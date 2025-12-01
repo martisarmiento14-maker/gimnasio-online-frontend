@@ -1,76 +1,306 @@
+// ==============================
+// CONFIG
+// ==============================
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
-// ======================================================
-// Cargar todas las cuotas
-// ======================================================
-async function cargarCuotas() {
-    const cont = document.getElementById("listaCuotas");
-    cont.innerHTML = "<tr><td colspan='6'>Cargando cuotas...</td></tr>";
+// ==============================
+// EVENTO PRINCIPAL
+// ==============================
+document.addEventListener("DOMContentLoaded", cargarAdministracion);
+
+let alumnosGlobal = []; // Para filtros y buscador
+
+
+// ==============================
+// FORMATEAR FECHA
+// ==============================
+function formatearFecha(iso) {
+    if (!iso) return "-";
+    const f = new Date(iso);
+    const d = String(f.getDate()).padStart(2, "0");
+    const m = String(f.getMonth() + 1).padStart(2, "0");
+    const y = f.getFullYear();
+    return `${d}/${m}/${y}`;
+}
+
+
+// ==============================
+// CREAR BÚSQUEDA + FILTROS
+// ==============================
+function crearControles() {
+    const cont = document.getElementById("admin-controles");
+
+    cont.innerHTML = `
+        <div class="panel-controles">
+            <input 
+                type="text" 
+                id="buscar"
+                class="input-search"
+                placeholder="Buscar por nombre o DNI">
+
+            <select id="filtroEstado" class="input-filter">
+                <option value="todos">Todos</option>
+                <option value="activos">Activos</option>
+                <option value="inactivos">Inactivos</option>
+                <option value="vencidos">Vencidos</option>
+                <option value="por_vencer">Por vencer</option>
+                <option value="al_dia">Al día</option>
+            </select>
+        </div>
+    `;
+
+    document.getElementById("buscar").addEventListener("input", aplicarFiltros);
+    document.getElementById("filtroEstado").addEventListener("change", aplicarFiltros);
+}
+
+
+// ==============================
+// CARGAR ADMINISTRACIÓN
+// ==============================
+async function cargarAdministracion() {
+    crearControles();
+
+    const cont = document.getElementById("listaAdmin");
+    cont.innerHTML = "Cargando alumnos...";
 
     try {
-        const res = await fetch(`${API_URL}/cuotas`);
-        const cuotas = await res.json();
+        // ==============================
+        // 1) TRAER ALUMNOS
+        // ==============================
+        const resAlumnos = await fetch(`${API_URL}/alumnos`);
+        const alumnos = await resAlumnos.json();
 
-        let html = "";
+        // ==============================
+        // 2) POR CADA ALUMNO → ÚLTIMA CUOTA
+        // ==============================
+        for (let al of alumnos) {
+            const resHist = await fetch(`${API_URL}/cuotas/historial/${al.id}`);
+            const hist = await resHist.json();
 
-        for (let c of cuotas) {
-            const fecha = c.fecha_pago ? c.fecha_pago.split("T")[0] : "-";
+            const ultima = hist[0];
+            al.vencimiento = ultima ? formatearFecha(ultima.fecha_vencimiento) : "Sin datos";
 
-            html += `
-                <tr>
-                    <td>${c.id}</td>
-                    <td>${c.nombre ?? ""} ${c.apellido ?? ""}</td>
-                    <td>$${c.monto}</td>
-                    <td>${fecha}</td>
-                    <td>${c.metodo_pago}</td>
-                    <td>${c.comentarios ?? ""}</td>
-                </tr>
-            `;
+            // ==============================
+            // CALCULAR ESTADO
+            // ==============================
+            let estado = "";
+            let estadoClave = "";
+            let claseFila = "";
+            let mensajeWs = "";
+
+            if (!ultima) {
+                estado = "Sin cuota";
+                estadoClave = "sin_cuota";
+                claseFila = "fila-sin-cuota";
+                mensajeWs = `Hola ${al.nombre}, todavía no registramos una cuota activa.`;
+            } else {
+                const hoy = new Date();
+                const vto = new Date(ultima.fecha_vencimiento);
+                const diff = Math.ceil((vto - hoy) / (1000 * 60 * 60 * 24));
+
+                if (vto < hoy) {
+                    estado = "Vencido";
+                    estadoClave = "vencido";
+                    claseFila = "fila-vencido";
+                    mensajeWs = `Hola ${al.nombre}, tu cuota se venció el ${al.vencimiento}.`;
+                } else if (diff <= 5) {
+                    estado = "Por vencer";
+                    estadoClave = "por_vencer";
+                    claseFila = "fila-por-vencer";
+                    mensajeWs = `Hola ${al.nombre}, tu cuota vence el ${al.vencimiento}.`;
+                } else {
+                    estado = "Al día";
+                    estadoClave = "al_dia";
+                    claseFila = "fila-al-dia";
+                    mensajeWs = `Hola ${al.nombre}, tu cuota está al día.`;
+                }
+            }
+
+            if (!al.activo) {
+                estadoClave = "inactivo";
+                claseFila = "fila-inactivo";
+            }
+
+            al.estado = estado;
+            al.estadoClave = estadoClave;
+            al.claseFila = claseFila;
+            al.mensajeWs = mensajeWs;
         }
 
-        cont.innerHTML = html;
+        alumnosGlobal = alumnos;
 
-    } catch (err) {
-        console.error(err);
-        cont.innerHTML = "<tr><td colspan='6'>Error cargando cuotas</td></tr>";
+        ordenarLista();
+        aplicarFiltros();
+
+    } catch (e) {
+        cont.innerHTML = "Error al cargar la información.";
+        console.error(e);
     }
 }
 
-// ======================================================
-// Crear nueva cuota
-// ======================================================
-async function crearCuota() {
-    const id_alumno = document.getElementById("id_alumno").value;
-    const monto = document.getElementById("monto").value;
-    const fecha_pago = document.getElementById("fecha_pago").value;
-    const metodo_pago = document.getElementById("metodo_pago").value;
-    const comentarios = document.getElementById("comentarios").value;
 
-    if (!id_alumno || !monto || !fecha_pago) {
-        alert("Faltan datos obligatorios.");
+// ==============================
+// ORDENAR
+// ==============================
+function ordenarLista() {
+    alumnosGlobal.sort((a, b) => {
+        if (a.activo !== b.activo) return b.activo - a.activo;
+
+        const orden = {
+            vencido: 1,
+            por_vencer: 2,
+            al_dia: 3,
+            sin_cuota: 4,
+            inactivo: 5
+        };
+
+        return orden[a.estadoClave] - orden[b.estadoClave];
+    });
+}
+
+
+// ==============================
+// FILTRAR
+// ==============================
+function aplicarFiltros() {
+    let texto = document.getElementById("buscar").value.toLowerCase();
+    let filtro = document.getElementById("filtroEstado").value;
+
+    let lista = alumnosGlobal.filter(a => {
+        const coincideTexto =
+            a.nombre.toLowerCase().includes(texto) ||
+            a.apellido.toLowerCase().includes(texto) ||
+            String(a.dni).includes(texto);
+
+        let coincideEstado = false;
+
+        switch (filtro) {
+            case "todos": coincideEstado = true; break;
+            case "activos": coincideEstado = Number(a.activo) === 1; break;
+            case "inactivos": coincideEstado = Number(a.activo) === 0; break;
+            case "vencidos": coincideEstado = a.estadoClave === "vencido"; break;
+            case "por_vencer": coincideEstado = a.estadoClave === "por_vencer"; break;
+            case "al_dia": coincideEstado = a.estadoClave === "al_dia"; break;
+        }
+
+        return coincideTexto && coincideEstado;
+    });
+
+    renderTabla(lista);
+}
+
+
+// ==============================
+// RENDER TABLA
+// ==============================
+function renderTabla(lista) {
+    const cont = document.getElementById("listaAdmin");
+
+    let html = `
+    <table class="tabla-alumnos">
+        <thead>
+            <tr>
+                <th>Alumno</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Equipo</th>
+                <th>WhatsApp</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (let al of lista) {
+        html += `
+        <tr class="${al.claseFila}">
+            <td>${al.nombre} ${al.apellido} ${al.activo ? "" : "(inactivo)"}</td>
+            <td>${al.vencimiento}</td>
+            <td><b>${al.estado}</b></td>
+
+            <td>
+                <select onchange="cambiarEquipo(${al.id}, this.value)">
+                    <option value="">-</option>
+                    <option value="blanco" ${al.equipo === "blanco" ? "selected" : ""}>Blanco</option>
+                    <option value="morado" ${al.equipo === "morado" ? "selected" : ""}>Morado</option>
+                </select>
+            </td>
+
+            <td>
+                <button class="btn-ws"
+                    onclick="enviarWhatsapp('${al.telefono}', '${encodeURIComponent(al.mensajeWs)}')">
+                    WhatsApp
+                </button>
+            </td>
+
+            <td>
+                <button class="btn-edit" 
+                    onclick="toggleActivo(${al.id}, ${al.activo})">
+                    ${al.activo ? "Desactivar" : "Activar"}
+                </button>
+
+                <button class="btn-delete" onclick="eliminarAlumno(${al.id})">
+                    Borrar
+                </button>
+            </td>
+        </tr>`;
+    }
+
+    html += "</tbody></table>";
+    cont.innerHTML = html;
+}
+
+
+// ==============================
+// WHATSAPP
+// ==============================
+function enviarWhatsapp(numero, msg) {
+    if (!numero) {
+        alert("El alumno no tiene número de teléfono.");
         return;
     }
+    const url = `https://wa.me/549${numero}?text=${msg}`;
+    window.open(url, "_blank");
+}
 
-    try {
-        const res = await fetch(`${API_URL}/cuotas`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id_alumno,
-                monto,
-                fecha_pago,
-                metodo_pago,
-                comentarios
-            })
-        });
 
-        const data = await res.json();
-        alert("Cuota creada correctamente");
+// ==============================
+// CAMBIAR ACTIVO
+// ==============================
+async function toggleActivo(id, activo) {
+    const ruta = activo
+        ? `${API_URL}/alumnos/${id}/desactivar`
+        : `${API_URL}/alumnos/${id}/activar`;
 
-        window.location.href = "cuota.html";
+    await fetch(ruta, { method: "PUT" });
+    await cargarAdministracion();
+}
 
-    } catch (err) {
-        console.error("❌ Error creando cuota:", err);
-        alert("Error al crear cuota");
-    }
+
+// ==============================
+// CAMBIAR EQUIPO
+// ==============================
+async function cambiarEquipo(id, equipo) {
+    if (!equipo) return;
+
+    await fetch(`${API_URL}/alumnos/${id}/equipo`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ equipo })
+    });
+
+    await cargarAdministracion();
+}
+
+
+// ==============================
+// ELIMINAR ALUMNO
+// ==============================
+async function eliminarAlumno(id) {
+    const ok = confirm("¿Eliminar alumno permanentemente?");
+
+    if (!ok) return;
+
+    const res = await fetch(`${API_URL}/alumnos/${id}`, { method: "DELETE" });
+    await cargarAdministracion();
 }
