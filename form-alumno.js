@@ -11,11 +11,12 @@ let fechaVencimientoOriginal = null;
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
 function sumarUnMes(fecha) {
-    if (!fecha) return "";
-    let f = new Date(fecha);
+    const [year, month, day] = fecha.split("-").map(Number);
+    let f = new Date(year, month - 1, day);
     f.setMonth(f.getMonth() + 1);
     return f.toISOString().split("T")[0];
 }
+
 
 async function iniciar() {
     const params = new URLSearchParams(window.location.search);
