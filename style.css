@@ -1115,3 +1115,30 @@ select:hover {
     text-align: center;
     box-shadow: 0 0 25px rgba(0,0,0,0.30);
 }
+.alerta-cuota {
+    background: rgba(255, 196, 0, 0.25);
+    border: 3px solid #ffcc00;
+    padding: 18px;
+    text-align: center;
+    font-size: 1.6rem;
+    width: 60%;
+    margin: 20px auto;
+    border-radius: 15px;
+    color: #ffdd55;
+    font-weight: bold;
+    animation: aparecer 0.4s ease-out;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.tarjeta {
+    width: 70%;
+    margin: 30px auto;
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(180,130,255,0.7);
+    text-align: center;
+}

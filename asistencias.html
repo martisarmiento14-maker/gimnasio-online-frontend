@@ -3,39 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencias</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <title>Asistencias - EG Gym</title>
 
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #0e0c14;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: #c283ff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #b26bff;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .btn-header {
+            background: white;
+            color: black;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-header:hover {
+            transform: scale(1.07);
+        }
+
+        /* Bienvenida */
+        #bienvenida {
+            font-size: 3rem;
+            margin-top: 40px;
+            color: #d8b8ff;
+            font-weight: 600;
+        }
+
+        /* Input */
+        #dniInput {
+            margin-top: 20px;
+            width: 60%;
+            padding: 18px;
+            font-size: 2rem;
+            border-radius: 20px;
+            border: 3px solid #d6b1ff;
+            outline: none;
+            text-align: center;
+            background: #eae6ff;
+            color: black;
+            box-shadow: 0 0 25px #b87dff;
+        }
+
+        /* Contenedor de resultados */
+        #resultado {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Botón Borrar */
+        #borrarBtn {
+            display: none;
+            background: #ff6f6f;
+            border: none;
+            padding: 15px 40px;
+            margin-top: 40px;
+            font-size: 1.8rem;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #borrarBtn:hover {
+            transform: scale(1.07);
+            background: #ff4a4a;
+        }
+
+        /* Tarjeta del alumno (se completa desde JS) */
+        .tarjeta {
+            width: 70%;
+            margin-top: 30px;
+            padding: 40px;
+            border-radius: 25px;
+            border: 3px solid rgba(180,130,255,0.7);
+        }
+
+        /* Alerta de cuota */
+        .alerta-cuota {
+            background: rgba(255, 196, 0, 0.25);
+            border: 3px solid #ffcc00;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 15px;
+            color: #ffdd55;
+            font-weight: bold;
+            animation: aparecer 0.4s ease-out;
+        }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+    </style>
+
+</head>
 <body>
-    <header class="topbar">
-        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
-        <h1 class="titulo">Asistencias</h1>
-        <button class="btn-salir" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+
+    <!-- Encabezado -->
+    <header>
+        <button class="btn-header" onclick="window.location.href='dashboard.html'">← Volver</button>
+        <h1>Asistencias</h1>
+        <button class="btn-header" onclick="window.location.href='index.html'">Cerrar Sesión</button>
     </header>
 
-    <div id="bienvenidaInicial" class="bienvenida-inicial">
-        <h2>Bienvenido a EG Gym</h2>
-    </div>
+    <!-- Bienvenida -->
+    <h2 id="bienvenida">Bienvenido a EG Gym</h2>
 
-    <div class="input-container">
-        <input 
-            id="dniInput"
-            type="number"
-            placeholder="Ingresar DNI"
-            onkeydown="if(event.key==='Enter') registrarAsistencia()"
-        >
-    </div>
+    <!-- Input DNI -->
+    <input type="number" id="dniInput" placeholder="Ingresar DNI">
 
-    <div id="alertaVencido" class="alerta-vencido" style="display:none;"></div>
+    <!-- Contenedor dinámico -->
+    <div id="resultado"></div>
 
-    <div id="infoAlumno"></div>
-
-    <button id="btnBorrar" class="btn-borrar" style="display:none;" onclick="borrarInfo()">Borrar</button>
-
-    <audio id="sonidoOk" src="sounds/ok.mp3"></audio>
-    <audio id="sonidoError" src="sounds/error.mp3"></audio>
+    <!-- Botón borrar -->
+    <button id="borrarBtn">Borrar</button>
 
     <script src="asistencias.js"></script>
+
 </body>
 </html>

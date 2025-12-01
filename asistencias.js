@@ -1,131 +1,122 @@
+const API_URL = "https://gimnasio-online-1.onrender.com/asistencias";
+
 const dniInput = document.getElementById("dniInput");
-const info = document.getElementById("infoAlumno");
-const btnBorrar = document.getElementById("btnBorrar");
-const bienvenidaInicial = document.getElementById("bienvenidaInicial");
-const alertaVencido = document.getElementById("alertaVencido");
+const resultadoContenedor = document.getElementById("resultado");
+const borrarBtn = document.getElementById("borrarBtn");
+const bienvenida = document.getElementById("bienvenida");
 
-async function registrarAsistencia() {
+// Mostrar bienvenida antes de ingresar DNI
+resultadoContenedor.innerHTML = "";
+borrarBtn.style.display = "none";
+
+dniInput.addEventListener("input", async () => {
     const dni = dniInput.value.trim();
-    if (!dni) return;
 
-    bienvenidaInicial.style.display = "none";
-    info.innerHTML = `<p style="color: yellow; font-size: 22px;">Buscando alumno...</p>`;
+    if (dni === "") {
+        bienvenida.style.display = "block";
+        resultadoContenedor.innerHTML = "";
+        borrarBtn.style.display = "none";
+        return;
+    }
+
+    bienvenida.style.display = "none";
 
     try {
-        const res = await fetch("https://gimnasio-backend-u3xo.onrender.com/asistencias", {
+        const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ dni }),
+            body: JSON.stringify({ dni })
         });
+
+        if (!res.ok) {
+            throw new Error("Servidor caído o sin conexión");
+        }
 
         const data = await res.json();
 
-        if (!res.ok || data.error) {
-            info.innerHTML = `<p style="color:red; font-size:30px;">✖ ${data.error || "Error de conexión"}</p>`;
-            sonarError();
-            btnBorrar.style.display = "block";
+        resultadoContenedor.innerHTML = "";
+        borrarBtn.style.display = "block";
+
+        // ❌ DNI NO ENCONTRADO
+        if (data.error) {
+            mostrarError("DNI no encontrado");
             return;
         }
 
+        // 📌 Mostrar tarjeta principal
         mostrarTarjeta(data);
 
-    } catch (err) {
-        info.innerHTML = `<p style="color:red; font-size:30px;">✖ Error de conexión con el servidor</p>`;
-        sonarError();
-    }
+        // ⚠️ Alerta de cuota vencida
+        if (data.cuota && data.cuota.estado === "vencida") {
+            mostrarAlertaCuota(data.cuota.fecha_vencimiento);
+        }
 
-    btnBorrar.style.display = "block";
-}
+    } catch (e) {
+        mostrarError("Error de conexión con el servidor");
+    }
+});
 
 function mostrarTarjeta(data) {
-    const {
-        alumno,
-        asistencias_semana,
-        limite_semanal,
-        se_registro,
-        alerta_cuota,
-        alerta_dias,
-        cuota
-    } = data;
+    const equipo = data.alumno.equipo.toLowerCase();
+    const esMorado = equipo === "morado";
 
-    info.innerHTML = "";
-    alertaVencido.style.display = "none";
+    const bgColor = esMorado
+        ? "rgba(90,0,120,0.55)"
+        : "rgba(255,255,255,0.50)";
 
-    // ⚠ Mostrar advertencia de cuota vencida arriba
-    if (cuota && cuota.estado === "Vencido") {
-        alertaVencido.style.display = "block";
-        alertaVencido.innerHTML = `
-            ⚠ <b>Tu cuota está vencida</b><br>
-            Venció el: <b>${formatearFecha(cuota.fecha_vencimiento)}</b>.
-        `;
-    }
+    const textColor = esMorado ? "white" : "black";
+    const nombreColor = esMorado ? "#d49bff" : "#6a00a8";
 
-    // colores según equipo
-    const esMorado = alumno.equipo.toLowerCase() === "morado";
+    resultadoContenedor.innerHTML = `
+        <div class="tarjeta" style="background:${bgColor}; color:${textColor}">
+            <h2 style="color:${nombreColor}">
+                Bienvenido, ${data.alumno.nombre} ${data.alumno.apellido}
+            </h2>
 
-    const tarjetaStyle = esMorado
-        ? `background: rgba(88, 0, 139, 0.45); color: white; border: 4px solid #b57bff;`
-        : `background: rgba(255,255,255,0.65); color: black; border: 4px solid #d2b4ff;`;
+            <p><strong>Equipo:</strong> ${data.alumno.equipo}</p>
+            <p><strong>Plan:</strong> ${data.alumno.planes}</p>
+            <p><strong>Asistencias esta semana:</strong> 
+                ${data.asistencias_semana} / ${data.limite_semanal}
+            </p>
 
-    const tituloColor = esMorado ? "#d9b3ff" : "black";
-    const nombreColor = esMorado ? "#e0b3ff" : "#7b3fe0";
+            ${data.alerta_dias ? `
+                <p style="color:yellow; font-size:1.4rem">
+                    ⚠️ ${data.alerta_dias}
+                </p>
+            ` : ""}
 
-    let html = `
-    <div class="tarjeta" style="${tarjetaStyle}">
-        <h2 style="font-size:40px; color:${tituloColor};">
-            Bienvenido, <span style="color:${nombreColor};">${alumno.nombre} ${alumno.apellido}</span>
-        </h2>
+            ${data.se_registro
+                ? `<p style="color:#00ff38; font-size:1.5rem">✔ Asistencia registrada correctamente</p>`
+                : `<p style="color:red; font-size:1.5rem">✘ No se registró la asistencia</p>`
+            }
+        </div>
+    `;
+}
 
-        <p><b>Equipo:</b> ${alumno.equipo}</p>
-        <p><b>Plan:</b> ${alumno.planes}</p>
+function mostrarAlertaCuota(fecha) {
+    const alerta = document.createElement("div");
+    alerta.className = "alerta-cuota";
+    alerta.innerHTML = `
+        ⚠️ <strong>CUOTA VENCIDA</strong><br>
+        Venció el <strong>${new Date(fecha).toLocaleDateString("es-AR")}</strong>.
+    `;
+    document.body.prepend(alerta);
 
-        <p style="font-size:26px; margin-top:20px;">
-            <b>Asistencias esta semana:</b> ${asistencias_semana} / ${limite_semanal}
+    setTimeout(() => alerta.remove(), 7000);
+}
+
+function mostrarError(msg) {
+    resultadoContenedor.innerHTML = `
+        <p style="color:red; font-size:2rem; text-align:center">
+            ✘ ${msg}
         </p>
     `;
-
-    if (alerta_dias) {
-        html += `<p style="color:yellow; font-size:26px;">⚠ ${alerta_dias}</p>`;
-    }
-
-    if (alerta_cuota) {
-        html += `<p style="color:red; font-size:26px;">✖ ${alerta_cuota}</p>`;
-    }
-
-    if (se_registro) {
-        html += `<p style="color:#00ff00; font-size:30px;">✔ Asistencia registrada correctamente</p>`;
-        sonarOK();
-    } else if (!alerta_cuota && !alerta_dias) {
-        html += `<p style="color:red; font-size:30px;">✖ No se registró la asistencia</p>`;
-        sonarError();
-    }
-
-    html += `</div>`;
-    info.innerHTML = html;
+    borrarBtn.style.display = "block";
 }
 
-function borrarInfo() {
+borrarBtn.addEventListener("click", () => {
     dniInput.value = "";
-    info.innerHTML = "";
-    alertaVencido.style.display = "none";
-    btnBorrar.style.display = "none";
-    bienvenidaInicial.style.display = "block";
-    dniInput.focus();
-}
-
-function sonarOK() {
-    const a = document.getElementById("sonidoOk");
-    a.currentTime = 0;
-    a.play().catch(()=>{});
-}
-
-function sonarError() {
-    const a = document.getElementById("sonidoError");
-    a.currentTime = 0;
-    a.play().catch(()=>{});
-}
-
-function formatearFecha(f) {
-    const date = new Date(f);
-    return date.toLocaleDateString("es-AR");
-}
+    resultadoContenedor.innerHTML = "";
+    borrarBtn.style.display = "none";
+    bienvenida.style.display = "block";
+});
