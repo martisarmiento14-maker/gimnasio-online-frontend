@@ -1,4 +1,3 @@
-
 // ==============================
 // CONFIG
 // ==============================
@@ -9,7 +8,7 @@ document.addEventListener("DOMContentLoaded", cargarCuotas);
 let alumnos = [];
 
 // ==============================
-// FORMATEAR FECHA dd/mm/aaaa
+// Helpers
 // ==============================
 function formatearFecha(iso) {
     if (!iso) return "—";
@@ -19,7 +18,7 @@ function formatearFecha(iso) {
 }
 
 // ==============================
-// CARGAR ESTADO DE CUOTAS
+// CARGAR TODOS LOS ALUMNOS
 // ==============================
 async function cargarCuotas() {
     const cont = document.getElementById("listaAdmin");
@@ -32,6 +31,7 @@ async function cargarCuotas() {
         alumnos = await res.json();
 
         procesarEstados();
+        ordenarLista();
         renderTabla(alumnos);
 
     } catch (error) {
@@ -41,7 +41,7 @@ async function cargarCuotas() {
 }
 
 // ==============================
-// CALCULAR ESTADO SEGÚN fecha_vencimiento
+// PROCESAR ESTADO SEGÚN FECHA
 // ==============================
 function procesarEstados() {
     const hoy = new Date();
@@ -58,7 +58,6 @@ function procesarEstados() {
         const vto = new Date(al.fecha_vencimiento);
         const diff = Math.ceil((vto - hoy) / (1000 * 60 * 60 * 24));
 
-        // INACTIVO  
         if (!al.activo) {
             al.estado = "Inactivo";
             al.estadoClave = "inactivo";
@@ -67,7 +66,6 @@ function procesarEstados() {
             return;
         }
 
-        // VENCIDO
         if (vto < hoy) {
             al.estado = "Vencido";
             al.estadoClave = "vencido";
@@ -76,7 +74,6 @@ function procesarEstados() {
             return;
         }
 
-        // POR VENCER
         if (diff <= 5) {
             al.estado = "Por vencer";
             al.estadoClave = "por_vencer";
@@ -85,7 +82,6 @@ function procesarEstados() {
             return;
         }
 
-        // AL DÍA
         al.estado = "Al día";
         al.estadoClave = "al_dia";
         al.claseFila = "fila-al-dia";
@@ -94,7 +90,26 @@ function procesarEstados() {
 }
 
 // ==============================
-// CONTROLES (BUSCAR Y FILTRAR)
+// ORDEN: activos arriba, inactivos abajo
+// luego por estado: vencido → por vencer → al día → sin cuota
+// ==============================
+function ordenarLista() {
+    const ordenEstado = {
+        vencido: 1,
+        por_vencer: 2,
+        al_dia: 3,
+        sin_cuota: 4,
+        inactivo: 5
+    };
+
+    alumnos.sort((a, b) => {
+        if (a.activo !== b.activo) return b.activo - a.activo;
+        return (ordenEstado[a.estadoClave] || 99) - (ordenEstado[b.estadoClave] || 99);
+    });
+}
+
+// ==============================
+// CONTROLES DE BUSQUEDA Y FILTRO
 // ==============================
 function crearControles() {
     const cont = document.getElementById("admin-controles");
@@ -115,6 +130,9 @@ function crearControles() {
     document.getElementById("filtroEstado").onchange = filtrar;
 }
 
+// ==============================
+// FILTRAR RESULTADOS
+// ==============================
 function filtrar() {
     const texto = document.getElementById("buscar").value.toLowerCase();
     const estado = document.getElementById("filtroEstado").value;
@@ -135,7 +153,7 @@ function filtrar() {
 }
 
 // ==============================
-// TABLA
+// RENDER TABLA
 // ==============================
 function renderTabla(lista) {
     const cont = document.getElementById("listaAdmin");
@@ -147,7 +165,8 @@ function renderTabla(lista) {
                 <th>Alumno</th>
                 <th>Vencimiento</th>
                 <th>Estado</th>
-                <th>WhatsApp</th>
+                <th>Equipo</th>
+                <th>WS</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -157,14 +176,23 @@ function renderTabla(lista) {
     lista.forEach(al => {
         html += `
         <tr class="${al.claseFila}">
-            <td>${al.nombre} ${al.apellido}</td>
+            <td>${al.nombre} ${al.apellido} ${!al.activo ? "(inactivo)" : ""}</td>
             <td>${formatearFecha(al.fecha_vencimiento)}</td>
             <td><b>${al.estado}</b></td>
 
             <td>
-                <button class="btn-ws"
+                <select onchange="cambiarEquipo(${al.id}, this.value)">
+                    <option value="">-</option>
+                    <option value="blanco" ${al.equipo === "blanco" ? "selected" : ""}>Blanco</option>
+                    <option value="morado" ${al.equipo === "morado" ? "selected" : ""}>Morado</option>
+                </select>
+            </td>
+
+            <td>
+                <button class="btn-ws" 
+                    ${!al.telefono || al.estadoClave === "inactivo" ? "disabled" : ""}
                     onclick="enviarWs('${al.telefono}', '${encodeURIComponent(al.mensajeWs)}')">
-                    WhatsApp
+                    WS
                 </button>
             </td>
 
@@ -174,7 +202,7 @@ function renderTabla(lista) {
                 </button>
 
                 <button class="btn-delete" onclick="eliminarAlumno(${al.id})">
-                    Borrar
+                    X
                 </button>
             </td>
         </tr>`;
@@ -186,16 +214,22 @@ function renderTabla(lista) {
 }
 
 // ==============================
-// WHATSAPP
+// FUNCIONES DEL SISTEMA
 // ==============================
 function enviarWs(tel, msg) {
-    if (!tel) return alert("El alumno no tiene teléfono");
     window.open(`https://wa.me/549${tel}?text=${msg}`, "_blank");
 }
 
-// ==============================
-// ACTIVAR / DESACTIVAR
-// ==============================
+async function cambiarEquipo(id, equipo) {
+    await fetch(`${API_URL}/alumnos/${id}/equipo`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ equipo })
+    });
+
+    cargarCuotas();
+}
+
 async function toggleActivo(id, actual) {
     const ruta = actual
         ? `${API_URL}/alumnos/${id}/desactivar`
@@ -205,11 +239,10 @@ async function toggleActivo(id, actual) {
     cargarCuotas();
 }
 
-// ==============================
-// ELIMINAR
-// ==============================
 async function eliminarAlumno(id) {
     if (!confirm("¿Eliminar alumno definitivamente?")) return;
+
     await fetch(`${API_URL}/alumnos/${id}`, { method: "DELETE" });
     cargarCuotas();
 }
+
