@@ -1,150 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencias - EG Gimnasio</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asistencias</title>
 
     <style>
-        /* ----------- DISEÑO MEJORADO PARA ASISTENCIAS ----------- */
+        body {
+            margin: 0;
+            background: #0a0711;
+            font-family: "Poppins", sans-serif;
+            color: white;
+        }
 
-        .asistencia-container {
+        /* ENCABEZADO */
+        header {
+            background: #c27bf1;
+            padding: 30px 40px;
             display: flex;
-            justify-content: center;
-            margin-top: 40px;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
         }
 
-        .asistencia-card {
-            background: #ffffff10;
-            backdrop-filter: blur(6px);
-            padding: 35px;
-            width: 90%;
-            max-width: 650px;
-            border-radius: 20px;
-            box-shadow: 0 0 25px #00000040;
-            text-align: center;
-        }
-
-        .asistencia-title {
-            font-size: 34px;
-            font-weight: 700;
-            color: #c38bfa;
-            margin-bottom: 25px;
-        }
-
-        #dniInput {
-            width: 100%;
-            padding: 14px;
+        .btnHeader {
+            background: white;
+            color: black;
+            padding: 10px 28px;
             font-size: 20px;
-            border-radius: 12px;
-            border: 2px solid #c9c9ff;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .btnHeader:hover {
+            transform: scale(1.05);
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        #subtituloGym {
+            font-size: 40px;
+            color: #d7baff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* INPUT DNI */
+        #dniInput {
+            width: 450px;
+            padding: 15px;
+            font-size: 22px;
+            border-radius: 18px;
+            border: 3px solid #c08aff;
             outline: none;
             text-align: center;
-            margin-bottom: 20px;
+            box-shadow: 0 0 15px #b47cff;
         }
 
         #dniInput:focus {
-            border-color: #b57bff;
-            box-shadow: 0 0 10px #b57bff;
+            box-shadow: 0 0 25px #d8afff;
+        }
+
+        /* RESULTADO */
+        #resultado {
+            margin: 40px auto 0;
+            min-height: 200px;
+            max-width: 1000px;
+        }
+
+        .alerta-cuota {
+            background: rgba(255, 50, 50, 0.25);
+            border: 3px solid red;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+            color: red;
+            font-weight: bold;
         }
 
         .asistencia-panel {
-            margin-top: 25px;
-            padding: 25px;
-            border-radius: 15px;
-            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            border: 4px solid #c08aff;
             text-align: center;
-            font-size: 20px;
-            border: 3px solid #e2c5ff;
         }
 
-        .asistencia-panel h3 {
-            font-size: 28px;
-            margin-bottom: 10px;
+        .panel-morado {
+            background: rgba(120, 40, 180, 0.65);
+            color: white;
+        }
+
+        .panel-blanco {
+            background: rgba(255, 255, 255, 0.85);
+            color: black;
+        }
+
+        .titulo-bienvenida {
+            font-size: 40px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .titulo-bienvenida span.nombre {
             font-weight: 700;
         }
 
-        .asistencia-panel p {
-            margin: 8px 0;
-            font-size: 20px;
+        .msg-amarillo {
+            color: #ffcc33;
+            font-size: 22px;
+            margin-top: 10px;
         }
 
-        /* colores de tarjeta por equipo */
-        .asistencia-card-blanco {
-            background: #ffffff;
-            border-left: 10px solid #d5d5ff;
+        .msg-rojo {
+            color: #ff4444;
+            font-size: 22px;
+            margin-top: 10px;
         }
 
-        .asistencia-card-violeta {
-            background: #f3d1ff;
-            border-left: 10px solid #d17bff;
+        .msg-verde {
+            color: #4cd964;
+            font-size: 22px;
+            margin-top: 10px;
         }
 
-        .alerta-roja {
-            color: red;
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-        .ok-verde {
-            color: #0a8f00;
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-        /* botón borrar */
-        .btn-borrar {
-            margin-top: 20px;
-            padding: 12px 25px;
-            font-size: 18px;
+        /* BOTÓN BORRAR */
+        #btnBorrar {
+            margin: 30px auto 0;
+            padding: 14px 32px;
+            font-size: 22px;
             background: #ff6b6b;
             border: none;
-            border-radius: 10px;
+            border-radius: 18px;
             color: white;
             cursor: pointer;
+            display: none;
         }
 
-        .btn-borrar:hover {
-            background: #ff4a4a;
+        #btnBorrar:hover {
+            background: #ff5050;
         }
     </style>
-
 </head>
 
-<body class="asist-body">
+<body>
+    <!-- HEADER -->
+    <header>
+        <button class="btnHeader" onclick="window.location.href='dashboard.html'">← Volver</button>
+        Asistencias
+        <button class="btnHeader" onclick="window.location.href='login.html'">Cerrar Sesión</button>
+    </header>
 
-    <div class="topbar">
-        <h2>Asistencias</h2>
-        <button id="logoutBtn">Cerrar Sesión</button>
-    </div>
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container">
 
-    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+        <!-- SUBTÍTULO (solo visible antes de escribir DNI) -->
+        <div id="subtituloGym">Bienvenido a EG Gym</div>
 
-    <div class="asistencia-container">
-        <div class="asistencia-card">
+        <!-- INPUT DNI -->
+        <input 
+            type="number" 
+            id="dniInput"
+            placeholder="Ingresar DNI"
+            onkeydown="if(event.key==='Enter') registrarAsistencia()" />
 
-            <h3 class="asistencia-title">Bienvenido a EG Gym</h3>
+        <!-- RESULTADO DINÁMICO -->
+        <div id="resultado"></div>
 
-            <input 
-                id="dniInput" 
-                type="number" 
-                placeholder="Ingresar DNI"
-                onkeydown="if(event.key === 'Enter') registrarAsistencia()"
-            >
-
-            <div id="infoAlumno"></div>
-
-            <button id="btnBorrar" class="btn-borrar" style="display:none;" onclick="borrarInfo()">
-                Borrar
-            </button>
-
-        </div>
+        <!-- BOTÓN BORRAR -->
+        <button id="btnBorrar" onclick="borrarInfo()">Borrar</button>
     </div>
 
     <script src="asistencias.js"></script>
-    <script src="dashboard.js"></script>
-
 </body>
 </html>
-
