@@ -28,38 +28,50 @@ function borrarInfo() {
 // MOSTRAR ALERTA DE CUOTA VENCIDA
 // ===============================
 function mostrarCuotaVencida(fecha) {
-    cuotaBannerText.textContent = `Tu cuota está vencida desde el ${fecha}`;
+    cuotaBannerText.textContent = `⚠ Tu cuota está vencida desde el ${fecha}`;
     cuotaBanner.classList.remove("hidden");
 }
 
 // ===============================
 // ARMAR TARJETA DEL ALUMNO
 // ===============================
-function armarTarjeta(alumno, asistencia) {
+function armarTarjeta(data) {
+    const alumno = data.alumno;
+    const asistencias = data.asistencias_semana;
+    const limite = data.limite_semanal ?? "-";
+    const alertaDias = data.alerta_dias;
+    const alertaCuota = data.alerta_cuota;
+    const seRegistro = data.se_registro;
+
     asistenciaCard.innerHTML = `
         <div class="bienvenida-inline">
-            Bienvenido, <span class="nombre">${alumno.nombre.toLowerCase()}</span>
+            Bienvenido, <span class="nombre">${alumno.nombre}</span>
         </div>
 
         <div class="fila"><span class="label">Equipo:</span> ${alumno.equipo}</div>
-        <div class="fila"><span class="label">Plan:</span> ${alumno.plan}</div>
-        <div class="fila"><span class="label">Asistencias esta semana:</span> 
-            ${asistencia.usadas} / ${asistencia.limite}
+        <div class="fila"><span class="label">Planes:</span> ${alumno.planes}</div>
+
+        <div class="fila">
+            <span class="label">Asistencias esta semana:</span>
+            ${asistencias} / ${limite}
         </div>
 
-        ${asistencia.advertencia
-            ? `<div class="alert-warning">⚠ ${asistencia.advertencia}</div>`
-            : ""
+        ${
+            seRegistro
+                ? `<div class="alert-info">✔ Asistencia registrada correctamente</div>`
+                : `<div class="alert-warning">⚠ Ya alcanzaste tu límite semanal</div>`
         }
 
-        ${asistencia.error
-            ? `<div class="alert-error">✖ ${asistencia.error}</div>`
-            : ""
+        ${
+            alertaDias
+                ? `<div class="alert-warning">${alertaDias}</div>`
+                : ""
         }
 
-        ${asistencia.ok
-            ? `<div class="alert-info">✔ ${asistencia.ok}</div>`
-            : ""
+        ${
+            alertaCuota
+                ? `<div class="alert-error">${alertaCuota}</div>`
+                : ""
         }
     `;
 
@@ -81,16 +93,22 @@ function armarTarjeta(alumno, asistencia) {
 // ===============================
 async function registrarAsistencia() {
     const dni = dniInput.value.trim();
-
     if (!dni) return;
 
     welcomeMain.classList.add("hidden");
     infoMensaje.textContent = "";
+    infoMensaje.classList.remove("error");
     asistenciaCard.classList.add("hidden");
     cuotaBanner.classList.add("hidden");
 
     try {
-        const res = await fetch(`${API_URL}/asistencias/registrar/${dni}`);
+        // 🔥 PETICIÓN CORRECTA AL BACKEND REAL
+        const res = await fetch(`${API_URL}/asistencias`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dni })
+        });
+
         const data = await res.json();
 
         if (!res.ok) {
@@ -100,18 +118,16 @@ async function registrarAsistencia() {
             return;
         }
 
-        infoMensaje.textContent = "";
-
-        // CUOTA VENCIDA
-        if (data.cuotaVencida) {
-            mostrarCuotaVencida(data.cuotaFecha);
+        // Si hay cuota y está vencida
+        if (data.cuota && data.cuota.estado === "vencida") {
+            mostrarCuotaVencida(data.cuota.fecha_vencimiento);
         }
 
-        // ARMAR TARJETA
-        armarTarjeta(data.alumno, data.asistencia);
+        // Armar tarjeta
+        armarTarjeta(data);
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
         infoMensaje.textContent = "✖ Error de conexión con el servidor";
         infoMensaje.classList.add("error");
         btnBorrar.classList.remove("hidden");
