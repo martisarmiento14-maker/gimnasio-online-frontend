@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencias - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ----------- DISEÑO MEJORADO PARA ASISTENCIAS ----------- */
+
+        .asistencia-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .asistencia-card {
+            background: #ffffff10;
+            backdrop-filter: blur(6px);
+            padding: 35px;
+            width: 90%;
+            max-width: 650px;
+            border-radius: 20px;
+            box-shadow: 0 0 25px #00000040;
+            text-align: center;
+        }
+
+        .asistencia-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: #c38bfa;
+            margin-bottom: 25px;
+        }
+
+        #dniInput {
+            width: 100%;
+            padding: 14px;
+            font-size: 20px;
+            border-radius: 12px;
+            border: 2px solid #c9c9ff;
+            outline: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #dniInput:focus {
+            border-color: #b57bff;
+            box-shadow: 0 0 10px #b57bff;
+        }
+
+        .asistencia-panel {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 15px;
+            background: white;
+            text-align: center;
+            font-size: 20px;
+            border: 3px solid #e2c5ff;
+        }
+
+        .asistencia-panel h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .asistencia-panel p {
+            margin: 8px 0;
+            font-size: 20px;
+        }
+
+        /* colores de tarjeta por equipo */
+        .asistencia-card-blanco {
+            background: #ffffff;
+            border-left: 10px solid #d5d5ff;
+        }
+
+        .asistencia-card-violeta {
+            background: #f3d1ff;
+            border-left: 10px solid #d17bff;
+        }
+
+        .alerta-roja {
+            color: red;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .ok-verde {
+            color: #0a8f00;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        /* botón borrar */
+        .btn-borrar {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 18px;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-borrar:hover {
+            background: #ff4a4a;
+        }
+    </style>
+
+</head>
+
+<body class="asist-body">
+
+    <div class="topbar">
+        <h2>Asistencias</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+
+    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+    <div class="asistencia-container">
+        <div class="asistencia-card">
+
+            <h3 class="asistencia-title">Bienvenido a EG Gym</h3>
+
+            <input 
+                id="dniInput" 
+                type="number" 
+                placeholder="Ingresar DNI"
+                onkeydown="if(event.key === 'Enter') registrarAsistencia()"
+            >
+
+            <div id="infoAlumno"></div>
+
+            <button id="btnBorrar" class="btn-borrar" style="display:none;" onclick="borrarInfo()">
+                Borrar
+            </button>
+
+        </div>
+    </div>
+
+    <script src="asistencias.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

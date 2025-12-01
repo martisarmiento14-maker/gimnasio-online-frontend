@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="topbar">
+        <h2>Administración</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+
+    <div class="content">
+
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+        <h3 class="subtitulo" style="margin-top:20px;">Estado general de cuotas</h3>
+
+        <!-- AQUÍ SE VA A DIBUJAR LA TABLA -->
+        <div id="admin-controles"></div>
+        <div id="listaAdmin"></div>
+
+    </div>
+
+    <script src="cuota.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

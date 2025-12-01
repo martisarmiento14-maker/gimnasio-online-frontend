@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="topbar">
+        <h2>Panel de Control</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+
+    <div class="dashboard-container">
+
+        <div class="dash-card" onclick="goTo('alumnos.html')">
+            <h3>Alumnos</h3>
+            <p>Gestión completa de alumnos</p>
+        </div>
+
+        <div class="dash-card" onclick="goTo('asistencias.html')">
+            <h3>Asistencias</h3>
+            <p>Registrar ingreso por DNI</p>
+        </div>
+
+        <div class="dash-card" onclick="goTo('cuota.html')">
+            <h3>Administración</h3>
+            <p>Control de vencimientos, WhatsApp y estado de alumnos</p>
+
+        </div>
+
+
+        <div class="dash-card" onclick="goTo('planes.html')">
+            <h3>Planes</h3>
+            <p>Administrar tipos de planes</p>
+        </div>
+
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

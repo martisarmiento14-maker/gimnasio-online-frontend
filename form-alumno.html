@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumno - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="topbar">
+        <h2 id="tituloForm">Nuevo Alumno</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+
+    <div class="form-container">
+
+        <!-- BOTÓN VOLVER -->
+        <button class="btn-volver" onclick="window.location.href='alumnos.html'">← Volver</button>
+
+        <form id="formAlumno">
+
+            <div class="form-row">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="apellido" placeholder="Apellido" required>
+            </div>
+
+            <div class="form-row">
+                <input type="number" id="dni" placeholder="DNI" required>
+                <input type="text" id="celular" placeholder="Celular" required>
+            </div>
+
+            <div class="form-row">
+                <select id="nivel" required>
+                    <option disabled selected value="">Nivel</option>
+                    <option value="principiante">Principiante</option>
+                    <option value="basico">Básico</option>
+                    <option value="experto">Experto</option>
+                </select>
+
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                    <label for="fecha_vencimiento">Fecha de vencimiento</label>
+                    <input type="date" id="fecha_vencimiento">
+                </div>
+
+                <button id="btnRenovar" class="btn-guardar" type="button">
+                    Renovar +1 mes
+                </button>
+            </div>
+
+            <h3 class="subtitulo">Planes</h3>
+
+            <div class="planes-box">
+                <label><input type="checkbox" id="plan_eg"> Plan EG</label>
+                <label><input type="checkbox" id="plan_personalizado"> Personalizado</label>
+                <label><input type="checkbox" id="plan_running"> Running</label>
+            </div>
+
+            <!-- DÍAS POR SEMANA (select, no texto libre) -->
+            <div class="form-row">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                    <label for="dias_semana">Días por semana</label>
+                    <select id="dias_semana" required>
+                        <option value="">Elegí un plan primero</option>
+                    </select>
+                    <small id="ayudaDias" style="color:#aaa;"></small>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+
+        </form>
+    </div>
+
+    <script src="form-alumno.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

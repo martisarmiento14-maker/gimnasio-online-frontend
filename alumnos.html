@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumnos - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="topbar">
+        <h2>Alumnos</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
+    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+
+    <div class="content">
+
+        <button class="btn-add" onclick="window.location.href='form-alumno.html'">
+            + Agregar Alumno
+        </button>
+    <div class="search-wrapper" style="margin-top:20px;">
+        <span class="search-icon">🔍</span>
+        <input 
+            type="text" 
+            id="buscarAlumno"
+            class="input-search" 
+            placeholder="Buscar por nombre o DNI..."
+            oninput="filtrarAlumnos()"
+        >
+    </div>
+
+        <table class="tabla-alumnos">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Nivel</th>
+                    <th>Equipo</th>
+                    <th>Planes</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+
+            <tbody id="listaAlumnos"></tbody>
+        </table>
+
+    </div>
+
+    <script src="alumnos.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+</html>
