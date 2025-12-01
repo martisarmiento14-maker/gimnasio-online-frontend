@@ -1,144 +1,131 @@
 const dniInput = document.getElementById("dniInput");
-const resultadoDiv = document.getElementById("resultado");
-const subtituloGym = document.getElementById("subtituloGym");
+const info = document.getElementById("infoAlumno");
 const btnBorrar = document.getElementById("btnBorrar");
+const bienvenidaInicial = document.getElementById("bienvenidaInicial");
+const alertaVencido = document.getElementById("alertaVencido");
 
-// esconder/mostrar "Bienvenido a EG Gym" según haya texto en DNI
-document.addEventListener("DOMContentLoaded", () => {
-    dniInput.addEventListener("input", () => {
-        if (dniInput.value.trim() === "") {
-            subtituloGym.style.display = "block";
-        } else {
-            subtituloGym.style.display = "none";
-        }
-    });
-});
-
-// ------------------------------
-// FUNCIÓN PRINCIPAL: REGISTRAR ASISTENCIA
-// ------------------------------
 async function registrarAsistencia() {
     const dni = dniInput.value.trim();
     if (!dni) return;
 
-    resultadoDiv.innerHTML = `<p style="font-size:22px;">Buscando alumno...</p>`;
-    btnBorrar.style.display = "none";
+    bienvenidaInicial.style.display = "none";
+    info.innerHTML = `<p style="color: yellow; font-size: 22px;">Buscando alumno...</p>`;
 
     try {
-        const res = await fetch(
-            "https://gimnasio-backend-u3xo.onrender.com/asistencias",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ dni }),
-            }
-        );
+        const res = await fetch("https://gimnasio-backend-u3xo.onrender.com/asistencias", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dni }),
+        });
 
         const data = await res.json();
 
         if (!res.ok || data.error) {
-            mostrarError(data.error || "Error al registrar asistencia");
+            info.innerHTML = `<p style="color:red; font-size:30px;">✖ ${data.error || "Error de conexión"}</p>`;
+            sonarError();
+            btnBorrar.style.display = "block";
             return;
         }
 
-        mostrarResultado(data);
-    } catch (err) {
-        console.error(err);
-        mostrarError("Error de conexión con el servidor");
-    }
-}
+        mostrarTarjeta(data);
 
-// ------------------------------
-// MOSTRAR ERROR SIMPLE
-// ------------------------------
-function mostrarError(mensaje) {
-    resultadoDiv.innerHTML = `
-        <div style="color:red; font-size:32px; margin-top:30px;">
-            ✖ ${mensaje}
-        </div>
-    `;
+    } catch (err) {
+        info.innerHTML = `<p style="color:red; font-size:30px;">✖ Error de conexión con el servidor</p>`;
+        sonarError();
+    }
+
     btnBorrar.style.display = "block";
 }
 
-// ------------------------------
-// DIBUJAR TARJETA DE RESULTADO
-// ------------------------------
-function mostrarResultado(data) {
+function mostrarTarjeta(data) {
     const {
         alumno,
-        cuota,
-        limite_semanal,
         asistencias_semana,
+        limite_semanal,
+        se_registro,
         alerta_cuota,
         alerta_dias,
-        se_registro,
+        cuota
     } = data;
 
-    // clase según equipo
-    let panelClass = "panel-blanco";
-    let colorNombre = "#6a1bb0"; // violeta fuerte para equipo blanco
+    info.innerHTML = "";
+    alertaVencido.style.display = "none";
 
-    if (
-        alumno.equipo &&
-        (alumno.equipo.toLowerCase() === "morado" ||
-            alumno.equipo.toLowerCase() === "violeta")
-    ) {
-        panelClass = "panel-morado";
-        colorNombre = "#c08aff";
-    }
-
-    let html = "";
-
-    // cartel de cuota vencida (si viene alerta_cuota del backend)
-    if (alerta_cuota) {
-        html += `<div class="alerta-cuota">⚠ ${alerta_cuota}</div>`;
-    }
-
-    html += `
-        <div class="asistencia-panel ${panelClass}">
-            <h2 class="titulo-bienvenida">
-                <span>Bienvenido, </span>
-                <span class="nombre" style="color:${colorNombre};">
-                    ${alumno.nombre} ${alumno.apellido}
-                </span>
-            </h2>
-
-            <p style="font-size:26px;"><strong>Equipo:</strong> ${alumno.equipo || "-"}</p>
-            <p style="font-size:26px;"><strong>Plan:</strong> ${alumno.planes || "-"}</p>
-    `;
-
-    if (limite_semanal) {
-        html += `
-            <p style="font-size:24px;">
-                <strong>Asistencias esta semana:</strong>
-                ${asistencias_semana} / ${limite_semanal}
-            </p>
+    // ⚠ Mostrar advertencia de cuota vencida arriba
+    if (cuota && cuota.estado === "Vencido") {
+        alertaVencido.style.display = "block";
+        alertaVencido.innerHTML = `
+            ⚠ <b>Tu cuota está vencida</b><br>
+            Venció el: <b>${formatearFecha(cuota.fecha_vencimiento)}</b>.
         `;
     }
 
+    // colores según equipo
+    const esMorado = alumno.equipo.toLowerCase() === "morado";
+
+    const tarjetaStyle = esMorado
+        ? `background: rgba(88, 0, 139, 0.45); color: white; border: 4px solid #b57bff;`
+        : `background: rgba(255,255,255,0.65); color: black; border: 4px solid #d2b4ff;`;
+
+    const tituloColor = esMorado ? "#d9b3ff" : "black";
+    const nombreColor = esMorado ? "#e0b3ff" : "#7b3fe0";
+
+    let html = `
+    <div class="tarjeta" style="${tarjetaStyle}">
+        <h2 style="font-size:40px; color:${tituloColor};">
+            Bienvenido, <span style="color:${nombreColor};">${alumno.nombre} ${alumno.apellido}</span>
+        </h2>
+
+        <p><b>Equipo:</b> ${alumno.equipo}</p>
+        <p><b>Plan:</b> ${alumno.planes}</p>
+
+        <p style="font-size:26px; margin-top:20px;">
+            <b>Asistencias esta semana:</b> ${asistencias_semana} / ${limite_semanal}
+        </p>
+    `;
+
     if (alerta_dias) {
-        html += `<p class="msg-amarillo">⚠ ${alerta_dias}</p>`;
+        html += `<p style="color:yellow; font-size:26px;">⚠ ${alerta_dias}</p>`;
+    }
+
+    if (alerta_cuota) {
+        html += `<p style="color:red; font-size:26px;">✖ ${alerta_cuota}</p>`;
     }
 
     if (se_registro) {
-        html += `<p class="msg-verde">✔ Asistencia registrada correctamente</p>`;
-    } else {
-        html += `<p class="msg-rojo">✖ No se registró la asistencia porque superaste tus días permitidos.</p>`;
+        html += `<p style="color:#00ff00; font-size:30px;">✔ Asistencia registrada correctamente</p>`;
+        sonarOK();
+    } else if (!alerta_cuota && !alerta_dias) {
+        html += `<p style="color:red; font-size:30px;">✖ No se registró la asistencia</p>`;
+        sonarError();
     }
 
     html += `</div>`;
-
-    resultadoDiv.innerHTML = html;
-    btnBorrar.style.display = "block";
+    info.innerHTML = html;
 }
 
-// ------------------------------
-// BOTÓN BORRAR
-// ------------------------------
 function borrarInfo() {
     dniInput.value = "";
-    resultadoDiv.innerHTML = "";
+    info.innerHTML = "";
+    alertaVencido.style.display = "none";
     btnBorrar.style.display = "none";
-    subtituloGym.style.display = "block";
+    bienvenidaInicial.style.display = "block";
     dniInput.focus();
+}
+
+function sonarOK() {
+    const a = document.getElementById("sonidoOk");
+    a.currentTime = 0;
+    a.play().catch(()=>{});
+}
+
+function sonarError() {
+    const a = document.getElementById("sonidoError");
+    a.currentTime = 0;
+    a.play().catch(()=>{});
+}
+
+function formatearFecha(f) {
+    const date = new Date(f);
+    return date.toLocaleDateString("es-AR");
 }
