@@ -1,5 +1,6 @@
-// gimnasio-frontend/form-alumno.js
-// (versión corregida completa con fix de fecha)
+// ========================
+//  form-alumno.js CORREGIDO
+// ========================
 
 document.addEventListener("DOMContentLoaded", iniciar);
 
@@ -9,20 +10,19 @@ let fechaVencimientoOriginal = null;
 
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
-// --------------------------------------
-// 🔧 SUMAR 1 MES CORRECTAMENTE
-// --------------------------------------
+// ------------------------------------------------------
+// SUMAR UN MES (SIN SUMAR DÍAS EXTRAS)
+// ------------------------------------------------------
 function sumarUnMes(fecha) {
-    const [year, month, day] = fecha.split("-").map(Number);
-    let f = new Date(year, month - 1, day);
+    const [y, m, d] = fecha.split("-").map(Number);
+    let f = new Date(y, m - 1, d);
     f.setMonth(f.getMonth() + 1);
-
-    // FIX FECHA → agregar 1 día para evitar corrimientos por zona horaria
-    f.setDate(f.getDate() + 1);
-
     return f.toISOString().split("T")[0];
 }
 
+// ------------------------------------------------------
+// INICIO
+// ------------------------------------------------------
 async function iniciar() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
@@ -55,16 +55,18 @@ async function iniciar() {
     document.getElementById("formAlumno").addEventListener("submit", guardar);
 }
 
+// ------------------------------------------------------
+// HELPERS
+// ------------------------------------------------------
 function esVerdadero(v) {
     return v === true || v === 1 || v === "1";
 }
 
-// --------------------------------------
-// 🔧 CARGAR ALUMNO (ARREGLADO)
-// --------------------------------------
+// ------------------------------------------------------
+// CARGAR ALUMNO (SIN SUMA DE DÍA)
+// ------------------------------------------------------
 async function cargarAlumno(id) {
     const res = await fetch(`${API_URL}/alumnos/${id}/detalle`);
-
     if (!res.ok) {
         alert("Error al cargar el alumno");
         return;
@@ -81,14 +83,8 @@ async function cargarAlumno(id) {
     equipoOriginal = al.equipo;
     activoOriginal = al.activo;
 
-    // --------------------------------------
-    // 🔧 FIX FECHA → SUMAR 1 DÍA AL CARGAR
-    // --------------------------------------
-    if (al.fecha_vencimiento) {
-        const f = new Date(al.fecha_vencimiento);
-        f.setDate(f.getDate() + 1); // ← FIX
-        fecha_vencimiento.value = f.toISOString().split("T")[0];
-    }
+    // 🔥 FECHA EXACTA SIN CORRIMIENTOS
+    fecha_vencimiento.value = al.fecha_vencimiento || "";
 
     fechaVencimientoOriginal = fecha_vencimiento.value || null;
 
@@ -108,6 +104,9 @@ function onCambioPlanes(e) {
     actualizarOpcionesDias();
 }
 
+// ------------------------------------------------------
+// DÍAS SEMANA
+// ------------------------------------------------------
 function actualizarOpcionesDias(diasTotales = null) {
     const sel = document.getElementById("dias_semana");
     const ayuda = document.getElementById("ayudaDias");
@@ -155,9 +154,9 @@ function actualizarOpcionesDias(diasTotales = null) {
     }
 }
 
-// --------------------------------------
-// 🔧 GUARDAR ALUMNO (ARREGLADO)
-// --------------------------------------
+// ------------------------------------------------------
+// GUARDAR (ÚNICO LUGAR DONDE SE APLICA EL FIX DE FECHA)
+// ------------------------------------------------------
 async function guardar(e) {
     e.preventDefault();
 
@@ -203,9 +202,8 @@ async function guardar(e) {
         return;
     }
 
-    // --------------------------------------
-    // 🔧 FIX FECHA → SUMAR 1 DÍA ANTES DE ENVIAR
-    // --------------------------------------
+    // 💥 FIX DEFINITIVO
+    // SUMAR SOLO 1 VEZ PARA COMPENSAR EL BUG DE ZONA HORARIA
     let fechaFix = null;
     if (fecha_vencimiento.value) {
         const f = new Date(fecha_vencimiento.value);
