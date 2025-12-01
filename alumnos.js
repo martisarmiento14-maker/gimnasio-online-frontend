@@ -8,19 +8,20 @@ async function cargarAlumnos() {
         const res = await fetch(`${API_URL}/alumnos`);
         const alumnos = await res.json();
 
-        // Mostrar SOLO activos si tu tabla tuviera ese campo
-        // pero ahora no existe, así que MOSTRAMOS TODOS
-        // const activos = alumnos.filter(a => Number(a.activo) === 1);
-
         let html = "";
 
         for (let al of alumnos) {
+            const planes = obtenerPlanesTexto(al);
+
             html += `
                 <tr>
                     <td>${al.nombre} ${al.apellido}</td>
-                    <td>${al.email}</td>
-                    <td>${al.edad}</td>
-                    <td>${al.telefono}</td>
+                    <td>${al.dni ?? "-"}</td>
+                    <td>${al.nivel ?? "-"}</td>
+                    <td>${al.equipo ?? "-"}</td>
+                    <td>${planes}</td>
+                    <td>${formatearFecha(al.fecha_vencimiento)}</td>
+
                     <td>
                         <button class="btn-edit" onclick="editarAlumno(${al.id})">
                             Editar
@@ -36,4 +37,23 @@ async function cargarAlumnos() {
         console.error(err);
         cont.innerHTML = "<tr><td colspan='7'>Error cargando alumnos</td></tr>";
     }
+}
+
+function obtenerPlanesTexto(al) {
+    let planes = [];
+
+    if (al.plan_eg === true || al.plan_eg === 1) planes.push("EG");
+    if (al.plan_personalizado === true || al.plan_personalizado === 1) planes.push("Personalizado");
+    if (al.plan_running === true || al.plan_running === 1) planes.push("Running");
+
+    return planes.length ? planes.join(" + ") : "-";
+}
+
+function formatearFecha(f) {
+    if (!f) return "-";
+    return f.split("T")[0];
+}
+
+function editarAlumno(id) {
+    window.location.href = `form-alumno.html?id=${id}`;
 }
