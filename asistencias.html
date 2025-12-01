@@ -8,28 +8,30 @@
 </head>
 <body>
 
-    <div class="container">
-        <h1>Control de Asistencias</h1>
+<div class="container">
+    <h1>Control de Asistencias</h1>
 
-        <div class="card">
-            <label for="dni">Ingresar DNI</label>
-            <input type="number" id="dni" placeholder="Ej: 12345678" />
+    <div class="card">
+        <label for="dniInput">Ingresar DNI</label>
+        <input type="number" id="dniInput" placeholder="Ej: 12345678"
+            onkeydown="if(event.key==='Enter') registrarAsistencia()" />
 
-            <button id="btnAsistencia">Registrar asistencia</button>
+        <button id="btnAsistencia" onclick="registrarAsistencia()">Registrar asistencia</button>
 
-            <p id="mensaje" class="mensaje"></p>
+        <div id="infoAlumno"></div>
 
-            <!-- ====== AUDIOS CORREGIDOS ====== -->
-            <audio id="sonidoOk" 
-                src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b5b9f345f.mp3?filename=correct-2-46134.mp3">
-            </audio>
+        <button id="btnBorrar" style="display:none;" onclick="borrarInfo()">Borrar</button>
 
-            <audio id="sonidoError" 
-                src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_2e2555026f.mp3?filename=error-126627.mp3">
-            </audio>
-        </div>
+        <audio id="sonidoOk"
+            src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b5b9f345f.mp3?filename=correct-2-46134.mp3">
+        </audio>
+
+        <audio id="sonidoError"
+            src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_2e2555026f.mp3?filename=error-126627.mp3">
+        </audio>
     </div>
+</div>
 
-    <script src="asistencias.js"></script>
+<script src="asistencias.js"></script>
 </body>
 </html>
