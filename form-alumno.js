@@ -1,5 +1,5 @@
 // ========================
-//  form-alumno.js CORREGIDO
+//  form-alumno.js CORREGIDO FINAL
 // ========================
 
 document.addEventListener("DOMContentLoaded", iniciar);
@@ -63,7 +63,7 @@ function esVerdadero(v) {
 }
 
 // ------------------------------------------------------
-// CARGAR ALUMNO (SIN SUMA DE DÍA)
+// CARGAR ALUMNO  (FIX AUTOCOMPLETAR FECHA)
 // ------------------------------------------------------
 async function cargarAlumno(id) {
     const res = await fetch(`${API_URL}/alumnos/${id}/detalle`);
@@ -83,8 +83,31 @@ async function cargarAlumno(id) {
     equipoOriginal = al.equipo;
     activoOriginal = al.activo;
 
-    // 🔥 FECHA EXACTA SIN CORRIMIENTOS
-    fecha_vencimiento.value = al.fecha_vencimiento || "";
+    // --------------------------------------------------
+    // 🔥 FIX DEFINITIVO PARA MOSTRAR LA FECHA CORRECTA
+    // --------------------------------------------------
+    if (al.fecha_vencimiento) {
+        let fechaBruta = al.fecha_vencimiento;
+        let fechaObj = new Date(fechaBruta);
+
+        if (!isNaN(fechaObj.getTime())) {
+            // Viene en formato correcto YYYY-MM-DD
+            fecha_vencimiento.value = fechaObj.toISOString().split("T")[0];
+        } else {
+            // Viene en dd/mm/yyyy → convertirlo
+            const partes = fechaBruta.split("/");
+            if (partes.length === 3) {
+                const yyyy = partes[2];
+                const mm = partes[1].padStart(2, "0");
+                const dd = partes[0].padStart(2, "0");
+                fecha_vencimiento.value = `${yyyy}-${mm}-${dd}`;
+            } else {
+                fecha_vencimiento.value = "";
+            }
+        }
+    } else {
+        fecha_vencimiento.value = "";
+    }
 
     fechaVencimientoOriginal = fecha_vencimiento.value || null;
 
@@ -96,6 +119,9 @@ async function cargarAlumno(id) {
     actualizarOpcionesDias(diasTotales);
 }
 
+// ------------------------------------------------------
+// PLANES Y DÍAS
+// ------------------------------------------------------
 function onCambioPlanes(e) {
     if (plan_eg.checked && plan_personalizado.checked) {
         e.target.checked = false;
@@ -104,9 +130,6 @@ function onCambioPlanes(e) {
     actualizarOpcionesDias();
 }
 
-// ------------------------------------------------------
-// DÍAS SEMANA
-// ------------------------------------------------------
 function actualizarOpcionesDias(diasTotales = null) {
     const sel = document.getElementById("dias_semana");
     const ayuda = document.getElementById("ayudaDias");
@@ -155,7 +178,7 @@ function actualizarOpcionesDias(diasTotales = null) {
 }
 
 // ------------------------------------------------------
-// GUARDAR (ÚNICO LUGAR DONDE SE APLICA EL FIX DE FECHA)
+// GUARDAR  (SUMA DE DÍA SOLO AQUÍ — FIX FINAL)
 // ------------------------------------------------------
 async function guardar(e) {
     e.preventDefault();
@@ -202,8 +225,7 @@ async function guardar(e) {
         return;
     }
 
-    // 💥 FIX DEFINITIVO
-    // SUMAR SOLO 1 VEZ PARA COMPENSAR EL BUG DE ZONA HORARIA
+    // 💥 FIX FINAL — sumar SOLO UNA vez
     let fechaFix = null;
     if (fecha_vencimiento.value) {
         const f = new Date(fecha_vencimiento.value);
