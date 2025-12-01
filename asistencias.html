@@ -2,95 +2,34 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Asistencias</title>
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        body {
-            background: #f2f2f2;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 420px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.15);
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid #aaa;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #6e2df5;
-            color: white;
-            border: none;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        #resultado {
-            margin-top: 20px;
-            display: none;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .ok { background: #d4ffd4; border-left: 6px solid #1fa61f; }
-        .error { background: #ffd4d4; border-left: 6px solid #c51d1d; }
-
-        .alerta {
-            margin-top: 10px;
-            padding: 10px;
-            background: #fff3cd;
-            border-left: 6px solid #ffcc00;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-
-        .titulo {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        .dato {
-            margin: 6px 0;
-            font-size: 17px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencias</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<div class="container">
-    <div class="titulo">Control de Asistencias</div>
+    <div class="container">
+        <h1>Control de Asistencias</h1>
 
-    <input type="number" id="dni" placeholder="Ingresá el DNI">
+        <div class="card">
+            <label for="dni">Ingresar DNI</label>
+            <input type="number" id="dni" placeholder="Ej: 12345678" />
 
-    <button id="btnMarcar">Registrar asistencia</button>
+            <button id="btnAsistencia">Registrar asistencia</button>
 
-    <div id="resultado"></div>
-</div>
+            <p id="mensaje" class="mensaje"></p>
 
-<audio id="sonidoOk" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.wav"></audio>
-<audio id="sonidoError" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.wav"></audio>
+            <!-- ====== AUDIOS CORREGIDOS ====== -->
+            <audio id="sonidoOk" 
+                src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b5b9f345f.mp3?filename=correct-2-46134.mp3">
+            </audio>
 
-<script src="asistencias.js"></script>
+            <audio id="sonidoError" 
+                src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_2e2555026f.mp3?filename=error-126627.mp3">
+            </audio>
+        </div>
+    </div>
 
+    <script src="asistencias.js"></script>
 </body>
 </html>
