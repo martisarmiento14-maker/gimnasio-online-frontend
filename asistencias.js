@@ -23,7 +23,7 @@ async function registrarAsistencia() {
     info.innerHTML = `<p>Buscando alumno...</p>`;
 
     try {
-        const res = await fetch("https://gimnasio-online-1.onrender.com/asistencias", {
+        const res = await fetch("https://gimnasio-backend-u3xo.onrender.com/asistencias", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ dni }),
@@ -31,9 +31,8 @@ async function registrarAsistencia() {
 
         const data = await res.json();
 
-        if (data.error) {
-            info.innerHTML = `<p style="color:red;">${data.error}</p>`;
-            sonarError();
+        if (!res.ok || data.error) {
+            info.innerHTML = `<p style="color:red;">${data.error || "Error al registrar asistencia"}</p>`;
             return;
         }
 
@@ -47,28 +46,28 @@ async function registrarAsistencia() {
             se_registro,
         } = data;
 
-        // Color equipo
+        // Cambiar color según equipo
         let claseEquipo = "asistencia-card-blanco";
         if (
             alumno.equipo &&
-            ["violeta", "morado", "lila"].includes(alumno.equipo.toLowerCase())
+            (alumno.equipo.toLowerCase() === "violeta" ||
+             alumno.equipo.toLowerCase() === "morado")
         ) {
             claseEquipo = "asistencia-card-violeta";
         }
 
+        // Construir HTML
         let html = `
         <div class="asistencia-panel ${claseEquipo}">
             <h3>${alumno.nombre} ${alumno.apellido}</h3>
-            <p><strong>DNI:</strong> ${alumno.dni}</p>
-            <p><strong>Nivel:</strong> ${alumno.nivel}</p>
             <p><strong>Equipo:</strong> ${alumno.equipo || "-"}</p>
-            <p><strong>Planes:</strong> ${alumno.planes || "-"}</p>
+            <p><strong>Plan:</strong> ${alumno.planes}</p>
         `;
 
         if (limite_semanal) {
             html += `
             <p><strong>Asistencias esta semana:</strong> 
-                ${asistencias_semana}/${limite_semanal}
+                ${asistencias_semana} / ${limite_semanal}
             </p>`;
         }
 
@@ -78,31 +77,32 @@ async function registrarAsistencia() {
                 ${formatearFecha(cuota.fecha_vencimiento)}
             </p>`;
         } else {
-            html += `<p><strong>Cuota:</strong> No registrada</p>`;
+            html += `<p><strong>Cuota:</strong> Sin datos</p>`;
         }
 
-        if (alerta_cuota) html += `<p class="alerta-roja">⚠ ${alerta_cuota}</p>`;
-        if (alerta_dias) html += `<p class="alerta-roja">⚠ ${alerta_dias}</p>`;
+        if (alerta_dias) {
+            html += `<p class="alerta-roja">⚠ ${alerta_dias}</p>`;
+        }
+
+        if (alerta_cuota) {
+            html += `<p class="alerta-roja">⚠ ${alerta_cuota}</p>`;
+        }
 
         if (se_registro) {
             html += `<p class="ok-verde">✔ Asistencia registrada correctamente</p>`;
-            sonarOK();
         } else {
-            html += `<p class="alerta-roja">⚠ No se registró asistencia</p>`;
-            sonarError();
+            html += `<p class="ok-verde">ℹ No se registró la asistencia porque superaste tus días permitidos.</p>`;
         }
 
         html += `</div>`;
 
         info.innerHTML = html;
         btnBorrar.style.display = "inline-block";
-
         dniInput.value = "";
         dniInput.focus();
 
     } catch (err) {
         console.error(err);
-        sonarError();
         info.innerHTML = `<p style="color:red;">Error de conexión con el servidor</p>`;
     }
 }
@@ -113,17 +113,3 @@ function borrarInfo() {
     btnBorrar.style.display = "none";
     dniInput.focus();
 }
-
-function sonarOK() {
-    const audio = document.getElementById("sonidoOk");
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-}
-
-function sonarError() {
-    const audio = document.getElementById("sonidoError");
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-}
-
-
