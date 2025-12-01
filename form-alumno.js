@@ -175,6 +175,26 @@ form.addEventListener("submit", async (e) => {
         dias_eg_pers: planEG.checked || planPers.checked ? parseInt(diasEgPers.value) : 0,
         dias_semana: diasSemana.value ? parseInt(diasSemana.value) : 0
     };
+        // ===========================
+    // ASIGNAR EQUIPO AUTOMÁTICO
+    // ===========================
+    try {
+        const resEquip = await fetch(`${API_URL}/alumnos`);
+        const lista = await resEquip.json();
+
+        const morados = lista.filter(a => a.equipo === "morado").length;
+        const blancos = lista.filter(a => a.equipo === "blanco").length;
+
+        // Si estoy editando, no cambiar equipo
+        if (!alumnoId) {
+            alumnoData.equipo = morados <= blancos ? "morado" : "blanco";
+        }
+
+    } catch (err) {
+        console.error("Error asignando equipo:", err);
+        alumnoData.equipo = "blanco"; // fallback por si falla
+    }
+
 
     try {
         let url = `${API_URL}/alumnos`;
