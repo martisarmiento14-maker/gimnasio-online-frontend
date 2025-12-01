@@ -1,0 +1,137 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #0d0c14;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    text-align: center;
+}
+
+/* HEADER */
+.header {
+    background: #c57bff;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #b66eff;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 45px;
+    font-weight: 700;
+}
+
+/* BOTONES HEADER */
+.header-btn {
+    background: white;
+    color: black;
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-size: 22px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.header-btn:hover {
+    transform: scale(1.07);
+}
+
+/* CONTENEDOR BUSCADOR */
+#searchBox {
+    margin: 40px auto;
+    width: 60%;
+    padding: 18px;
+    border-radius: 20px;
+    border: 3px solid #c57bff;
+    box-shadow: 0 0 25px #c57bff;
+    font-size: 28px;
+    text-align: center;
+}
+
+/* TARJETA INFORMACIÓN */
+#infoCard {
+    display: none;
+    margin: 40px auto;
+    width: 75%;
+    padding: 40px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 3px solid #c57bff;
+    backdrop-filter: blur(10px);
+}
+
+/* NOMBRE */
+#infoCard h2 {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+.label {
+    font-weight: 700;
+    font-size: 24px;
+    color: #c57bff;
+}
+
+.value {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+/* TARJETA BLANCO / MORADO */
+.card-blanco {
+    background: rgba(255, 255, 255, 0.25);
+    color: black;
+}
+
+.card-morado {
+    background: rgba(90, 0, 140, 0.45);
+    color: white;
+}
+
+/* ALERTA CUOTA VENCIDA */
+.alert-cuota {
+    display: none;
+    background: #ff0000cc;
+    padding: 18px;
+    border-radius: 20px;
+    width: 70%;
+    margin: 0 auto 25px auto;
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    border: 3px solid #ff4444;
+}
+
+/* ALERTAS DE ASISTENCIA */
+.alert-warning {
+    font-size: 26px;
+    color: #ffd500;
+    margin: 18px 0;
+}
+
+.alert-error {
+    font-size: 28px;
+    color: #ff3333;
+    margin-top: 10px;
+}
+
+/* BOTÓN BORRAR */
+#clearBtn {
+    margin-top: 40px;
+    padding: 18px 40px;
+    background: #ff7878;
+    border-radius: 25px;
+    font-size: 28px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: 0.2s;
+}
+
+#clearBtn:hover {
+    transform: scale(1.05);
+}
