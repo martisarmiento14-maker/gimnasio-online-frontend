@@ -125,15 +125,14 @@ DASHBOARD
 #logoutBtn:focus {
     outline: none;       /* ← saca el borde negro feo */
 }
-
 .dashboard-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);   /* 🔥 tres columnas */
+    display: flex;
+    flex-direction: column;   /* 🔥 EN COLUMNA */
     gap: 25px;
     padding: 40px;
     width: 100%;
-    box-sizing: border-box;
 }
+
 
 
 .dash-card {
@@ -145,6 +144,8 @@ DASHBOARD
     box-shadow: 0px 0px 10px #00000020;
     transition: 0.2s;
     height: 100%;
+    width: 100%;
+    max-width: 100%;
 }
 
 .dash-card:hover {
