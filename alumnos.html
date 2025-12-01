@@ -1,38 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Alumnos - EG Gimnasio</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="dashboard-body">
 
+    <!-- ========== TOPBAR NUEVA ========== -->
     <div class="topbar">
-        <h2>Alumnos</h2>
-        <button id="logoutBtn">Cerrar Sesión</button>
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+        <h1 style="margin: 0 auto; position:absolute; left:50%; transform:translateX(-50%); font-size:28px;">
+            Alumnos
+        </h1>
+
+        <button id="logoutBtn" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
-    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
 
-
-    <div class="content">
+    <!-- ========== PANEL CONTROLES (AGREGAR + BUSCAR) ========== -->
+    <div class="panel-controles" style="margin:40px auto; width:92%; max-width:1400px;">
 
         <button class="btn-add" onclick="window.location.href='form-alumno.html'">
             + Agregar Alumno
         </button>
-    <div class="search-wrapper" style="margin-top:20px;">
-        <span class="search-icon">🔍</span>
-        <input 
-            type="text" 
-            id="buscarAlumno"
-            class="input-search" 
-            placeholder="Buscar por nombre o DNI..."
-            oninput="filtrarAlumnos()"
-        >
+
+        <div class="search-wrapper" style="position:relative;">
+            <span class="search-icon">🔍</span>
+            <input
+                type="text"
+                id="inputBusqueda"
+                oninput="buscarAlumnos()"
+                class="input-search"
+                placeholder="Buscar por nombre o DNI..."
+            />
+        </div>
+
     </div>
 
-        <table class="tabla-alumnos">
+    <!-- ========== TABLA CENTRADA Y MÁS CHICA ========== -->
+    <div class="tabla-container" style="margin-top:10px;">
+
+        <table class="tabla-alumnos" id="tablaAlumnos">
             <thead>
                 <tr>
                     <th>Nombre</th>
@@ -44,15 +55,11 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-
-
             <tbody id="listaAlumnos"></tbody>
         </table>
 
     </div>
 
     <script src="alumnos.js"></script>
-    <script src="dashboard.js"></script>
-
 </body>
 </html>
