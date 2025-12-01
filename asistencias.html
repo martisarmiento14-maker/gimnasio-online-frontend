@@ -2,132 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencias</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            background: #0d0b16;
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            color: #fff;
-        }
-
-        .header {
-            background: #c27ff5;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .header button {
-            background: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 40px;
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
-
-        .container {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .welcome-title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        #dniInput {
-            width: 60%;
-            padding: 18px;
-            border-radius: 20px;
-            border: 3px solid #bb7fff;
-            font-size: 1.8rem;
-            text-align: center;
-            background: rgba(255,255,255,0.9);
-            margin-top: 20px;
-            box-shadow: 0 0 25px #b47cff;
-        }
-
-        .card {
-            width: 75%;
-            margin: 40px auto;
-            padding: 35px;
-            border-radius: 30px;
-            display: none;
-            border: 4px solid #b47cff;
-        }
-
-        .card.white-card {
-            background: rgba(255,255,255,0.96);
-            color: black;
-        }
-
-        .card.purple-card {
-            background: rgba(80,0,140,0.75);
-            color: white;
-        }
-
-        .popup {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 0, 0, 0.80);
-            color: white;
-            padding: 18px 35px;
-            border-radius: 15px;
-            font-size: 1.6rem;
-            display: none;
-            z-index: 9999;
-            box-shadow: 0 0 20px red;
-        }
-
-        .warning { color: #ffcf33; font-size: 1.8rem; }
-        .error { color: red; font-size: 1.8rem; }
-
-        #borrarBtn {
-            display: none;
-            margin: 30px auto;
-            padding: 18px 40px;
-            font-size: 1.7rem;
-            border-radius: 20px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-    </style>
+    <title>Asistencias - EG Gym</title>
+    <link rel="stylesheet" href="asistencias.css">
 </head>
+
 <body>
 
-<div class="popup" id="popupAlert"></div>
+    <header class="header">
+        <a class="botonVolver" href="index.html">← Volver</a>
+        <h1 class="titulo">Asistencias</h1>
+        <button class="logout">Cerrar Sesión</button>
+    </header>
 
-<div class="header">
-    <button onclick="window.location.href='dashboard.html'">← Volver</button>
-    Asistencias
-    <button onclick="window.location.href='index.html'">Cerrar Sesión</button>
-</div>
+    <h2 id="bienvenida" class="bienvenidaTitulo">Bienvenido a EG Gym</h2>
 
-<div class="container">
-    <div id="welcomeText" class="welcome-title">Bienvenido a EG Gym</div>
-    <input type="number" id="dniInput" placeholder="Ingresar DNI" oninput="buscarAlumno()">
-</div>
+    <div class="inputContainer">
+        <input id="dniInput" type="number" placeholder="Ingresar DNI" />
+    </div>
 
-<div id="card" class="card"></div>
+    <div id="alertaContainer" class="alertaContainer"></div>
 
-<button id="borrarBtn" onclick="resetear()">Borrar</button>
+    <div id="infoContainer" class="infoContainer"></div>
 
-<script src="asistencias.js"></script>
+    <button id="borrarBtn" class="btnBorrar" style="display:none;">Borrar</button>
 
+    <script src="asistencias.js"></script>
 </body>
 </html>

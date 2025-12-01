@@ -1,96 +1,109 @@
 const API_URL = "https://gimnasio-online-1.onrender.com";
+
 const dniInput = document.getElementById("dniInput");
-const card = document.getElementById("card");
-const popupAlert = document.getElementById("popupAlert");
+const infoContainer = document.getElementById("infoContainer");
+const bienvenidaText = document.getElementById("bienvenida");
 const borrarBtn = document.getElementById("borrarBtn");
-const welcomeText = document.getElementById("welcomeText");
+const alertaContainer = document.getElementById("alertaContainer");
 
-// Mostrar popup
-function showPopup(msg) {
-    popupAlert.innerText = msg;
-    popupAlert.style.display = "block";
+// Oculta la bienvenida al escribir
+dniInput.addEventListener("input", () => {
+    if (dniInput.value.trim() !== "") {
+        bienvenidaText.style.display = "none";
+    } else {
+        bienvenidaText.style.display = "block";
+        infoContainer.innerHTML = "";
+        alertaContainer.innerHTML = "";
+    }
+});
 
-    setTimeout(() => {
-        popupAlert.style.display = "none";
-    }, 3500);
-}
+// Buscar alumno al presionar ENTER
+dniInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+        buscarAlumno();
+    }
+});
 
-function resetear() {
-    dniInput.value = "";
-    card.style.display = "none";
-    borrarBtn.style.display = "none";
-    welcomeText.style.display = "block";
-}
-
-// Verifica vencimiento
-function estaVencido(fecha) {
-    let hoy = new Date();
-    let venc = new Date(fecha);
-
-    return venc < hoy;
-}
-
+// Función principal
 async function buscarAlumno() {
-    let dni = dniInput.value.trim();
-    if (dni.length < 7) return;
+    const dni = dniInput.value.trim();
+    infoContainer.innerHTML = "";
+    alertaContainer.innerHTML = "";
 
-    welcomeText.style.display = "none";
+    if (!dni) return;
 
     try {
-        const resp = await fetch(`${API_URL}/asistencia/${dni}`);
-        const data = await resp.json();
+        // Traer alumno
+        const respAlumno = await fetch(`${API_URL}/alumnos/${dni}`);
+        const alumno = await respAlumno.json();
 
-        borrarBtn.style.display = "block";
-
-        if (!resp.ok) {
-            card.style.display = "none";
-            showPopup("❌ DNI no encontrado");
+        if (!alumno || alumno.error) {
+            mostrarError("❌ DNI no encontrado");
             return;
         }
 
-        const alumno = data.alumno;
-        const cuota = data.cuota;
+        // Traer cuota
+        const respCuota = await fetch(`${API_URL}/cuotas/${dni}`);
+        const cuota = await respCuota.json();
 
-        // =======================
-        //   AVISO DE VENCIMIENTO
-        // =======================
-        if (cuota && estaVencido(cuota.vencimiento)) {
-            showPopup(`⚠️ Tu cuota está vencida desde ${cuota.vencimiento}`);
+        // Registrar asistencia
+        const respAsis = await fetch(`${API_URL}/asistencias/registrar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dni }),
+        });
+
+        const resultado = await respAsis.json();
+
+        // TARJETA DE COLOR SEGÚN EQUIPO
+        let colorFondo = alumno.equipo === "blanco" ? "rgba(255,255,255,0.15)" : "rgba(115,0,230,0.20)";
+        let colorTexto = alumno.equipo === "blanco" ? "black" : "white";
+
+        // ALERTA SI CUOTA ESTÁ VENCIDA
+        if (cuota.estado === "Vencido") {
+            mostrarAlerta(`⚠ Tu cuota venció el día ${cuota.vencimiento}`);
         }
 
-        // =======================
-        //   TARJETA PERSONALIZADA
-        // =======================
-        if (alumno.equipo === "blanco") {
-            card.className = "card white-card";
-        } else {
-            card.className = "card purple-card";
-        }
+        infoContainer.innerHTML = `
+            <div class="tarjeta" style="background:${colorFondo}; color:${colorTexto}">
+                <h2 style="font-size: 40px; margin-bottom: 15px;">
+                    Bienvenido, <span style="color:#c58bff">${alumno.nombre}</span>
+                </h2>
 
-        card.innerHTML = `
-            <h1 style="font-size:2.8rem; color:black;">
-                Bienvenido, <span style="color:#b47cff;">${alumno.nombre}</span>
-            </h1>
+                <p><strong>Equipo:</strong> ${alumno.equipo}</p>
+                <p><strong>Plan:</strong> ${alumno.plan}</p>
+                <p><strong>Asistencias esta semana:</strong> ${resultado.asistencias_semana}</p>
 
-            <p><b>Equipo:</b> ${alumno.equipo}</p>
-            <p><b>Plan:</b> ${alumno.plan}</p>
-
-            <p style="color:#821bff; font-size:1.6rem;">
-                <b>Asistencias esta semana:</b> ${data.asistencias_semana}
-            </p>
-
-            ${data.alerta_dias ? 
-                `<p class="warning">⚠ ${data.alerta_dias}</p>` : ""}
-
-            ${data.alerta_asistencia ?
-                `<p class="error">✖ ${data.alerta_asistencia}</p>` : ""}
+                ${resultado.warning ? `<p class="warning">⚠ ${resultado.warning}</p>` : ""}
+                ${resultado.error ? `<p class="error">❌ ${resultado.error}</p>` : ""}
+                ${resultado.success ? `<p class="success">✔ ${resultado.success}</p>` : ""}
+            </div>
         `;
 
-        card.style.display = "block";
+        borrarBtn.style.display = "block";
 
     } catch (error) {
-        showPopup("❌ Error de conexión");
-        console.error(error);
+        mostrarError("❌ Error de conexión con el servidor");
     }
 }
+
+function mostrarError(msg) {
+    alertaContainer.innerHTML = `
+        <div class="alertaRoja">${msg}</div>
+    `;
+}
+
+function mostrarAlerta(msg) {
+    alertaContainer.innerHTML = `
+        <div class="alertaAmarilla">${msg}</div>
+    `;
+}
+
+borrarBtn.addEventListener("click", () => {
+    dniInput.value = "";
+    bienvenidaText.style.display = "block";
+    infoContainer.innerHTML = "";
+    alertaContainer.innerHTML = "";
+    borrarBtn.style.display = "none";
+});
 
