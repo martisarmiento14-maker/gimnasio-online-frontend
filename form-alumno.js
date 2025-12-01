@@ -1,266 +1,207 @@
-// ========================
-//  form-alumno.js CORREGIDO FINAL
-// ========================
+const API_URL = "https://gimnasio-online-backend.onrender.com";
 
-document.addEventListener("DOMContentLoaded", iniciar);
+// ===============================
+// Obtener parámetros (crear/editar)
+// ===============================
+const params = new URLSearchParams(window.location.search);
+const alumnoId = params.get("id"); // null = crear, número = editar
 
-let equipoOriginal = "blanco";
-let activoOriginal = 1;
-let fechaVencimientoOriginal = null;
+// Elementos del formulario
+const form = document.getElementById("formAlumno");
 
-const API_URL = "https://gimnasio-online-1.onrender.com";
+const nombre = document.getElementById("nombre");
+const apellido = document.getElementById("apellido");
+const dni = document.getElementById("dni");
+const celular = document.getElementById("celular");
+const nivel = document.getElementById("nivel");
+const fechaVenc = document.getElementById("fecha_vencimiento");
 
-// ------------------------------------------------------
-// SUMAR UN MES (SIN SUMAR DÍAS EXTRAS)
-// ------------------------------------------------------
-function sumarUnMes(fecha) {
-    const [y, m, d] = fecha.split("-").map(Number);
-    let f = new Date(y, m - 1, d);
-    f.setMonth(f.getMonth() + 1);
-    return f.toISOString().split("T")[0];
+const planEG = document.getElementById("plan_eg");
+const planPers = document.getElementById("plan_personalizado");
+const planRun = document.getElementById("plan_running");
+
+const diasEgPersContainer = document.getElementById("diasEgPersContainer");
+const diasEgPers = document.getElementById("dias_eg_pers");
+
+const diasSemana = document.getElementById("dias_semana");
+const ayudaDias = document.getElementById("ayudaDias");
+
+const btnRenovar = document.getElementById("btnRenovar");
+
+// ===============================
+// Cargar datos si es edición
+// ===============================
+if (alumnoId) {
+    cargarAlumno();
+    btnRenovar.style.display = "inline-block";
+    document.getElementById("tituloForm").textContent = "Editar Alumno";
+} else {
+    btnRenovar.style.display = "none";
+    document.getElementById("tituloForm").textContent = "Nuevo Alumno";
 }
 
-// ------------------------------------------------------
-// INICIO
-// ------------------------------------------------------
-async function iniciar() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    const btnRenovar = document.getElementById("btnRenovar");
 
-    plan_eg.addEventListener("change", onCambioPlanes);
-    plan_personalizado.addEventListener("change", onCambioPlanes);
-    plan_running.addEventListener("change", onCambioPlanes);
 
-    if (!id) {
-        document.getElementById("tituloForm").textContent = "Nuevo Alumno";
-        btnRenovar.style.display = "none";
-    } else {
-        document.getElementById("tituloForm").textContent = "Editar Alumno";
-        await cargarAlumno(id);
-    }
+// ===============================
+// CARGAR ALUMNO
+// ===============================
+async function cargarAlumno() {
+    try {
+        const res = await fetch(`${API_URL}/alumnos/${alumnoId}`);
+        const data = await res.json();
 
-    btnRenovar.addEventListener("click", () => {
-        const fecha = document.getElementById("fecha_vencimiento");
-        const base =
-            fecha.value ||
-            fechaVencimientoOriginal ||
-            new Date().toISOString().split("T")[0];
+        nombre.value = data.nombre;
+        apellido.value = data.apellido;
+        dni.value = data.dni;
+        celular.value = data.telefono;
+        nivel.value = data.nivel;
+        fechaVenc.value = data.fecha_vencimiento ? data.fecha_vencimiento.split("T")[0] : "";
 
-        fecha.value = sumarUnMes(base);
-    });
+        // Planes
+        planEG.checked = data.plan_eg;
+        planPers.checked = data.plan_personalizado;
+        planRun.checked = data.plan_running;
 
-    actualizarOpcionesDias();
-
-    document.getElementById("formAlumno").addEventListener("submit", guardar);
-}
-
-// ------------------------------------------------------
-// HELPERS
-// ------------------------------------------------------
-function esVerdadero(v) {
-    return v === true || v === 1 || v === "1";
-}
-
-// ------------------------------------------------------
-// CARGAR ALUMNO  (FIX AUTOCOMPLETAR FECHA)
-// ------------------------------------------------------
-async function cargarAlumno(id) {
-    const res = await fetch(`${API_URL}/alumnos/${id}/detalle`);
-    if (!res.ok) {
-        alert("Error al cargar el alumno");
-        return;
-    }
-
-    const al = await res.json();
-
-    nombre.value = al.nombre || "";
-    apellido.value = al.apellido || "";
-    dni.value = al.dni || "";
-    celular.value = al.telefono || "";
-    nivel.value = al.nivel || "";
-
-    equipoOriginal = al.equipo;
-    activoOriginal = al.activo;
-
-    // --------------------------------------------------
-    // 🔥 FIX DEFINITIVO PARA MOSTRAR LA FECHA CORRECTA
-    // --------------------------------------------------
-    if (al.fecha_vencimiento) {
-        let fechaBruta = al.fecha_vencimiento;
-        let fechaObj = new Date(fechaBruta);
-
-        if (!isNaN(fechaObj.getTime())) {
-            // Viene en formato correcto YYYY-MM-DD
-            fecha_vencimiento.value = fechaObj.toISOString().split("T")[0];
-        } else {
-            // Viene en dd/mm/yyyy → convertirlo
-            const partes = fechaBruta.split("/");
-            if (partes.length === 3) {
-                const yyyy = partes[2];
-                const mm = partes[1].padStart(2, "0");
-                const dd = partes[0].padStart(2, "0");
-                fecha_vencimiento.value = `${yyyy}-${mm}-${dd}`;
-            } else {
-                fecha_vencimiento.value = "";
-            }
+        // Mostrar select EG/Pers si corresponde
+        if (data.plan_eg || data.plan_personalizado) {
+            diasEgPersContainer.style.display = "flex";
+            diasEgPers.value = data.dias_eg_pers || "3";
         }
+
+        // Días totales
+        diasSemana.innerHTML = `<option value="${data.dias_semana}" selected>${data.dias_semana} días</option>`;
+        ayudaDias.textContent = "Se calculó según los planes del alumno.";
+
+    } catch (error) {
+        alert("Error cargando alumno.");
+        console.error(error);
+    }
+}
+
+
+// ===============================
+// VALIDAR PLANES
+// ===============================
+function validarPlanes() {
+    // EG + Personalizado → no permitido
+    if (planEG.checked && planPers.checked) {
+        alert("No se puede activar Plan EG y Personalizado al mismo tiempo.");
+        planPers.checked = false;
+    }
+
+    // Mostrar select de días EG/Pers si corresponde
+    if (planEG.checked || planPers.checked) {
+        diasEgPersContainer.style.display = "flex";
     } else {
-        fecha_vencimiento.value = "";
+        diasEgPersContainer.style.display = "none";
     }
 
-    fechaVencimientoOriginal = fecha_vencimiento.value || null;
-
-    plan_eg.checked = esVerdadero(al.plan_eg);
-    plan_personalizado.checked = esVerdadero(al.plan_personalizado);
-    plan_running.checked = esVerdadero(al.plan_running);
-
-    const diasTotales = al.dias_semana || "";
-    actualizarOpcionesDias(diasTotales);
+    calcularDias();
 }
 
-// ------------------------------------------------------
-// PLANES Y DÍAS
-// ------------------------------------------------------
-function onCambioPlanes(e) {
-    if (plan_eg.checked && plan_personalizado.checked) {
-        e.target.checked = false;
-        alert("No se puede combinar Plan EG con Personalizado.");
+planEG.addEventListener("change", validarPlanes);
+planPers.addEventListener("change", validarPlanes);
+planRun.addEventListener("change", calcularDias);
+diasEgPers.addEventListener("change", calcularDias);
+
+
+// ===============================
+// CALCULAR DÍAS TOTALES
+// ===============================
+function calcularDias() {
+    let total = 0;
+
+    // EG o Personalizado
+    if (planEG.checked || planPers.checked) {
+        total += parseInt(diasEgPers.value);
     }
-    actualizarOpcionesDias();
-}
 
-function actualizarOpcionesDias(diasTotales = null) {
-    const sel = document.getElementById("dias_semana");
-    const ayuda = document.getElementById("ayudaDias");
+    // Running suma 2 siempre
+    if (planRun.checked) {
+        total += 2;
+    }
 
-    const eg = plan_eg.checked;
-    const pers = plan_personalizado.checked;
-    const run = plan_running.checked;
-
-    sel.innerHTML = "";
-    sel.disabled = false;
-    ayuda.textContent = "";
-
-    if (!eg && !pers && !run) {
-        sel.innerHTML = `<option value="">Elegí un plan primero</option>`;
-        sel.disabled = true;
+    if (total === 0) {
+        diasSemana.innerHTML = `<option value="">Elegí un plan primero</option>`;
+        ayudaDias.textContent = "";
         return;
     }
 
-    if (run && !eg && !pers) {
-        sel.innerHTML = `<option value="2">2 días (Running)</option>`;
-        sel.value = "2";
-        sel.disabled = true;
-        return;
-    }
-
-    if ((eg || pers) && !run) {
-        sel.innerHTML = `
-            <option value="">Elegí cantidad de días</option>
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
-        if (diasTotales) sel.value = String(diasTotales);
-        return;
-    }
-
-    if (run && (eg || pers)) {
-        sel.innerHTML = `
-            <option value="3">3 días (total 5 con Running)</option>
-            <option value="5">5 días (total 7 con Running)</option>
-        `;
-        if (diasTotales) {
-            const base = diasTotales - 2;
-            if (base === 3 || base === 5) sel.value = String(base);
-        }
-    }
+    diasSemana.innerHTML = `<option value="${total}" selected>${total} días</option>`;
+    ayudaDias.textContent = "Se calcula automáticamente según los planes.";
 }
 
-// ------------------------------------------------------
-// GUARDAR  (SUMA DE DÍA SOLO AQUÍ — FIX FINAL)
-// ------------------------------------------------------
-async function guardar(e) {
+
+// ===============================
+// RENOVAR CUOTA (+1 mes)
+// ===============================
+btnRenovar.addEventListener("click", async () => {
+    try {
+        const res = await fetch(`${API_URL}/alumnos/${alumnoId}/renovar`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await res.json();
+
+        fechaVenc.value = data.fecha_vencimiento.split("T")[0];
+        alert("Cuota renovada correctamente");
+
+    } catch (err) {
+        console.error(err);
+        alert("Error renovando cuota");
+    }
+});
+
+
+// ===============================
+// GUARDAR (crear o editar)
+// ===============================
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    const esNuevo = !id;
-
-    let eg = plan_eg.checked ? 1 : 0;
-    let pers = plan_personalizado.checked ? 1 : 0;
-    let run = plan_running.checked ? 1 : 0;
-
-    if (eg && pers) {
-        alert("No se puede combinar Plan EG con Personalizado.");
-        return;
-    }
-    if (!eg && !pers && !run) {
-        alert("Elegí al menos un plan.");
-        return;
-    }
-
-    const selDias = document.getElementById("dias_semana");
-    let valorSel = Number(selDias.value);
-
-    let diasTotales = 0;
-
-    if (run && !eg && !pers) diasTotales = 2;
-    else if ((eg || pers) && !run) {
-        if (![3, 5].includes(valorSel)) {
-            alert("Elegí 3 o 5 días.");
-            return;
-        }
-        diasTotales = valorSel;
-    } else if (run && (eg || pers)) {
-        if (![3, 5].includes(valorSel)) {
-            alert("Elegí 3 o 5 días.");
-            return;
-        }
-        diasTotales = valorSel + 2;
-    }
-
-    if (!fecha_vencimiento.value) {
-        alert("Tenés que indicar fecha de vencimiento.");
-        return;
-    }
-
-    // 💥 FIX FINAL — sumar SOLO UNA vez
-    let fechaFix = null;
-    if (fecha_vencimiento.value) {
-        const f = new Date(fecha_vencimiento.value);
-        f.setDate(f.getDate() + 1);
-        fechaFix = f.toISOString().split("T")[0];
-    }
-
-    const data = {
+    const alumnoData = {
         nombre: nombre.value,
         apellido: apellido.value,
         dni: dni.value,
         telefono: celular.value,
         nivel: nivel.value,
-        plan_eg: eg,
-        plan_personalizado: pers,
-        plan_running: run,
-        dias_semana: diasTotales,
-        fecha_vencimiento: fechaFix
+        fecha_vencimiento: fechaVenc.value,
+
+        plan_eg: planEG.checked,
+        plan_personalizado: planPers.checked,
+        plan_running: planRun.checked,
+
+        dias_eg_pers: planEG.checked || planPers.checked ? parseInt(diasEgPers.value) : 0,
+        dias_semana: diasSemana.value ? parseInt(diasSemana.value) : 0
     };
 
-    if (esNuevo) {
-        await fetch(`${API_URL}/alumnos`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        alert("Alumno creado");
-    } else {
-        await fetch(`${API_URL}/alumnos/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        alert("Alumno editado");
-    }
+    try {
+        let url = `${API_URL}/alumnos`;
+        let method = "POST";
 
-    window.location.href = "alumnos.html";
-}
+        if (alumnoId) {
+            url = `${API_URL}/alumnos/${alumnoId}`;
+            method = "PUT";
+        }
+
+        const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(alumnoData)
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            alert(err.error || "Error guardando alumno");
+            return;
+        }
+
+        alert("Alumno guardado correctamente");
+        window.location.href = "alumnos.html";
+
+    } catch (err) {
+        alert("Error guardando alumno");
+        console.error(err);
+    }
+});

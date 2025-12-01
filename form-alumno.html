@@ -57,6 +57,17 @@
                 <label><input type="checkbox" id="plan_personalizado"> Personalizado</label>
                 <label><input type="checkbox" id="plan_running"> Running</label>
             </div>
+            <!-- Selector exclusivo para EG o Personalizado -->
+            <div class="form-row" id="diasEgPersContainer" style="display:none;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                    <label for="dias_eg_pers">Días EG o Personalizado</label>
+                    <select id="dias_eg_pers">
+                        <option value="3">3 días</option>
+                        <option value="5">5 días</option>
+                    </select>
+                </div>
+            </div>
+
 
             <!-- DÍAS POR SEMANA (select, no texto libre) -->
             <div class="form-row">

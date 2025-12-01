@@ -1,92 +1,94 @@
-// alumnos.js
-const API_URL = "https://gimnasio-online-1.onrender.com";
+const API_URL = "https://gimnasio-online-backend.onrender.com";
 
-let alumnoActual = null;
+// Elementos del DOM
+const listaAlumnos = document.getElementById("listaAlumnos");
+const buscador = document.getElementById("buscador");
 
-// INPUT DNI - presiona ENTER para buscar
-document.getElementById("dniBuscar").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        buscarAlumno();
-    }
-});
-
-// ==========================
-// BUSCAR ALUMNO POR DNI
-// ==========================
-async function buscarAlumno() {
-    const dni = document.getElementById("dniBuscar").value.trim();
-    if (!dni) return alert("Ingresá un DNI");
-
+// ===============================
+//   CARGAR TODOS LOS ALUMNOS
+// ===============================
+async function cargarAlumnos() {
     try {
-        const res = await fetch(`${API_URL}/alumnos/dni/${dni}`);
-        if (!res.ok) {
-            alert("Alumno no encontrado");
-            return;
-        }
+        const res = await fetch(`${API_URL}/alumnos`);
+        const alumnos = await res.json();
 
-        alumnoActual = await res.json();
+        mostrarAlumnos(alumnos);
 
-        // cargar en formulario
-        document.getElementById("nombre").value = alumnoActual.nombre;
-        document.getElementById("apellido").value = alumnoActual.apellido;
-        document.getElementById("telefono").value = alumnoActual.telefono || "";
-        document.getElementById("nivel").value = alumnoActual.nivel || "";
-        document.getElementById("dias_semana").value = alumnoActual.dias_semana || 0;
+        // Activar búsqueda dinámica
+        buscador.addEventListener("input", () => {
+            const texto = buscador.value.toLowerCase();
+            const filtrados = alumnos.filter(a =>
+                a.nombre.toLowerCase().includes(texto) ||
+                a.apellido.toLowerCase().includes(texto) ||
+                a.dni.toString().includes(texto)
+            );
+            mostrarAlumnos(filtrados);
+        });
 
-        document.getElementById("plan_eg").checked = alumnoActual.plan_eg;
-        document.getElementById("plan_personalizado").checked = alumnoActual.plan_personalizado;
-        document.getElementById("plan_running").checked = alumnoActual.plan_running;
-
-        if (alumnoActual.fecha_vencimiento) {
-            document.getElementById("fecha_vencimiento").value =
-                alumnoActual.fecha_vencimiento.split("T")[0];
-        }
-
-    } catch (err) {
-        console.error("ERROR buscar alumno:", err);
-        alert("Error al conectar con el servidor");
+    } catch (error) {
+        console.error("ERROR CARGANDO ALUMNOS:", error);
+        listaAlumnos.innerHTML = "<p>Error al cargar alumnos.</p>";
     }
 }
 
-// ==========================
-// GUARDAR CAMBIOS
-// ==========================
-document.getElementById("guardarBtn").addEventListener("click", async () => {
-    if (!alumnoActual) {
-        return alert("Primero buscá un alumno por DNI");
+cargarAlumnos();
+
+
+// ===============================
+//   MOSTRAR LISTA DE ALUMNOS
+// ===============================
+function mostrarAlumnos(alumnos) {
+    listaAlumnos.innerHTML = "";
+
+    if (alumnos.length === 0) {
+        listaAlumnos.innerHTML = "<p>No hay alumnos para mostrar.</p>";
+        return;
     }
 
-    const datos = {
-        nombre: document.getElementById("nombre").value,
-        apellido: document.getElementById("apellido").value,
-        dni: alumnoActual.dni,
-        telefono: document.getElementById("telefono").value,
-        nivel: document.getElementById("nivel").value,
-        dias_semana: parseInt(document.getElementById("dias_semana").value),
+    alumnos.forEach(alumno => {
+        const div = document.createElement("div");
+        div.classList.add("alumno-card");
 
-        plan_eg: document.getElementById("plan_eg").checked,
-        plan_personalizado: document.getElementById("plan_personalizado").checked,
-        plan_running: document.getElementById("plan_running").checked,
+        div.innerHTML = `
+            <h3>${alumno.nombre} ${alumno.apellido}</h3>
 
-        fecha_vencimiento: document.getElementById("fecha_vencimiento").value
-    };
+            <p><strong>DNI:</strong> ${alumno.dni}</p>
+            <p><strong>Celular:</strong> ${alumno.telefono || "-"}</p>
+            <p><strong>Nivel:</strong> ${alumno.nivel || "-"}</p>
 
-    try {
-        const res = await fetch(`${API_URL}/alumnos/${alumnoActual.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datos)
-        });
+            <p><strong>Planes:</strong>
+                ${alumno.plan_eg ? "EG " : ""}
+                ${alumno.plan_personalizado ? "Personalizado " : ""}
+                ${alumno.plan_running ? "Running" : ""}
+            </p>
 
-        if (!res.ok) {
-            alert("Error al guardar cambios");
-            return;
-        }
+            <p><strong>Días por semana:</strong> ${alumno.dias_semana}</p>
 
-        alert("Cambios guardados correctamente ✔");
+            <p><strong>Vence:</strong> ${
+                alumno.fecha_vencimiento
+                    ? alumno.fecha_vencimiento.split("T")[0]
+                    : "Sin fecha"
+            }</p>
 
-    } catch (err) {
-        console.error("ERROR guardar alumno:", err);
-        alert("Error al conectar con el servidor");
-    }
-});
+            <div class="acciones">
+                <button class="btn-editar" onclick="editarAlumno(${alumno.id})">
+                    Editar
+                </button>
+
+                <a class="btn-wsp" href="https://wa.me/${alumno.telefono}" target="_blank">
+                    WhatsApp
+                </a>
+            </div>
+        `;
+
+        listaAlumnos.appendChild(div);
+    });
+}
+
+
+// ===============================
+//   IR A EDITAR
+// ===============================
+function editarAlumno(id) {
+    window.location.href = `form-alumno.html?id=${id}`;
+}
