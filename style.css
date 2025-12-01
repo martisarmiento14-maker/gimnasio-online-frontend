@@ -126,14 +126,15 @@ DASHBOARD
     outline: none;       /* ← saca el borde negro feo */
 }
 
-
-
 .dashboard-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);   /* 🔥 tres columnas */
     gap: 25px;
     padding: 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
+
 
 .dash-card {
     background: var(--violeta-light);
@@ -143,6 +144,7 @@ DASHBOARD
     cursor: pointer;
     box-shadow: 0px 0px 10px #00000020;
     transition: 0.2s;
+    height: 100%;
 }
 
 .dash-card:hover {
@@ -773,4 +775,15 @@ select:hover {
 .btn-ws:hover {
     border: 2px solid #b57bff !important;
     transform: scale(1.04);
+}
+@media (max-width: 900px) {
+    .dashboard-container {
+        grid-template-columns: 1fr 1fr;  /* 2 columnas en tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;      /* 1 columna en celular */
+    }
 }
