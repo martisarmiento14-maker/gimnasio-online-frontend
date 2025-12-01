@@ -1,7 +1,7 @@
 // ===============================
 // CONFIGURACIÓN
 // ===============================
-const API_URL = "https://gimnasio-online-1.onrender.com";  // Backend correcto
+const API_URL = "https://gimnasio-online-1.onrender.com";
 
 const dniInput = document.getElementById("dniInput");
 const infoMensaje = document.getElementById("infoMensaje");
@@ -10,6 +10,9 @@ const welcomeMain = document.getElementById("welcomeMain");
 const cuotaBanner = document.getElementById("cuotaBanner");
 const cuotaBannerText = document.getElementById("cuotaBannerText");
 const btnBorrar = document.getElementById("btnBorrar");
+
+const globalCuotasBanner = document.getElementById("globalCuotasVencidas");
+const globalCuotasText = document.getElementById("globalCuotasText");
 
 // ===============================
 // BORRAR TODO
@@ -56,36 +59,46 @@ function armarTarjeta(data) {
             ${asistencias} / ${limite}
         </div>
 
-        ${
-            seRegistro
-                ? `<div class="alert-info">✔ Asistencia registrada correctamente</div>`
-                : `<div class="alert-warning">⚠ Ya alcanzaste tu límite semanal</div>`
-        }
+        ${seRegistro
+            ? `<div class="alert-info">✔ Asistencia registrada correctamente</div>`
+            : `<div class="alert-warning">⚠ Ya alcanzaste tu límite semanal</div>`}
 
-        ${
-            alertaDias
-                ? `<div class="alert-warning">${alertaDias}</div>`
-                : ""
-        }
-
-        ${
-            alertaCuota
-                ? `<div class="alert-error">${alertaCuota}</div>`
-                : ""
-        }
+        ${alertaDias ? `<div class="alert-warning">${alertaDias}</div>` : ""}
+        ${alertaCuota ? `<div class="alert-error">${alertaCuota}</div>` : ""}
     `;
 
-    // Aplicar estilo por equipo
     asistenciaCard.classList.remove("card-blanco", "card-morado");
-
-    if (alumno.equipo.toLowerCase() === "blanco") {
-        asistenciaCard.classList.add("card-blanco");
-    } else {
-        asistenciaCard.classList.add("card-morado");
-    }
+    asistenciaCard.classList.add(
+        alumno.equipo.toLowerCase() === "blanco" ? "card-blanco" : "card-morado"
+    );
 
     asistenciaCard.classList.remove("hidden");
     btnBorrar.classList.remove("hidden");
+}
+
+// ===============================
+// VERIFICAR SI HAY ALUMNOS CON CUOTA VENCIDA (GLOBAL)
+// ===============================
+async function verificarCuotasVencidasGlobal() {
+    try {
+        const res = await fetch(`${API_URL}/cuotas/vencidas`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (Array.isArray(data) && data.length > 0) {
+            globalCuotasText.textContent =
+                data.length === 1
+                    ? "Hay 1 alumno con la cuota vencida"
+                    : `Hay ${data.length} alumnos con la cuota vencida`;
+
+            globalCuotasBanner.classList.remove("hidden");
+        } else {
+            globalCuotasBanner.classList.add("hidden");
+        }
+    } catch (err) {
+        console.log("No se pudieron cargar cuotas vencidas globales", err);
+    }
 }
 
 // ===============================
@@ -102,7 +115,6 @@ async function registrarAsistencia() {
     cuotaBanner.classList.add("hidden");
 
     try {
-        // 🔥 PETICIÓN CORRECTA AL BACKEND REAL
         const res = await fetch(`${API_URL}/asistencias`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -118,12 +130,10 @@ async function registrarAsistencia() {
             return;
         }
 
-        // Si hay cuota y está vencida
         if (data.cuota && data.cuota.estado === "vencida") {
             mostrarCuotaVencida(data.cuota.fecha_vencimiento);
         }
 
-        // Armar tarjeta
         armarTarjeta(data);
 
     } catch (err) {
@@ -144,4 +154,9 @@ dniInput.addEventListener("keydown", e => {
 document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "index.html";
+});
+
+// Al cargar la página → verificar deudas globales
+window.addEventListener("DOMContentLoaded", () => {
+    verificarCuotasVencidasGlobal();
 });
