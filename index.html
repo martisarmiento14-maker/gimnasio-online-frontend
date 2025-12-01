@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - EG Gimnasio</title>
+    <title>Ingreso al Sistema</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="login-body">
+<body>
 
-    <div class="login-card">
-        <h1 class="login-logo">EG GIMNASIO</h1>
+    <main class="login-container">
+        <h2>Ingreso al Sistema</h2>
 
-        <form id="loginForm">
-            <input id="usuario" type="email" placeholder="Email" required />
+        <div class="login-card">
+            <label for="usuario">Usuario</label>
+            <input type="text" id="usuario" placeholder="Ingresar usuario">
 
-            <input type="password" id="clave" placeholder="Contraseña" required>
+            <label for="clave">Contraseña</label>
+            <input type="password" id="clave" placeholder="Ingresar contraseña">
 
-            <button type="submit" class="login-btn">Ingresar</button>
+            <button id="loginBtn">Ingresar</button>
 
-            <p id="errorMensaje"></p>
-        </form>
-    </div>
+            <p id="loginMensaje" class="mensaje"></p>
+        </div>
+    </main>
 
     <script src="app.js"></script>
+
 </body>
 </html>

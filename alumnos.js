@@ -1,130 +1,92 @@
-// alumnos.js – versión adaptada al backend nuevo (PostgreSQL)
-
+// alumnos.js
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
-// Cuando carga la página, traemos los alumnos
-document.addEventListener("DOMContentLoaded", cargarAlumnos);
+let alumnoActual = null;
 
-// ------------------------------
-// Helpers
-// ------------------------------
-
-// Formatear fecha: dd/mm/aaaa
-function formatearFecha(iso) {
-    if (!iso) return "-";
-
-    const f = new Date(iso);
-    if (isNaN(f.getTime())) return "-";
-
-    const d = String(f.getDate()).padStart(2, "0");
-    const m = String(f.getMonth() + 1).padStart(2, "0");
-    const y = f.getFullYear();
-
-    return `${d}/${m}/${y}`;
-}
-
-// Construir texto de planes a partir de las columnas del alumno
-function construirTextoPlanes(al) {
-    const partes = [];
-
-    // En la DB pueden venir como true/false o 1/0
-    if (al.plan_eg === true || al.plan_eg === 1) partes.push("Plan EG");
-    if (al.plan_personalizado === true || al.plan_personalizado === 1) partes.push("Personalizado");
-    if (al.plan_running === true || al.plan_running === 1) partes.push("Running");
-
-    if (partes.length === 0) return "-";
-
-    let texto = partes.join(" + ");
-
-    if (al.dias_semana) {
-        texto += ` (${al.dias_semana} días/sem)`;
+// INPUT DNI - presiona ENTER para buscar
+document.getElementById("dniBuscar").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        buscarAlumno();
     }
+});
 
-    return texto;
-}
-
-// ------------------------------
-// Cargar alumnos desde la API
-// ------------------------------
-async function cargarAlumnos() {
-    const cont = document.getElementById("listaAlumnos");
-    cont.innerHTML = "<tr><td colspan='7'>Cargando alumnos...</td></tr>";
+// ==========================
+// BUSCAR ALUMNO POR DNI
+// ==========================
+async function buscarAlumno() {
+    const dni = document.getElementById("dniBuscar").value.trim();
+    if (!dni) return alert("Ingresá un DNI");
 
     try {
-        const res = await fetch(`${API_URL}/alumnos`);
+        const res = await fetch(`${API_URL}/alumnos/dni/${dni}`);
         if (!res.ok) {
-            throw new Error("Error HTTP " + res.status);
-        }
-
-        const alumnos = await res.json();
-
-        // Mostrar SOLO los activos (activo = 1 / true)
-        const activos = alumnos.filter(a =>
-            a.activo === true || Number(a.activo) === 1
-        );
-
-        if (activos.length === 0) {
-            cont.innerHTML = "<tr><td colspan='7'>No hay alumnos activos.</td></tr>";
+            alert("Alumno no encontrado");
             return;
         }
 
-        let html = "";
+        alumnoActual = await res.json();
 
-        for (let al of activos) {
-            const planesTexto = construirTextoPlanes(al);
-            const vencimiento = al.fecha_vencimiento
-                ? formatearFecha(al.fecha_vencimiento)
-                : "-";
+        // cargar en formulario
+        document.getElementById("nombre").value = alumnoActual.nombre;
+        document.getElementById("apellido").value = alumnoActual.apellido;
+        document.getElementById("telefono").value = alumnoActual.telefono || "";
+        document.getElementById("nivel").value = alumnoActual.nivel || "";
+        document.getElementById("dias_semana").value = alumnoActual.dias_semana || 0;
 
-            html += `
-                <tr>
-                    <td>${al.nombre ?? ""} ${al.apellido ?? ""}</td>
-                    <td>${al.dni ?? "-"}</td>
-                    <td>${al.nivel ?? "-"}</td>
-                    <td>${al.equipo ?? "-"}</td>
-                    <td>${planesTexto}</td>
-                    <td>${vencimiento}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editarAlumno(${al.id})">
-                            Editar
-                        </button>
-                    </td>
-                </tr>
-            `;
+        document.getElementById("plan_eg").checked = alumnoActual.plan_eg;
+        document.getElementById("plan_personalizado").checked = alumnoActual.plan_personalizado;
+        document.getElementById("plan_running").checked = alumnoActual.plan_running;
+
+        if (alumnoActual.fecha_vencimiento) {
+            document.getElementById("fecha_vencimiento").value =
+                alumnoActual.fecha_vencimiento.split("T")[0];
         }
 
-        cont.innerHTML = html;
-
     } catch (err) {
-        console.error("Error cargando alumnos:", err);
-        cont.innerHTML = "<tr><td colspan='7'>Error cargando alumnos</td></tr>";
+        console.error("ERROR buscar alumno:", err);
+        alert("Error al conectar con el servidor");
     }
 }
 
-// Ir al formulario de edición
-function editarAlumno(id) {
-    window.location.href = `form-alumno.html?id=${id}`;
-}
+// ==========================
+// GUARDAR CAMBIOS
+// ==========================
+document.getElementById("guardarBtn").addEventListener("click", async () => {
+    if (!alumnoActual) {
+        return alert("Primero buscá un alumno por DNI");
+    }
 
-// ------------------------------
-// Filtro en tiempo real por nombre o DNI
-// ------------------------------
-function filtrarAlumnos() {
-    const texto = document.getElementById("buscarAlumno").value.toLowerCase();
-    const filas = document.querySelectorAll("#listaAlumnos tr");
+    const datos = {
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        dni: alumnoActual.dni,
+        telefono: document.getElementById("telefono").value,
+        nivel: document.getElementById("nivel").value,
+        dias_semana: parseInt(document.getElementById("dias_semana").value),
 
-    filas.forEach(fila => {
-        const nombre = (fila.children[0]?.textContent || "").toLowerCase();
-        const dni    = (fila.children[1]?.textContent || "").toLowerCase();
+        plan_eg: document.getElementById("plan_eg").checked,
+        plan_personalizado: document.getElementById("plan_personalizado").checked,
+        plan_running: document.getElementById("plan_running").checked,
 
-        if (nombre.includes(texto) || dni.includes(texto)) {
-            fila.style.display = "";
-        } else {
-            fila.style.display = "none";
+        fecha_vencimiento: document.getElementById("fecha_vencimiento").value
+    };
+
+    try {
+        const res = await fetch(`${API_URL}/alumnos/${alumnoActual.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        });
+
+        if (!res.ok) {
+            alert("Error al guardar cambios");
+            return;
         }
-    });
-}
 
-// lo usa el input de búsqueda en alumnos.html con oninput="filtrarAlumnos()"
-window.filtrarAlumnos = filtrarAlumnos;
-window.editarAlumno = editarAlumno;
+        alert("Cambios guardados correctamente ✔");
+
+    } catch (err) {
+        console.error("ERROR guardar alumno:", err);
+        alert("Error al conectar con el servidor");
+    }
+});

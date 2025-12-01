@@ -3,62 +3,55 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alumnos - EG Gimnasio</title>
+    <title>Editar Alumno</title>
     <link rel="stylesheet" href="style.css" />
 </head>
+<body>
 
-<body class="dashboard-body">
+    <header>
+        <h2>Editar Alumno</h2>
+        <button onclick="window.location.href='dashboard.html'">Volver</button>
+    </header>
 
-    <!-- ========== TOPBAR NUEVA ========== -->
-    <div class="topbar">
-        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+    <main class="container">
+        <div class="form-card">
+            <h3>Datos del alumno</h3>
 
-        <h1 style="margin: 0 auto; position:absolute; left:50%; transform:translateX(-50%); font-size:28px;">
-            Alumnos
-        </h1>
+            <label>DNI</label>
+            <input type="text" id="dniBuscar" placeholder="Ingresar DNI y presionar ENTER">
 
-        <button id="logoutBtn" onclick="cerrarSesion()">Cerrar Sesión</button>
-    </div>
+            <hr>
 
-    <!-- ========== PANEL CONTROLES (AGREGAR + BUSCAR) ========== -->
-    <div class="panel-controles" style="margin:40px auto; width:92%; max-width:1400px;">
+            <label>Nombre</label>
+            <input type="text" id="nombre">
 
-        <button class="btn-add" onclick="window.location.href='form-alumno.html'">
-            + Agregar Alumno
-        </button>
+            <label>Apellido</label>
+            <input type="text" id="apellido">
 
-        <div class="search-wrapper" style="position:relative;">
+            <label>Teléfono</label>
+            <input type="text" id="telefono">
 
-            <input
-                type="text"
-                id="inputBusqueda"
-                oninput="buscarAlumnos()"
-                class="input-search"
-                placeholder="Buscar por nombre o DNI..."
-            />
+            <label>Nivel</label>
+            <input type="text" id="nivel">
+
+            <label>Días por semana</label>
+            <input type="number" id="dias_semana" min="0">
+
+            <label>Plan EG</label>
+            <input type="checkbox" id="plan_eg">
+
+            <label>Plan Personalizado</label>
+            <input type="checkbox" id="plan_personalizado">
+
+            <label>Plan Running</label>
+            <input type="checkbox" id="plan_running">
+
+            <label>Fecha de vencimiento</label>
+            <input type="date" id="fecha_vencimiento">
+
+            <button id="guardarBtn">Guardar Cambios</button>
         </div>
-
-    </div>
-
-    <!-- ========== TABLA CENTRADA Y MÁS CHICA ========== -->
-    <div class="tabla-container" style="margin-top:10px;">
-
-        <table class="tabla-alumnos" id="tablaAlumnos">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>DNI</th>
-                    <th>Nivel</th>
-                    <th>Equipo</th>
-                    <th>Planes</th>
-                    <th>Fecha Vencimiento</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="listaAlumnos"></tbody>
-        </table>
-
-    </div>
+    </main>
 
     <script src="alumnos.js"></script>
 </body>
