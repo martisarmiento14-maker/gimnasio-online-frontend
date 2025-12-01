@@ -23,7 +23,8 @@ async function registrarAsistencia() {
     info.innerHTML = `<p>Buscando alumno...</p>`;
 
     try {
-        const res = await fetch("https://gimnasio-backend-u3xo.onrender.com/asistencias", {
+        const res = await fetch("https://gimnasio-online-1.onrender.com/asistencias", {
+
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ dni }),
@@ -51,7 +52,7 @@ async function registrarAsistencia() {
         if (
             alumno.equipo &&
             (alumno.equipo.toLowerCase() === "violeta" ||
-             alumno.equipo.toLowerCase() === "morado")
+            alumno.equipo.toLowerCase() === "morado")
         ) {
             claseEquipo = "asistencia-card-violeta";
         }
