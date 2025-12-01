@@ -2,10 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loginForm");
     const errorMensaje = document.getElementById("errorMensaje");
 
-    if (!form) {
-        console.error("No se encontró el formulario de login");
-        return;
-    }
+    if (!form) return;
+
+    // 👉 URL REAL DE TU BACKEND
+    const API_URL = "https://gimnasio-online-1.onrender.com";
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -15,8 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const clave = document.getElementById("clave").value;
 
         try {
-            const res = await fetch("https://gimnasio-backend-2.onrender.com/login", {
-
+            const res = await fetch(`${API_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -24,23 +23,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ usuario, clave }),
             });
 
-            if (!res.ok) {
-                throw new Error(`Error HTTP ${res.status}`);
-            }
-
             const data = await res.json();
 
-            if (data.error) {
-                errorMensaje.textContent = data.error;
-            } else {
-                errorMensaje.textContent = "";
-                alert("Login exitoso!");
-                window.location.href = "dashboard.html";
+            if (!res.ok || data.error) {
+                errorMensaje.textContent = data.error || "Error en login";
+                return;
             }
+
+            alert("Login exitoso!");
+            window.location.href = "dashboard.html";
+
         } catch (err) {
             console.error(err);
-            errorMensaje.textContent =
-                "No se pudo conectar con el servidor.";
+            errorMensaje.textContent = "No se pudo conectar con el servidor.";
         }
     });
 });
