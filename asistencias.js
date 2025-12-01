@@ -1,109 +1,91 @@
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
-const dniInput = document.getElementById("dniInput");
-const infoContainer = document.getElementById("infoContainer");
-const bienvenidaText = document.getElementById("bienvenida");
-const borrarBtn = document.getElementById("borrarBtn");
-const alertaContainer = document.getElementById("alertaContainer");
+document.addEventListener("DOMContentLoaded", () => {
+    const dniInput = document.getElementById("dniInput");
+    const infoCard = document.getElementById("infoCard");
+    const alertCuota = document.getElementById("alert-cuota");
+    const clearBtn = document.getElementById("clearBtn");
+    const bienvenidaEG = document.getElementById("bienvenidaEG");
 
-// Oculta la bienvenida al escribir
-dniInput.addEventListener("input", () => {
-    if (dniInput.value.trim() !== "") {
-        bienvenidaText.style.display = "none";
+    dniInput.addEventListener("change", async () => {
+        const dni = dniInput.value.trim();
+        if (!dni) return;
+
+        bienvenidaEG.style.display = "none"; // Oculto el “Bienvenido a EG Gym”
+
+        try {
+            const res = await fetch(`${API_URL}/asistencias?dni=${dni}`);
+            if (!res.ok) throw new Error("Servidor caído");
+
+            const data = await res.json();
+
+            // DNI no encontrado
+            if (!data || data.error) {
+                infoCard.style.display = "none";
+                alertCuota.style.display = "none";
+                document.getElementById("messages").innerHTML =
+                    `<p class="alert-error">❌ DNI no encontrado</p>`;
+                return;
+            }
+
+            mostrarDatos(data);
+        } catch (error) {
+            infoCard.style.display = "none";
+            alertCuota.style.display = "none";
+
+            document.getElementById("messages").innerHTML =
+                `<p class="alert-error">❌ Error de conexión con el servidor</p>`;
+        }
+    });
+
+    clearBtn.addEventListener("click", () => {
+        dniInput.value = "";
+        infoCard.style.display = "none";
+        alertCuota.style.display = "none";
+        document.getElementById("messages").innerHTML = "";
+        bienvenidaEG.style.display = "block";
+    });
+});
+
+function mostrarDatos(data) {
+    const infoCard = document.getElementById("infoCard");
+    const alertCuota = document.getElementById("alert-cuota");
+
+    document.getElementById("messages").innerHTML = "";
+
+    // ESTILOS SEGÚN EQUIPO
+    if (data.equipo === "blanco") {
+        infoCard.className = "card-blanco";
     } else {
-        bienvenidaText.style.display = "block";
-        infoContainer.innerHTML = "";
-        alertaContainer.innerHTML = "";
+        infoCard.className = "card-morado";
     }
-});
 
-// Buscar alumno al presionar ENTER
-dniInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        buscarAlumno();
+    // Lleno la información
+    document.getElementById("nombre").innerText = data.nombreCompleto;
+    document.getElementById("equipo").innerText = data.equipo;
+    document.getElementById("plan").innerText = data.plan;
+    document.getElementById("asistencias").innerText =
+        `${data.asistenciasSemana} / ${data.maximoSemana}`;
+
+    // CUOTA VENCIDA
+    if (data.estado === "Vencido") {
+        alertCuota.style.display = "block";
+        alertCuota.innerHTML = `⚠️ Tu cuota venció el día ${data.vencimiento}`;
+    } else {
+        alertCuota.style.display = "none";
     }
-});
 
-// Función principal
-async function buscarAlumno() {
-    const dni = dniInput.value.trim();
-    infoContainer.innerHTML = "";
-    alertaContainer.innerHTML = "";
-
-    if (!dni) return;
-
-    try {
-        // Traer alumno
-        const respAlumno = await fetch(`${API_URL}/alumnos/${dni}`);
-        const alumno = await respAlumno.json();
-
-        if (!alumno || alumno.error) {
-            mostrarError("❌ DNI no encontrado");
-            return;
-        }
-
-        // Traer cuota
-        const respCuota = await fetch(`${API_URL}/cuotas/${dni}`);
-        const cuota = await respCuota.json();
-
-        // Registrar asistencia
-        const respAsis = await fetch(`${API_URL}/asistencias/registrar`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ dni }),
-        });
-
-        const resultado = await respAsis.json();
-
-        // TARJETA DE COLOR SEGÚN EQUIPO
-        let colorFondo = alumno.equipo === "blanco" ? "rgba(255,255,255,0.15)" : "rgba(115,0,230,0.20)";
-        let colorTexto = alumno.equipo === "blanco" ? "black" : "white";
-
-        // ALERTA SI CUOTA ESTÁ VENCIDA
-        if (cuota.estado === "Vencido") {
-            mostrarAlerta(`⚠ Tu cuota venció el día ${cuota.vencimiento}`);
-        }
-
-        infoContainer.innerHTML = `
-            <div class="tarjeta" style="background:${colorFondo}; color:${colorTexto}">
-                <h2 style="font-size: 40px; margin-bottom: 15px;">
-                    Bienvenido, <span style="color:#c58bff">${alumno.nombre}</span>
-                </h2>
-
-                <p><strong>Equipo:</strong> ${alumno.equipo}</p>
-                <p><strong>Plan:</strong> ${alumno.plan}</p>
-                <p><strong>Asistencias esta semana:</strong> ${resultado.asistencias_semana}</p>
-
-                ${resultado.warning ? `<p class="warning">⚠ ${resultado.warning}</p>` : ""}
-                ${resultado.error ? `<p class="error">❌ ${resultado.error}</p>` : ""}
-                ${resultado.success ? `<p class="success">✔ ${resultado.success}</p>` : ""}
-            </div>
+    // LÓGICA DE ASISTENCIAS
+    if (data.asistenciasSemana >= data.maximoSemana) {
+        document.getElementById("messages").innerHTML = `
+            <p class="alert-warning">⚠️ Ya usaste tus ${data.maximoSemana} días permitidos esta semana.</p>
+            <p class="alert-error">❌ No se registró la asistencia</p>
         `;
-
-        borrarBtn.style.display = "block";
-
-    } catch (error) {
-        mostrarError("❌ Error de conexión con el servidor");
+    } else {
+        document.getElementById("messages").innerHTML = `
+            <p style="color:#1aff1a; font-size:26px;">✔ Asistencia registrada correctamente</p>
+        `;
     }
+
+    infoCard.style.display = "block";
 }
-
-function mostrarError(msg) {
-    alertaContainer.innerHTML = `
-        <div class="alertaRoja">${msg}</div>
-    `;
-}
-
-function mostrarAlerta(msg) {
-    alertaContainer.innerHTML = `
-        <div class="alertaAmarilla">${msg}</div>
-    `;
-}
-
-borrarBtn.addEventListener("click", () => {
-    dniInput.value = "";
-    bienvenidaText.style.display = "block";
-    infoContainer.innerHTML = "";
-    alertaContainer.innerHTML = "";
-    borrarBtn.style.display = "none";
-});
-
