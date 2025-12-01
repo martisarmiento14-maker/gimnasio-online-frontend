@@ -82,7 +82,8 @@ async function cargarAlumno(id) {
     activoOriginal = al.activo;
 
     // Fecha de vencimiento
-    fecha_vencimiento.value = al.fecha_vencimiento
+    fecha_vencimiento.value = al.fecha_vencimiento.split("T")[0]
+
         ? al.fecha_vencimiento.split("T")[0]
         : "";
     fechaVencimientoOriginal = fecha_vencimiento.value || null;
