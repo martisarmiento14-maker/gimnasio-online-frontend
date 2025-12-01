@@ -57,3 +57,4 @@ function formatearFecha(f) {
 function editarAlumno(id) {
     window.location.href = `form-alumno.html?id=${id}`;
 }
+document.addEventListener("DOMContentLoaded", cargarAlumnos);
