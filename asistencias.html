@@ -3,155 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencias - EG Gym</title>
-
+    <title>Asistencias</title>
     <link rel="stylesheet" href="style.css">
-
     <style>
         body {
-            background: #0e0c14;
-            color: white;
-            font-family: 'Poppins', sans-serif;
+            background: #0d0b16;
             margin: 0;
-            padding: 0;
-            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
         }
 
-        header {
-            background: #c283ff;
+        .header {
+            background: #c27ff5;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #b26bff;
-        }
-
-        header h1 {
-            font-size: 3rem;
-            margin: 0;
+            font-size: 2rem;
             font-weight: 700;
+            color: white;
         }
 
-        .btn-header {
+        .header button {
             background: white;
-            color: black;
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-size: 1.4rem;
-            font-weight: 600;
             border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 1.4rem;
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .btn-header:hover {
-            transform: scale(1.07);
+        .container {
+            text-align: center;
+            margin-top: 30px;
         }
 
-        /* Bienvenida */
-        #bienvenida {
+        .welcome-title {
             font-size: 3rem;
-            margin-top: 40px;
-            color: #d8b8ff;
-            font-weight: 600;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
         }
 
-        /* Input */
         #dniInput {
-            margin-top: 20px;
             width: 60%;
             padding: 18px;
-            font-size: 2rem;
             border-radius: 20px;
-            border: 3px solid #d6b1ff;
-            outline: none;
+            border: 3px solid #bb7fff;
+            font-size: 1.8rem;
             text-align: center;
-            background: #eae6ff;
+            background: rgba(255,255,255,0.9);
+            margin-top: 20px;
+            box-shadow: 0 0 25px #b47cff;
+        }
+
+        .card {
+            width: 75%;
+            margin: 40px auto;
+            padding: 35px;
+            border-radius: 30px;
+            display: none;
+            border: 4px solid #b47cff;
+        }
+
+        .card.white-card {
+            background: rgba(255,255,255,0.96);
             color: black;
-            box-shadow: 0 0 25px #b87dff;
         }
 
-        /* Contenedor de resultados */
-        #resultado {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            width: 100%;
+        .card.purple-card {
+            background: rgba(80,0,140,0.75);
+            color: white;
         }
 
-        /* Botón Borrar */
+        .popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.80);
+            color: white;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-size: 1.6rem;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 0 20px red;
+        }
+
+        .warning { color: #ffcf33; font-size: 1.8rem; }
+        .error { color: red; font-size: 1.8rem; }
+
         #borrarBtn {
             display: none;
-            background: #ff6f6f;
-            border: none;
-            padding: 15px 40px;
-            margin-top: 40px;
-            font-size: 1.8rem;
+            margin: 30px auto;
+            padding: 18px 40px;
+            font-size: 1.7rem;
             border-radius: 20px;
+            background: #ff6b6b;
             color: white;
+            border: none;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        #borrarBtn:hover {
-            transform: scale(1.07);
-            background: #ff4a4a;
-        }
-
-        /* Tarjeta del alumno (se completa desde JS) */
-        .tarjeta {
-            width: 70%;
-            margin-top: 30px;
-            padding: 40px;
-            border-radius: 25px;
-            border: 3px solid rgba(180,130,255,0.7);
-        }
-
-        /* Alerta de cuota */
-        .alerta-cuota {
-            background: rgba(255, 196, 0, 0.25);
-            border: 3px solid #ffcc00;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.8rem;
-            width: 60%;
-            margin: 20px auto;
-            border-radius: 15px;
-            color: #ffdd55;
-            font-weight: bold;
-            animation: aparecer 0.4s ease-out;
-        }
-
-        @keyframes aparecer {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
         }
 
     </style>
-
 </head>
 <body>
 
-    <!-- Encabezado -->
-    <header>
-        <button class="btn-header" onclick="window.location.href='dashboard.html'">← Volver</button>
-        <h1>Asistencias</h1>
-        <button class="btn-header" onclick="window.location.href='index.html'">Cerrar Sesión</button>
-    </header>
+<div class="popup" id="popupAlert"></div>
 
-    <!-- Bienvenida -->
-    <h2 id="bienvenida">Bienvenido a EG Gym</h2>
+<div class="header">
+    <button onclick="window.location.href='dashboard.html'">← Volver</button>
+    Asistencias
+    <button onclick="window.location.href='index.html'">Cerrar Sesión</button>
+</div>
 
-    <!-- Input DNI -->
-    <input type="number" id="dniInput" placeholder="Ingresar DNI">
+<div class="container">
+    <div id="welcomeText" class="welcome-title">Bienvenido a EG Gym</div>
+    <input type="number" id="dniInput" placeholder="Ingresar DNI" oninput="buscarAlumno()">
+</div>
 
-    <!-- Contenedor dinámico -->
-    <div id="resultado"></div>
+<div id="card" class="card"></div>
 
-    <!-- Botón borrar -->
-    <button id="borrarBtn">Borrar</button>
+<button id="borrarBtn" onclick="resetear()">Borrar</button>
 
-    <script src="asistencias.js"></script>
+<script src="asistencias.js"></script>
 
 </body>
 </html>
