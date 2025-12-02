@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================================================
-// 🔥 LÓGICA CORRECTA DE DÍAS SEGÚN PLANES
+// 🔥 LÓGICA DE DÍAS AUTOMÁTICOS
 // =========================================================
 function actualizarDias() {
     const eg = plan_eg.checked;
@@ -29,11 +29,13 @@ function actualizarDias() {
     const boxEgPers = document.getElementById("diasEgPersContainer");
     const boxTotales = document.getElementById("diasTotalesContainer");
 
-    // Ocultar todo
     boxEgPers.style.display = "none";
     boxTotales.style.display = "none";
 
-    // ❌ EG + Personalizado juntos no se puede
+    let diasPlan = 0;
+    let diasTotales = 0;
+
+    // ❌ EG + Personalizado no se puede
     if (eg && pers) {
         alert("No podés combinar Plan EG con Plan Personalizado.");
         plan_personalizado.checked = false;
@@ -41,78 +43,83 @@ function actualizarDias() {
     }
 
     // -------------------------
-    // ✔ SOLO RUNNING (2 días fijos)
+    // ✔ RUNNING SOLO (2)
     // -------------------------
     if (run && !eg && !pers) {
-        boxTotales.style.display = "block";
-        dias_semana.innerHTML = `<option value="2">2 días</option>`;
-        dias_eg_pers.innerHTML = "";
+        diasTotales = 2;
+        mostrarTotales(diasTotales);
         return;
     }
 
     // -------------------------
-    // ✔ SOLO EG
+    // ✔ EG SOLO (3 o 5)
     // -------------------------
     if (eg && !run && !pers) {
-        boxTotales.style.display = "block";
-        dias_semana.innerHTML = `
+        boxEgPers.style.display = "block";
+        dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
-        dias_eg_pers.innerHTML = "";
+        diasPlan = Number(dias_eg_pers.value);
+        diasTotales = diasPlan;
+        mostrarTotales(diasTotales);
+        dias_eg_pers.onchange = actualizarDias;
         return;
     }
 
     // -------------------------
-    // ✔ SOLO Personalizado
+    // ✔ Personalizado SOLO
     // -------------------------
     if (pers && !run && !eg) {
-        boxTotales.style.display = "block";
-        dias_semana.innerHTML = `
+        boxEgPers.style.display = "block";
+        dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
-        dias_eg_pers.innerHTML = "";
+        diasPlan = Number(dias_eg_pers.value);
+        diasTotales = diasPlan;
+        mostrarTotales(diasTotales);
+        dias_eg_pers.onchange = actualizarDias;
         return;
     }
 
     // -------------------------
-    // ✔ EG + Running
+    // ✔ EG + RUNNING
     // -------------------------
     if (eg && run) {
         boxEgPers.style.display = "block";
-        boxTotales.style.display = "block";
-
         dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
-
-        dias_semana.innerHTML = `
-            <option value="5">5 días totales</option>
-            <option value="7">7 días totales</option>
-        `;
+        diasPlan = Number(dias_eg_pers.value);
+        diasTotales = diasPlan + 2;
+        mostrarTotales(diasTotales);
+        dias_eg_pers.onchange = actualizarDias;
         return;
     }
 
     // -------------------------
-    // ✔ Personalizado + Running
+    // ✔ Personalizado + RUNNING
     // -------------------------
     if (pers && run) {
         boxEgPers.style.display = "block";
-        boxTotales.style.display = "block";
-
         dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
-
-        dias_semana.innerHTML = `
-            <option value="5">5 días totales</option>
-            <option value="7">7 días totales</option>
-        `;
+        diasPlan = Number(dias_eg_pers.value);
+        diasTotales = diasPlan + 2;
+        mostrarTotales(diasTotales);
+        dias_eg_pers.onchange = actualizarDias;
         return;
     }
+}
+
+function mostrarTotales(total) {
+    const boxTotales = document.getElementById("diasTotalesContainer");
+    boxTotales.style.display = "block";
+    dias_semana.value = total;
 }
 
 // =========================================================
@@ -128,11 +135,9 @@ async function cargarAlumno(id) {
     celular.value = a.telefono ?? "";
     nivel.value = a.nivel;
 
-    if (a.fecha_vencimiento) {
-        fecha_vencimiento.value = new Date(a.fecha_vencimiento)
-            .toISOString()
-            .split("T")[0];
-    }
+    fecha_vencimiento.value = new Date(a.fecha_vencimiento)
+        .toISOString()
+        .split("T")[0];
 
     plan_eg.checked = a.plan_eg;
     plan_personalizado.checked = a.plan_personalizado;
@@ -141,7 +146,8 @@ async function cargarAlumno(id) {
     actualizarDias();
 
     if (a.dias_eg_pers) dias_eg_pers.value = a.dias_eg_pers;
-    if (a.dias_semana) dias_semana.value = a.dias_semana;
+
+    dias_semana.value = a.dias_semana;
 }
 
 // =========================================================
@@ -154,16 +160,13 @@ function sumarUnMes() {
 }
 
 // =========================================================
-// 💾 GUARDAR ALUMNO
+// 💾 GUARDAR
 // =========================================================
 async function guardarAlumno(e) {
     e.preventDefault();
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get("editar");
-
-    let diasTotales = Number(dias_semana.value);
-    let diasEgPers = dias_eg_pers.value ? Number(dias_eg_pers.value) : null;
 
     const datos = {
         nombre: nombre.value,
@@ -175,8 +178,8 @@ async function guardarAlumno(e) {
         plan_eg: plan_eg.checked,
         plan_personalizado: plan_personalizado.checked,
         plan_running: plan_running.checked,
-        dias_semana: diasTotales,
-        dias_eg_pers: diasEgPers
+        dias_semana: Number(dias_semana.value),
+        dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
     };
 
     let url = `${API_URL}/alumnos`;

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumno - EG Gimnasio</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,21 +20,17 @@
 
         <form id="formAlumno">
 
-            <!-- FILA 1 -->
             <div class="form-row">
                 <input type="text" id="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" placeholder="Apellido" required>
             </div>
 
-            <!-- FILA 2 -->
             <div class="form-row">
                 <input type="number" id="dni" placeholder="DNI" required>
                 <input type="text" id="celular" placeholder="Celular" required>
             </div>
 
-            <!-- FILA 3 -->
             <div class="form-row">
-
                 <select id="nivel" required>
                     <option disabled selected value="">Nivel</option>
                     <option value="principiante">Principiante</option>
@@ -43,7 +38,7 @@
                     <option value="experto">Experto</option>
                 </select>
 
-                <div style="flex: 1; display:flex; flex-direction:column;">
+                <div style="flex:1; display:flex; flex-direction:column;">
                     <label style="color:white; font-size:14px;">Fecha de vencimiento</label>
                     <input type="date" id="fecha_vencimiento" required>
                 </div>
@@ -55,14 +50,13 @@
 
             <h3 class="subtitulo" style="color:white;">Planes</h3>
 
-            <!-- PLANES -->
             <div class="planes-box">
                 <label><input type="checkbox" id="plan_eg"> Plan EG</label>
                 <label><input type="checkbox" id="plan_personalizado"> Personalizado</label>
                 <label><input type="checkbox" id="plan_running"> Running (2 días)</label>
             </div>
 
-            <!-- DÍAS EG/PERS -->
+            <!-- Días del plan EG/Personalizado -->
             <div class="form-row" id="diasEgPersContainer" style="display:none;">
                 <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días del plan EG/Personalizado</label>
@@ -70,11 +64,11 @@
                 </div>
             </div>
 
-            <!-- DÍAS TOTALES -->
+            <!-- TOTAL AUTOMÁTICO -->
             <div class="form-row" id="diasTotalesContainer" style="display:none;">
                 <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días totales por semana</label>
-                    <select id="dias_semana"></select>
+                    <input id="dias_semana" type="number" readonly>
                 </div>
             </div>
 
