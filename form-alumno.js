@@ -174,7 +174,7 @@ document.getElementById("formAlumno").addEventListener("submit", async (e) => {
         nombre: nombreInput.value,
         apellido: apellidoInput.value,
         dni: dniInput.value,
-        celular: celularInput.value,
+        telefono: celularInput.value,
         nivel: nivelInput.value,
         fecha_vencimiento: vencInput.value,
 
