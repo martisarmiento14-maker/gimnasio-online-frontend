@@ -6,7 +6,6 @@
     <title>Alumno - EG Gimnasio</title>
 
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body class="dashboard-body">
@@ -49,7 +48,6 @@
                     <input type="date" id="fecha_vencimiento" required>
                 </div>
 
-                <!-- ID CORRECTO -->
                 <button id="btnRenovar" class="btn-guardar" type="button">
                     Renovar +1 mes
                 </button>
@@ -64,23 +62,19 @@
                 <label><input type="checkbox" id="plan_running"> Running (2 días)</label>
             </div>
 
-            <!-- DÍAS EG O PERSONALIZADO -->
-            <div class="form-row" id="diasEgPersContainer" style="display:flex;">
+            <!-- DÍAS EG/PERS -->
+            <div class="form-row" id="diasEgPersContainer" style="display:none;">
                 <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días del plan EG/Personalizado</label>
-                    <select id="dias_eg_pers">
-                        <!-- dinámico desde JS -->
-                    </select>
+                    <select id="dias_eg_pers"></select>
                 </div>
             </div>
 
             <!-- DÍAS TOTALES -->
-            <div class="form-row">
+            <div class="form-row" id="diasTotalesContainer" style="display:none;">
                 <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días totales por semana</label>
-                    <select id="dias_semana" required>
-                        <!-- dinámico desde JS -->
-                    </select>
+                    <select id="dias_semana"></select>
                 </div>
             </div>
 
