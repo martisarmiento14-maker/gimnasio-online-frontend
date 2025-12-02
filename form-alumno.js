@@ -35,86 +35,73 @@ function actualizarDias() {
     let diasPlan = 0;
     let diasTotales = 0;
 
-    // ❌ EG + Personalizado no se puede
+    // ❌ EG + Pers no se puede
     if (eg && pers) {
         alert("No podés combinar Plan EG con Plan Personalizado.");
         plan_personalizado.checked = false;
         return;
     }
 
+    // Guardar selección actual si existe
+    let valorPrevio = dias_eg_pers.value;
+
     // -------------------------
-    // ✔ RUNNING SOLO (2)
+    // RUNNING SOLO (2)
     // -------------------------
     if (run && !eg && !pers) {
         diasTotales = 2;
         mostrarTotales(diasTotales);
+        dias_eg_pers.innerHTML = "";
         return;
     }
 
     // -------------------------
-    // ✔ EG SOLO (3 o 5)
+    // EG SOLO o Personalizado SOLO
     // -------------------------
-    if (eg && !run && !pers) {
+    if ((eg || pers) && !run) {
         boxEgPers.style.display = "block";
+
         dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
+
+        // Restaurar selección previa si existe
+        if (valorPrevio === "5") dias_eg_pers.value = "5";
+
         diasPlan = Number(dias_eg_pers.value);
         diasTotales = diasPlan;
+
         mostrarTotales(diasTotales);
+
         dias_eg_pers.onchange = actualizarDias;
         return;
     }
 
     // -------------------------
-    // ✔ Personalizado SOLO
+    // EG + RUNNING o Pers + RUNNING
     // -------------------------
-    if (pers && !run && !eg) {
+    if ((eg || pers) && run) {
         boxEgPers.style.display = "block";
-        dias_eg_pers.innerHTML = `
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
-        diasPlan = Number(dias_eg_pers.value);
-        diasTotales = diasPlan;
-        mostrarTotales(diasTotales);
-        dias_eg_pers.onchange = actualizarDias;
-        return;
-    }
 
-    // -------------------------
-    // ✔ EG + RUNNING
-    // -------------------------
-    if (eg && run) {
-        boxEgPers.style.display = "block";
         dias_eg_pers.innerHTML = `
             <option value="3">3 días</option>
             <option value="5">5 días</option>
         `;
+
+        // Restaurar selección previa si existe
+        if (valorPrevio === "5") dias_eg_pers.value = "5";
+
         diasPlan = Number(dias_eg_pers.value);
         diasTotales = diasPlan + 2;
-        mostrarTotales(diasTotales);
-        dias_eg_pers.onchange = actualizarDias;
-        return;
-    }
 
-    // -------------------------
-    // ✔ Personalizado + RUNNING
-    // -------------------------
-    if (pers && run) {
-        boxEgPers.style.display = "block";
-        dias_eg_pers.innerHTML = `
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
-        diasPlan = Number(dias_eg_pers.value);
-        diasTotales = diasPlan + 2;
         mostrarTotales(diasTotales);
+
         dias_eg_pers.onchange = actualizarDias;
         return;
     }
 }
+
 
 function mostrarTotales(total) {
     const boxTotales = document.getElementById("diasTotalesContainer");
