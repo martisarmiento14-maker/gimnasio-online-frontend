@@ -20,13 +20,25 @@
 
         <h3 class="subtitulo" style="margin-top:20px;">Estado general de cuotas</h3>
 
-        <div id="admin-controles"></div>
-        <div id="listaAdmin"></div>
+        <!-- 📌 TABLA AGREGADA AQUÍ -->
+        <table class="tabla-admin">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Equipo</th>
+                    <th>Estado</th>
+                    <th>Borrar</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabla-alumnos"></tbody>
+        </table>
 
     </div>
 
-    <!-- IMPORTANTE: versionado para evitar cache -->
-    <script src="admin.js?v=3001"></script>
+    <script src="admin.js"></script>
     <script src="dashboard.js"></script>
 
 </body>
