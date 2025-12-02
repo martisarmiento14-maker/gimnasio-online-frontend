@@ -280,6 +280,7 @@ async function eliminarAlumno(id) {
     await fetch(`${API_URL}/alumnos/${id}`, { method: "DELETE" });
     cargarCuotas();
 }
+
 // ==============================
 // REGISTRAR FUNCIONES EN WINDOW
 // ==============================
