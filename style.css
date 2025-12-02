@@ -445,27 +445,27 @@ DASHBOARD
 /* ======== COLORES NUEVOS ======== */
 
 /* Rojo brillante para vencidos */
-.fila-vencido {
+#listaAdmin .fila-vencido {
     background-color: #dc3232 !important;
 }
 
 /* Amarillo vivo para por vencer */
-.fila-por-vencer {
+#listaAdmin .fila-por-vencer {
     background-color: #cdae25 !important;
 }
 
 /* Verde brillante */
-.fila-al-dia {
+#listaAdmin .fila-al-dia {
     background-color: #1da546 !important;
 }
 
 /* Sin cuota */
-.fila-sin-cuota {
+#listaAdmin .fila-sin-cuota {
     background-color: #424242 !important;
 }
 
 /* Inactivo gris claro */
-.fila-inactivo {
+#listaAdmin .fila-inactivo {
     background-color: #2b2b2b !important;
 }
 
@@ -1103,11 +1103,6 @@ select:hover {
     text-align: center;
 }
 /* Fondo de la tabla */
-.tabla-alumnos {
-    background: #1a1125; /* morado oscuro */
-}
-
-
 
 /* Texto más fuerte */
 .tabla-alumnos td {
