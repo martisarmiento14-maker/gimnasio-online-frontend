@@ -1,45 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administración - EG Gimnasio</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administración</title>
+
+    <style>
+        body {
+            background-color: #0d0b14;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #b369ff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #b369ff;
+        }
+
+        tr:nth-child(even) {
+            background: #1a1724;
+        }
+
+        select, button {
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .delete-btn {
+            cursor: pointer;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+        }
+    </style>
 </head>
 
-<body class="dashboard-body">
+<body>
 
-    <div class="topbar">
-        <h2>Administración</h2>
-        <button id="logoutBtn">Cerrar Sesión</button>
-    </div>
+<header>
+    <h1>Administración</h1>
+    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+</header>
 
-    <div class="content">
+<a href="dashboard.html" style="color:white; margin-left:30px;">← Volver</a>
 
-        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+<h2 style="margin-left:30px;">Estado general de cuotas</h2>
 
-        <h3 class="subtitulo" style="margin-top:20px;">Estado general de cuotas</h3>
+<table id="tablaAdmin">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Equipo</th>
+            <th>Estado</th>
+            <th>Borrar</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-        <!-- 📌 TABLA AGREGADA AQUÍ -->
-        <table class="tabla-admin">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Equipo</th>
-                    <th>Estado</th>
-                    <th>Borrar</th>
-                </tr>
-            </thead>
-
-            <tbody id="tabla-alumnos"></tbody>
-        </table>
-
-    </div>
-
-    <script src="admin.js"></script>
-    <script src="dashboard.js"></script>
+<script src="admin.js"></script>
 
 </body>
 </html>

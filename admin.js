@@ -1,80 +1,95 @@
-const API = "https://gimnasio-online-1.onrender.com/admin";
+console.log("ADMIN JS VERSION FINAL DEFINITIVO");
 
-document.addEventListener("DOMContentLoaded", cargarAlumnos);
+// URL DEL BACKEND
+const API = "https://gimnasio-online.onrender.com";
 
-/* ==============================
-   CARGAR TABLA COMPLETA
-============================== */
-async function cargarAlumnos() {
-    const res = await fetch(API);
-    const alumnos = await res.json();
+// Cargar la tabla al iniciar
+document.addEventListener("DOMContentLoaded", cargarTablaAdmin);
 
-    const tbody = document.querySelector("#tabla-alumnos");
-    tbody.innerHTML = "";
+// ----------------------------
+// CARGAR TABLA
+// ----------------------------
+function cargarTablaAdmin() {
+    fetch(`${API}/alumnos`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector("#tablaAdmin tbody");
+            tbody.innerHTML = "";
 
-    alumnos.forEach(a => {
-        const tr = document.createElement("tr");
+            data.forEach(al => {
+                let fila = document.createElement("tr");
 
-        tr.innerHTML = `
-            <td>${a.id}</td>
-            <td>${a.nombre}</td>
-            <td>${a.apellido}</td>
-            <td>
-                <select onchange="cambiarEquipo(${a.id}, this.value)">
-                    <option value="morado" ${a.equipo === "morado" ? "selected":""}>Morado</option>
-                    <option value="blanco" ${a.equipo === "blanco" ? "selected":""}>Blanco</option>
-                </select>
-            </td>
-            <td>
-                <button onclick="toggleEstado(${a.id}, ${a.activo})" class="${a.activo ? "desactivar" : "activar"}">
-                    ${a.activo ? "Desactivar" : "Activar"}
-                </button>
-            </td>
-            <td>
-                <button onclick="borrarAlumno(${a.id})" class="borrar">🗑️</button>
-            </td>
-        `;
+                fila.innerHTML = `
+                    <td>${al.id}</td>
+                    <td>${al.nombre}</td>
+                    <td>${al.apellido}</td>
 
-        tbody.appendChild(tr);
-    });
+                    <td>
+                        <select onchange="cambiarEquipo(${al.id}, this.value)">
+                            <option value="Blanco" ${al.equipo === "Blanco" ? "selected" : ""}>Blanco</option>
+                            <option value="Morado" ${al.equipo === "Morado" ? "selected" : ""}>Morado</option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <select onchange="cambiarEstado(${al.id}, this.value)">
+                            <option value="Activo" ${al.estado === "Activo" ? "selected" : ""}>Activo</option>
+                            <option value="Inactivo" ${al.estado === "Inactivo" ? "selected" : ""}>Inactivo</option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <button class="delete-btn" onclick="borrarAlumno(${al.id})">🗑</button>
+                    </td>
+                `;
+
+                tbody.appendChild(fila);
+            });
+        })
+        .catch(err => console.error("Error cargando tabla:", err));
 }
 
-/* ==============================
-   CAMBIAR EQUIPO
-============================== */
-async function cambiarEquipo(id, equipo) {
-    await fetch(`${API}/${id}/equipo`, {
+// ----------------------------
+// CAMBIAR EQUIPO
+// ----------------------------
+function cambiarEquipo(id, nuevoEquipo) {
+    fetch(`${API}/admin/equipo/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ equipo }),
-    });
-
-    cargarAlumnos();
+        body: JSON.stringify({ equipo: nuevoEquipo })
+    })
+    .then(res => res.json())
+    .then(() => cargarTablaAdmin());
 }
 
-/* ==============================
-   ACTIVAR / DESACTIVAR
-============================== */
-async function toggleEstado(id, activo) {
-
-    const ruta = activo ? "desactivar" : "activar";
-
-    await fetch(`${API}/${id}/${ruta}`, {
-        method: "PUT"
-    });
-
-    cargarAlumnos();
+// ----------------------------
+// CAMBIAR ESTADO
+// ----------------------------
+function cambiarEstado(id, estado) {
+    fetch(`${API}/admin/estado/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado })
+    })
+    .then(res => res.json())
+    .then(() => cargarTablaAdmin());
 }
 
-/* ==============================
-   BORRAR ALUMNO
-============================== */
-async function borrarAlumno(id) {
+// ----------------------------
+// BORRAR ALUMNO
+// ----------------------------
+function borrarAlumno(id) {
     if (!confirm("¿Seguro que querés borrar este alumno?")) return;
 
-    await fetch(`${API}/${id}`, {
-        method: "DELETE"
-    });
+    fetch(`${API}/admin/borrar/${id}`, { method: "DELETE" })
+        .then(res => res.json())
+        .then(() => cargarTablaAdmin());
+}
 
-    cargarAlumnos();
+// ----------------------------
+// LOGOUT
+// ----------------------------
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
 }
