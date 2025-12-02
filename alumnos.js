@@ -1,55 +1,50 @@
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
-console.log("ALUMNOS.JS CARGADO", API_URL);
-
-const tablaBody = document.getElementById("tablaAlumnosBody");
-const buscador = document.getElementById("buscador");
-
 document.addEventListener("DOMContentLoaded", cargarAlumnos);
-buscador.addEventListener("input", cargarAlumnos);
-
-function formatearPlanes(a) {
-    let planes = [];
-
-    if (a.plan_eg) planes.push(`Plan EG (${a.dias_eg_pers} días/sem)`);
-    if (a.plan_personalizado) planes.push(`Personalizado (${a.dias_eg_pers} días/sem)`);
-    if (a.plan_running) planes.push(`Running (2 días/sem)`);
-
-    return planes.join(" + ");
-}
-
-function formatFecha(f) {
-    if (!f) return "-";
-    return new Date(f).toLocaleDateString("es-AR");
-}
+document.getElementById("buscador").addEventListener("input", cargarAlumnos);
 
 async function cargarAlumnos() {
     try {
-        console.log("Cargando alumnos desde:", `${API_URL}/alumnos`);
         const res = await fetch(`${API_URL}/alumnos`);
-        const data = await res.json();
+        const alumnos = await res.json();
 
-        console.log("Alumnos recibidos:", data);
+        const txt = document.getElementById("buscador").value.toLowerCase();
 
-        let txt = buscador.value.toLowerCase();
-
-        let filtrados = data.filter(a =>
+        const filtrados = alumnos.filter(a =>
             a.nombre.toLowerCase().includes(txt) ||
             a.apellido.toLowerCase().includes(txt) ||
             String(a.dni).includes(txt)
         );
 
-        mostrarTabla(filtrados);
+        mostrarAlumnos(filtrados);
+
     } catch (error) {
-        console.error("Error cargando alumnos:", error);
+        console.log("Error cargando alumnos:", error);
     }
 }
 
-function mostrarTabla(lista) {
-    tablaBody.innerHTML = "";
+function formatearFecha(f) {
+    if (!f) return "-";
+    const fecha = new Date(f);
+    return fecha.toLocaleDateString("es-AR");
+}
+
+function formatearPlanes(a) {
+    let planes = [];
+
+    if (a.plan_eg) planes.push("Plan EG");
+    if (a.plan_personalizado) planes.push("Personalizado");
+    if (a.plan_running) planes.push("Running (2 días/sem)");
+
+    return planes.join(" + ");
+}
+
+function mostrarAlumnos(lista) {
+    const tbody = document.getElementById("tablaAlumnosBody");
+    tbody.innerHTML = "";
 
     lista.forEach(a => {
-        const tr = document.createElement("tr");
+        let tr = document.createElement("tr");
 
         tr.innerHTML = `
             <td>${a.nombre} ${a.apellido}</td>
@@ -57,14 +52,14 @@ function mostrarTabla(lista) {
             <td>${a.nivel}</td>
             <td>${a.equipo}</td>
             <td>${formatearPlanes(a)}</td>
-            <td>${formatFecha(a.fecha_vencimiento)}</td>
-            <td><button class="btn-edit" onclick="editarAlumno(${a.id})">Editar</button></td>
+            <td>${formatearFecha(a.fecha_vencimiento)}</td>
+            <td><button class="btn-edit" onclick="editar(${a.id})">Editar</button></td>
         `;
 
-        tablaBody.appendChild(tr);
+        tbody.appendChild(tr);
     });
 }
 
-function editarAlumno(id) {
+function editar(id) {
     window.location.href = `form-alumno.html?editar=${id}`;
 }

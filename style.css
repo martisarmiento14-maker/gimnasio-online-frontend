@@ -1167,3 +1167,30 @@ select:hover {
 .btn-agregar:active {
     transform: scale(0.98);
 }
+.buscador-contenedor {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+}
+
+#buscador {
+    width: 300px;
+    max-width: 70%;
+}
+
+.btn-sesion {
+    background: white;
+    color: black;
+    padding: 12px 26px;
+    border-radius: 20px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-sesion:hover {
+    transform: scale(1.05);
+}
