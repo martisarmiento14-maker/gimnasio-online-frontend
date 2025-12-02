@@ -1,7 +1,7 @@
 console.log("ADMIN JS VERSION FINAL DEFINITIVO");
 
 // URL DEL BACKEND
-const API = "https://gimnasio-online.onrender.com";
+const API = "https://gimnasio-online.onrender-1.com";
 
 // Cargar la tabla al iniciar
 document.addEventListener("DOMContentLoaded", cargarTablaAdmin);
