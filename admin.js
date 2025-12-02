@@ -103,11 +103,9 @@ function ordenarLista() {
     };
 
     alumnos.sort((a, b) => {
-        // activos primero
         if (Boolean(a.activo) !== Boolean(b.activo)) {
             return (b.activo ? 1 : 0) - (a.activo ? 1 : 0);
         }
-        // luego por estado
         return (ordenEstado[a.estadoClave] || 99) - (ordenEstado[b.estadoClave] || 99);
     });
 }
@@ -176,7 +174,10 @@ function filtrar() {
 
         const coincideEquipo =
             equipoSel === "todos" ||
-            (a.equipo && a.equipo === equipoSel);
+            a.equipo === equipoSel;
+        if (!al.equipo) al.equipo = "morado";
+
+
 
         return coincideTexto && coincideEstado && coincideActivo && coincideEquipo;
     });
@@ -236,6 +237,12 @@ function renderTabla(lista) {
                 <button class="btn-delete" onclick="eliminarAlumno(${al.id})">
                     X
                 </button>
+
+                ${!al.activo ? `
+                    <button class="btn-delete-force" onclick="eliminarForzado(${al.id})">
+                        FORZAR
+                    </button>
+                ` : ""}
             </td>
         </tr>`;
     });
@@ -249,7 +256,6 @@ function renderTabla(lista) {
 // FUNCIONES DEL SISTEMA
 // ==============================
 function enviarWs(tel, msg) {
-    // tel debe ser sin 0 y sin 15, vos ya manejás ese formato
     window.open(`https://wa.me/549${tel}?text=${msg}`, "_blank");
 }
 
@@ -282,9 +288,27 @@ async function eliminarAlumno(id) {
 }
 
 // ==============================
+// BORRADO FORZADO
+// ==============================
+async function eliminarForzado(id) {
+    const confirmar = confirm(
+        "⚠ ATENCIÓN:\nEsto borrará también TODAS las asistencias del alumno.\n\n¿Seguro que querés continuar?"
+    );
+
+    if (!confirmar) return;
+
+    await fetch(`${API_URL}/admin/forzar/${id}`, {
+        method: "DELETE"
+    });
+
+    cargarCuotas();
+}
+
+// ==============================
 // REGISTRAR FUNCIONES EN WINDOW
 // ==============================
 window.cambiarEquipo = cambiarEquipo;
 window.toggleActivo = toggleActivo;
 window.eliminarAlumno = eliminarAlumno;
 window.enviarWs = enviarWs;
+window.eliminarForzado = eliminarForzado;
