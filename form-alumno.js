@@ -1,4 +1,5 @@
-const API_URL = "https://gimnasio-online.onrender.com"; // Ajustalo si tu backend cambia
+const API_URL = "https://gimnasio-online-1.onrender.com";
+ // Ajustalo si tu backend cambia
 
 const nombreInput = document.getElementById("nombre");
 const apellidoInput = document.getElementById("apellido");

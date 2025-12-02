@@ -3,6 +3,7 @@
 // ===============================
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
+
 const dniInput = document.getElementById("dniInput");
 const infoMensaje = document.getElementById("infoMensaje");
 const asistenciaCard = document.getElementById("asistenciaCard");

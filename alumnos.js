@@ -1,4 +1,4 @@
-const API_URL = "https://gimnasio-online.onrender.com";
+const API_URL = "https://gimnasio-online-1.onrender.com";
 
 const tablaBody = document.getElementById("tablaAlumnosBody");
 const buscador = document.getElementById("buscador");
