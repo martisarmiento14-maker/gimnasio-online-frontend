@@ -2,6 +2,8 @@
 // CONFIG
 // ==============================
 const API_URL = "https://gimnasio-online-1.onrender.com";
+console.log("ADMIN JS VERSION NUEVA 2025");
+
 
 document.addEventListener("DOMContentLoaded", cargarCuotas);
 
