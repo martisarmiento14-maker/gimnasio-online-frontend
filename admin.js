@@ -175,7 +175,7 @@ function filtrar() {
         const coincideEquipo =
             equipoSel === "todos" ||
             a.equipo === equipoSel;
-        if (!al.equipo) al.equipo = "morado";
+        if (!a.equipo) a.equipo = "morado";
 
 
 
