@@ -13,7 +13,7 @@
 
     <div class="topbar">
         <h2 id="tituloForm">Nuevo Alumno</h2>
-        <button id="logoutBtn">Cerrar Sesión</button>
+        <button id="logoutBtn" onclick="window.location.href='index.html'">Cerrar Sesión</button>
     </div>
 
     <div class="form-container">
@@ -22,17 +22,21 @@
 
         <form id="formAlumno">
 
+            <!-- FILA 1 -->
             <div class="form-row">
                 <input type="text" id="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" placeholder="Apellido" required>
             </div>
 
+            <!-- FILA 2 -->
             <div class="form-row">
                 <input type="number" id="dni" placeholder="DNI" required>
                 <input type="text" id="celular" placeholder="Celular" required>
             </div>
 
+            <!-- FILA 3 -->
             <div class="form-row">
+
                 <select id="nivel" required>
                     <option disabled selected value="">Nivel</option>
                     <option value="principiante">Principiante</option>
@@ -53,27 +57,29 @@
 
             <h3 class="subtitulo" style="color:white;">Planes</h3>
 
+            <!-- PLANES -->
             <div class="planes-box">
                 <label><input type="checkbox" id="plan_eg"> Plan EG</label>
                 <label><input type="checkbox" id="plan_personalizado"> Personalizado</label>
-                <label><input type="checkbox" id="plan_running"> Running</label>
+                <label><input type="checkbox" id="plan_running"> Running (2 días)</label>
             </div>
 
-            <div class="form-row" id="diasEgPersContainer" style="display:none;">
+            <!-- DÍAS EG O PERSONALIZADO -->
+            <div class="form-row" id="diasEgPersContainer" style="display:flex;">
                 <div style="flex:1;">
-                    <label style="color:white; font-size:14px;">Días EG o Personalizado</label>
+                    <label style="color:white; font-size:14px;">Días del plan EG/Personalizado</label>
                     <select id="dias_eg_pers">
-                        <option value="3">3 días</option>
-                        <option value="5">5 días</option>
+                        <!-- dinámico desde JS -->
                     </select>
                 </div>
             </div>
 
+            <!-- DÍAS TOTALES -->
             <div class="form-row">
                 <div style="flex:1;">
-                    <label style="color:white; font-size:14px;">Días por semana totales</label>
+                    <label style="color:white; font-size:14px;">Días totales por semana</label>
                     <select id="dias_semana" required>
-                        <option value="">Elegí un plan primero</option>
+                        <!-- dinámico desde JS -->
                     </select>
                 </div>
             </div>
