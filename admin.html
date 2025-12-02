@@ -4,95 +4,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administración</title>
-
-    <style>
-        body {
-            background-color: #0d0b14;
-            font-family: Arial, sans-serif;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: #b369ff;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 {
-            margin: 0;
-        }
-
-        .logout-btn {
-            padding: 10px 20px;
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            color: white;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background: #b369ff;
-        }
-
-        tr:nth-child(even) {
-            background: #1a1724;
-        }
-
-        select, button {
-            padding: 6px;
-            border-radius: 6px;
-        }
-
-        .delete-btn {
-            cursor: pointer;
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
+<body class="dashboard-body">
 
-<header>
-    <h1>Administración</h1>
-    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
-</header>
+    <div class="topbar">
+        <h2>Administración de Alumnos</h2>
+        <button class="btn-sesion" onclick="window.location.href='dashboard.html'">Volver</button>
+    </div>
 
-<a href="dashboard.html" style="color:white; margin-left:30px;">← Volver</a>
+    <div class="tabla-container">
 
-<h2 style="margin-left:30px;">Estado general de cuotas</h2>
+        <!-- BUSCADOR -->
+        <div class="buscador-contenedor">
+            <input id="buscador" class="input-search" type="text" placeholder="Buscar alumno..." />
+        </div>
 
-<table id="tablaAdmin">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Equipo</th>
-            <th>Estado</th>
-            <th>Borrar</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+        <!-- FILTROS -->
+        <div class="panel-controles">
+            <select id="filtroEquipo" class="input-filter">
+                <option value="todos">Todos</option>
+                <option value="morado">Morado</option>
+                <option value="blanco">Blanco</option>
+            </select>
 
-<script src="admin.js"></script>
+            <select id="filtroEstado" class="input-filter">
+                <option value="todos">Estados</option>
+                <option value="vencido">Vencidos</option>
+                <option value="por-vencer">Por vencer</option>
+                <option value="al-dia">Al día</option>
+                <option value="inactivo">Inactivos</option>
+            </select>
+        </div>
 
+        <!-- TABLA -->
+        <table id="listaAdmin" class="tabla-alumnos">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Teléfono</th>
+                    <th>Nivel</th>
+                    <th>Equipo</th>
+                    <th>Vence</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyAdmin"></tbody>
+        </table>
+
+    </div>
+
+    <script src="admin.js"></script>
 </body>
 </html>
+
