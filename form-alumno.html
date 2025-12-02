@@ -6,14 +6,11 @@
     <title>Alumno - EG Gimnasio</title>
 
     <link rel="stylesheet" href="style.css">
-
-    <!-- Fuente (igual que en alumnos.html) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body class="dashboard-body">
 
-    <!-- Topbar -->
     <div class="topbar">
         <h2 id="tituloForm">Nuevo Alumno</h2>
         <button id="logoutBtn">Cerrar Sesión</button>
@@ -21,24 +18,20 @@
 
     <div class="form-container">
 
-        <!-- BOTÓN VOLVER -->
         <button class="btn-volver" onclick="window.location.href='alumnos.html'">← Volver</button>
 
         <form id="formAlumno">
 
-            <!-- Nombre + Apellido -->
             <div class="form-row">
                 <input type="text" id="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" placeholder="Apellido" required>
             </div>
 
-            <!-- DNI + Celular -->
             <div class="form-row">
                 <input type="number" id="dni" placeholder="DNI" required>
                 <input type="text" id="celular" placeholder="Celular" required>
             </div>
 
-            <!-- Nivel + Vencimiento + Botón renovar -->
             <div class="form-row">
                 <select id="nivel" required>
                     <option disabled selected value="">Nivel</option>
@@ -52,12 +45,12 @@
                     <input type="date" id="fecha_vencimiento" required>
                 </div>
 
+                <!-- ID CORRECTO -->
                 <button id="btnRenovar" class="btn-guardar" type="button">
                     Renovar +1 mes
                 </button>
             </div>
 
-            <!-- PLANES -->
             <h3 class="subtitulo" style="color:white;">Planes</h3>
 
             <div class="planes-box">
@@ -66,9 +59,8 @@
                 <label><input type="checkbox" id="plan_running"> Running</label>
             </div>
 
-            <!-- Select de 3/5 días (solo para EG o personalizado) -->
             <div class="form-row" id="diasEgPersContainer" style="display:none;">
-                <div style="flex:1; display:flex; flex-direction:column;">
+                <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días EG o Personalizado</label>
                     <select id="dias_eg_pers">
                         <option value="3">3 días</option>
@@ -77,18 +69,15 @@
                 </div>
             </div>
 
-            <!-- DÍAS POR SEMANA (total final) -->
             <div class="form-row">
-                <div style="flex:1; display:flex; flex-direction:column;">
+                <div style="flex:1;">
                     <label style="color:white; font-size:14px;">Días por semana totales</label>
                     <select id="dias_semana" required>
                         <option value="">Elegí un plan primero</option>
                     </select>
-                    <small id="ayudaDias" style="color:#d3c0ff; font-size:13px;"></small>
                 </div>
             </div>
 
-            <!-- BOTÓN GUARDAR -->
             <button type="submit" class="btn-guardar">Guardar</button>
 
         </form>
@@ -96,7 +85,5 @@
     </div>
 
     <script src="form-alumno.js"></script>
-    <script src="dashboard.js"></script>
-
 </body>
 </html>
