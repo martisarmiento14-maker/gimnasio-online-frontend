@@ -1,20 +1,11 @@
-const API_URL = "https://gimnasio-online-backend.onrender.com";
+const API_URL = "https://gimnasio-online.onrender.com"; // Ajustalo si tu backend cambia
 
-// ===============================
-// Obtener parámetros (crear/editar)
-// ===============================
-const params = new URLSearchParams(window.location.search);
-const alumnoId = params.get("id"); // null = crear, número = editar
-
-// Elementos del formulario
-const form = document.getElementById("formAlumno");
-
-const nombre = document.getElementById("nombre");
-const apellido = document.getElementById("apellido");
-const dni = document.getElementById("dni");
-const celular = document.getElementById("celular");
-const nivel = document.getElementById("nivel");
-const fechaVenc = document.getElementById("fecha_vencimiento");
+const nombreInput = document.getElementById("nombre");
+const apellidoInput = document.getElementById("apellido");
+const dniInput = document.getElementById("dni");
+const celularInput = document.getElementById("celular");
+const nivelInput = document.getElementById("nivel");
+const vencInput = document.getElementById("fecha_vencimiento");
 
 const planEG = document.getElementById("plan_eg");
 const planPers = document.getElementById("plan_personalizado");
@@ -23,205 +14,204 @@ const planRun = document.getElementById("plan_running");
 const diasEgPersContainer = document.getElementById("diasEgPersContainer");
 const diasEgPers = document.getElementById("dias_eg_pers");
 
-const diasSemana = document.getElementById("dias_semana");
+const diasSemanaSelect = document.getElementById("dias_semana");
 const ayudaDias = document.getElementById("ayudaDias");
 
 const btnRenovar = document.getElementById("btnRenovar");
+const tituloForm = document.getElementById("tituloForm");
 
-// ===============================
-// Cargar datos si es edición
-// ===============================
-if (alumnoId) {
-    cargarAlumno();
-    btnRenovar.style.display = "inline-block";
-    document.getElementById("tituloForm").textContent = "Editar Alumno";
-} else {
-    btnRenovar.style.display = "none";
-    document.getElementById("tituloForm").textContent = "Nuevo Alumno";
+let modoEditar = false;
+let alumnoID = null;
+
+/* ─────────────────────────────────────────────── */
+/* 🔹 VER SI ESTAMOS EDITANDO O CREANDO NUEVO      */
+/* ─────────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", async () => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has("editar")) {
+        modoEditar = true;
+        alumnoID = params.get("editar");
+
+        tituloForm.textContent = "Editar Alumno";
+        cargarAlumno(alumnoID);
+    } else {
+        tituloForm.textContent = "Nuevo Alumno";
+        hoyComoVencimiento();
+    }
+});
+
+/* ─────────────────────────────────────────────── */
+/* 🔹 FECHA DE VENCIMIENTO POR DEFECTO             */
+/* ─────────────────────────────────────────────── */
+function hoyComoVencimiento() {
+    const hoy = new Date().toISOString().split("T")[0];
+    vencInput.value = hoy;
 }
 
-
-
-// ===============================
-// CARGAR ALUMNO
-// ===============================
-async function cargarAlumno() {
+/* ─────────────────────────────────────────────── */
+/* 🔹 CARGAR DATOS DEL ALUMNO (EDITAR)             */
+/* ─────────────────────────────────────────────── */
+async function cargarAlumno(id) {
     try {
-        const res = await fetch(`${API_URL}/alumnos/${alumnoId}`);
+        const res = await fetch(`${API_URL}/alumnos/${id}`);
         const data = await res.json();
 
-        nombre.value = data.nombre;
-        apellido.value = data.apellido;
-        dni.value = data.dni;
-        celular.value = data.telefono;
-        nivel.value = data.nivel;
-        fechaVenc.value = data.fecha_vencimiento ? data.fecha_vencimiento.split("T")[0] : "";
+        nombreInput.value = data.nombre;
+        apellidoInput.value = data.apellido;
+        dniInput.value = data.dni;
+        celularInput.value = data.celular;
+        nivelInput.value = data.nivel;
+        vencInput.value = data.fecha_vencimiento;
 
-        // Planes
         planEG.checked = data.plan_eg;
         planPers.checked = data.plan_personalizado;
         planRun.checked = data.plan_running;
 
-        // Mostrar select EG/Pers si corresponde
         if (data.plan_eg || data.plan_personalizado) {
             diasEgPersContainer.style.display = "flex";
-            diasEgPers.value = data.dias_eg_pers || "3";
+            diasEgPers.value = data.dias_eg_pers;
         }
 
-        // Días totales
-        diasSemana.innerHTML = `<option value="${data.dias_semana}" selected>${data.dias_semana} días</option>`;
-        ayudaDias.textContent = "Se calculó según los planes del alumno.";
+        actualizarDiasSemana();
 
     } catch (error) {
-        alert("Error cargando alumno.");
-        console.error(error);
+        alert("Error cargando alumno");
+        console.log(error);
     }
 }
 
+/* ─────────────────────────────────────────────── */
+/* 🔹 BOTÓN RENOVAR FECHA                          */
+/* ─────────────────────────────────────────────── */
+btnRenovar.addEventListener("click", () => {
+    let fecha = new Date(vencInput.value);
+    fecha.setMonth(fecha.getMonth() + 1);
 
-// ===============================
-// VALIDAR PLANES
-// ===============================
-function validarPlanes() {
-    // EG + Personalizado → no permitido
-    if (planEG.checked && planPers.checked) {
-        alert("No se puede activar Plan EG y Personalizado al mismo tiempo.");
-        planPers.checked = false;
+    vencInput.value = fecha.toISOString().split("T")[0];
+});
+
+/* ─────────────────────────────────────────────── */
+/* 🔹 LÓGICA DE PLANES Y DÍAS POR SEMANA           */
+/* ─────────────────────────────────────────────── */
+const actualizarDiasSemana = () => {
+    diasSemanaSelect.innerHTML = "";
+
+    let totalDias = 0;
+    let texto = "";
+
+    // RUNNING — SIEMPRE SUMA 2
+    if (planRun.checked) {
+        totalDias += 2;
+        texto += "Running suma 2 días. ";
     }
 
-    // Mostrar select de días EG/Pers si corresponde
+    // EG y PERSONALIZADO no pueden estar juntos
+    if (planEG.checked && planPers.checked) {
+        alert("No podés elegir EG y Personalizado juntos.");
+        planPers.checked = false;
+        return actualizarDiasSemana();
+    }
+
+    // EG o PERSONALIZADO
     if (planEG.checked || planPers.checked) {
         diasEgPersContainer.style.display = "flex";
+        totalDias += parseInt(diasEgPers.value);
+        texto += `+ ${diasEgPers.value} días del plan principal. `;
     } else {
         diasEgPersContainer.style.display = "none";
     }
 
-    calcularDias();
-}
-
-planEG.addEventListener("change", validarPlanes);
-planPers.addEventListener("change", validarPlanes);
-planRun.addEventListener("change", calcularDias);
-diasEgPers.addEventListener("change", calcularDias);
-
-
-// ===============================
-// CALCULAR DÍAS TOTALES
-// ===============================
-function calcularDias() {
-    let total = 0;
-
-    // EG o Personalizado
-    if (planEG.checked || planPers.checked) {
-        total += parseInt(diasEgPers.value);
-    }
-
-    // Running suma 2 siempre
-    if (planRun.checked) {
-        total += 2;
-    }
-
-    if (total === 0) {
-        diasSemana.innerHTML = `<option value="">Elegí un plan primero</option>`;
+    if (totalDias === 0) {
+        diasSemanaSelect.innerHTML = `<option value="">Elegí un plan primero</option>`;
         ayudaDias.textContent = "";
         return;
     }
 
-    diasSemana.innerHTML = `<option value="${total}" selected>${total} días</option>`;
-    ayudaDias.textContent = "Se calcula automáticamente según los planes.";
+    diasSemanaSelect.innerHTML = `<option value="${totalDias}">${totalDias} días por semana</option>`;
+    ayudaDias.textContent = texto;
+};
+
+// Eventos
+planEG.addEventListener("change", actualizarDiasSemana);
+planPers.addEventListener("change", actualizarDiasSemana);
+planRun.addEventListener("change", actualizarDiasSemana);
+diasEgPers.addEventListener("change", actualizarDiasSemana);
+
+/* ─────────────────────────────────────────────── */
+/* 🔹 ASIGNACIÓN AUTOMÁTICA DE EQUIPO              */
+/* ─────────────────────────────────────────────── */
+async function asignarEquipo() {
+    try {
+        const res = await fetch(`${API_URL}/alumnos`);
+        const alumnos = await res.json();
+
+        let blancos = alumnos.filter(a => a.equipo === "blanco").length;
+        let morados = alumnos.filter(a => a.equipo === "morado").length;
+
+        return blancos <= morados ? "blanco" : "morado";
+
+    } catch (error) {
+        console.log("Error asignando equipo:", error);
+        return "blanco";
+    }
 }
 
-
-// ===============================
-// RENOVAR CUOTA (+1 mes)
-// ===============================
-btnRenovar.addEventListener("click", async () => {
-    try {
-        const res = await fetch(`${API_URL}/alumnos/${alumnoId}/renovar`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" }
-        });
-
-        const data = await res.json();
-
-        fechaVenc.value = data.fecha_vencimiento.split("T")[0];
-        alert("Cuota renovada correctamente");
-
-    } catch (err) {
-        console.error(err);
-        alert("Error renovando cuota");
-    }
-});
-
-
-// ===============================
-// GUARDAR (crear o editar)
-// ===============================
-form.addEventListener("submit", async (e) => {
+/* ─────────────────────────────────────────────── */
+/* 🔹 ENVIAR FORMULARIO                            */
+/* ─────────────────────────────────────────────── */
+document.getElementById("formAlumno").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const alumnoData = {
-        nombre: nombre.value,
-        apellido: apellido.value,
-        dni: dni.value,
-        telefono: celular.value,
-        nivel: nivel.value,
-        fecha_vencimiento: fechaVenc.value,
+    const dias_totales = parseInt(diasSemanaSelect.value);
+
+    if (!dias_totales) {
+        return alert("Elegí un plan para calcular los días por semana.");
+    }
+
+    const datos = {
+        nombre: nombreInput.value,
+        apellido: apellidoInput.value,
+        dni: dniInput.value,
+        celular: celularInput.value,
+        nivel: nivelInput.value,
+        fecha_vencimiento: vencInput.value,
 
         plan_eg: planEG.checked,
         plan_personalizado: planPers.checked,
         plan_running: planRun.checked,
 
-        dias_eg_pers: planEG.checked || planPers.checked ? parseInt(diasEgPers.value) : 0,
-        dias_semana: diasSemana.value ? parseInt(diasSemana.value) : 0
+        dias_eg_pers: planEG.checked || planPers.checked ? diasEgPers.value : null,
+        dias_semana: dias_totales
     };
-        // ===========================
-    // ASIGNAR EQUIPO AUTOMÁTICO
-    // ===========================
-    try {
-        const resEquip = await fetch(`${API_URL}/alumnos`);
-        const lista = await resEquip.json();
 
-        const morados = lista.filter(a => a.equipo === "morado").length;
-        const blancos = lista.filter(a => a.equipo === "blanco").length;
-
-        // Si estoy editando, no cambiar equipo
-        if (!alumnoId) {
-            alumnoData.equipo = morados <= blancos ? "morado" : "blanco";
-        }
-
-    } catch (err) {
-        console.error("Error asignando equipo:", err);
-        alumnoData.equipo = "blanco"; // fallback por si falla
+    // Crear → asignar equipo
+    if (!modoEditar) {
+        datos.equipo = await asignarEquipo();
     }
-
 
     try {
         let url = `${API_URL}/alumnos`;
-        let method = "POST";
+        let metodo = "POST";
 
-        if (alumnoId) {
-            url = `${API_URL}/alumnos/${alumnoId}`;
-            method = "PUT";
+        if (modoEditar) {
+            url = `${API_URL}/alumnos/${alumnoID}`;
+            metodo = "PUT";
         }
 
         const res = await fetch(url, {
-            method,
+            method: metodo,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(alumnoData)
+            body: JSON.stringify(datos)
         });
 
-        if (!res.ok) {
-            const err = await res.json();
-            alert(err.error || "Error guardando alumno");
-            return;
-        }
+        if (!res.ok) throw new Error("Error guardando alumno");
 
-        alert("Alumno guardado correctamente");
+        alert("Alumno guardado con éxito ✔");
         window.location.href = "alumnos.html";
 
-    } catch (err) {
-        alert("Error guardando alumno");
-        console.error(err);
+    } catch (error) {
+        alert("Error guardando el alumno.");
+        console.log(error);
     }
 });

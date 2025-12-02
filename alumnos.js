@@ -1,94 +1,89 @@
-const API_URL = "https://gimnasio-online-backend.onrender.com";
+const API_URL = "https://gimnasio-online.onrender.com";
 
-// Elementos del DOM
-const listaAlumnos = document.getElementById("listaAlumnos");
+const tablaBody = document.getElementById("tablaAlumnosBody");
 const buscador = document.getElementById("buscador");
 
-// ===============================
-//   CARGAR TODOS LOS ALUMNOS
-// ===============================
+// Cargar listado inicial
+document.addEventListener("DOMContentLoaded", cargarAlumnos);
+
+// Buscar por nombre o DNI
+buscador.addEventListener("input", cargarAlumnos);
+
+/* ─────────────────────────────── */
+/* 🔹 Formatear planes (como tu foto) */
+/* ─────────────────────────────── */
+function formatearPlanes(a) {
+    let planes = [];
+
+    if (a.plan_eg) planes.push(`Plan EG (${a.dias_eg_pers} días/sem)`);
+    if (a.plan_personalizado) planes.push(`Personalizado (${a.dias_eg_pers} días/sem)`);
+    if (a.plan_running) planes.push(`Running (2 días/sem)`);
+
+    return planes.join(" + ");
+}
+
+/* ─────────────────────────────── */
+/* 🔹 Formato fecha DD/MM/YYYY */
+/* ─────────────────────────────── */
+function formatFecha(f) {
+    return new Date(f).toLocaleDateString("es-AR");
+}
+
+/* ─────────────────────────────── */
+/* 🔹 Cargar alumnos */
+/* ─────────────────────────────── */
 async function cargarAlumnos() {
     try {
         const res = await fetch(`${API_URL}/alumnos`);
-        const alumnos = await res.json();
+        const data = await res.json();
 
-        mostrarAlumnos(alumnos);
+        let txt = buscador.value.toLowerCase();
 
-        // Activar búsqueda dinámica
-        buscador.addEventListener("input", () => {
-            const texto = buscador.value.toLowerCase();
-            const filtrados = alumnos.filter(a =>
-                a.nombre.toLowerCase().includes(texto) ||
-                a.apellido.toLowerCase().includes(texto) ||
-                a.dni.toString().includes(texto)
-            );
-            mostrarAlumnos(filtrados);
-        });
+        let filtrados = data.filter(a =>
+            a.nombre.toLowerCase().includes(txt) ||
+            a.apellido.toLowerCase().includes(txt) ||
+            String(a.dni).includes(txt)
+        );
+
+        mostrarTabla(filtrados);
 
     } catch (error) {
-        console.error("ERROR CARGANDO ALUMNOS:", error);
-        listaAlumnos.innerHTML = "<p>Error al cargar alumnos.</p>";
+        console.log("Error cargando alumnos:", error);
     }
 }
 
-cargarAlumnos();
+/* ─────────────────────────────── */
+/* 🔹 Mostrar tabla */
+/* ─────────────────────────────── */
+function mostrarTabla(lista) {
+    tablaBody.innerHTML = "";
 
+    lista.forEach(a => {
+        const tr = document.createElement("tr");
+        
+        const color = a.equipo === "morado" ? "#e5ccff" : "#ffffff";
 
-// ===============================
-//   MOSTRAR LISTA DE ALUMNOS
-// ===============================
-function mostrarAlumnos(alumnos) {
-    listaAlumnos.innerHTML = "";
+        tr.innerHTML = `
+            <td style="background:${color}">${a.nombre}<br>${a.apellido}</td>
+            <td style="background:${color}">${a.dni}</td>
+            <td style="background:${color}">${a.nivel}</td>
+            <td style="background:${color}">${a.equipo}</td>
+            <td style="background:${color}">${formatearPlanes(a)}</td>
+            <td style="background:${color}">${formatFecha(a.fecha_vencimiento)}</td>
 
-    if (alumnos.length === 0) {
-        listaAlumnos.innerHTML = "<p>No hay alumnos para mostrar.</p>";
-        return;
-    }
-
-    alumnos.forEach(alumno => {
-        const div = document.createElement("div");
-        div.classList.add("alumno-card");
-
-        div.innerHTML = `
-            <h3>${alumno.nombre} ${alumno.apellido}</h3>
-
-            <p><strong>DNI:</strong> ${alumno.dni}</p>
-            <p><strong>Celular:</strong> ${alumno.telefono || "-"}</p>
-            <p><strong>Nivel:</strong> ${alumno.nivel || "-"}</p>
-
-            <p><strong>Planes:</strong>
-                ${alumno.plan_eg ? "EG " : ""}
-                ${alumno.plan_personalizado ? "Personalizado " : ""}
-                ${alumno.plan_running ? "Running" : ""}
-            </p>
-
-            <p><strong>Días por semana:</strong> ${alumno.dias_semana}</p>
-
-            <p><strong>Vence:</strong> ${
-                alumno.fecha_vencimiento
-                    ? alumno.fecha_vencimiento.split("T")[0]
-                    : "Sin fecha"
-            }</p>
-
-            <div class="acciones">
-                <button class="btn-editar" onclick="editarAlumno(${alumno.id})">
-                    Editar
-                </button>
-
-                <a class="btn-wsp" href="https://wa.me/${alumno.telefono}" target="_blank">
-                    WhatsApp
-                </a>
-            </div>
+            <td style="background:${color}">
+                <button class="btn-editar" onclick="editarAlumno(${a.id})">Editar</button>
+            </td>
         `;
 
-        listaAlumnos.appendChild(div);
+        tablaBody.appendChild(tr);
     });
 }
 
-
-// ===============================
-//   IR A EDITAR
-// ===============================
+/* ─────────────────────────────── */
+/* 🔹 Ir a editar */
+/* ─────────────────────────────── */
 function editarAlumno(id) {
-    window.location.href = `form-alumno.html?id=${id}`;
+    window.location.href = `form-alumno.html?editar=${id}`;
 }
+

@@ -1,57 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editar Alumno</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumnos - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-    <header>
-        <h2>Editar Alumno</h2>
-        <button onclick="window.location.href='dashboard.html'">Volver</button>
-    </header>
+<body class="dashboard-body">
 
-    <main class="container">
-        <div class="form-card">
-            <h3>Datos del alumno</h3>
+    <div class="topbar">
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+        <h2>Alumnos</h2>
+        <button class="btn-agregar" onclick="window.location.href='form-alumno.html'">+ Agregar Alumno</button>
+    </div>
 
-            <label>DNI</label>
-            <input type="text" id="dniBuscar" placeholder="Ingresar DNI y presionar ENTER">
+    <div class="search-container">
+        <input type="text" id="buscador" placeholder="Buscar por nombre o DNI...">
+    </div>
 
-            <hr>
+    <div class="tabla-container">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Nivel</th>
+                    <th>Equipo</th>
+                    <th>Planes</th>
+                    <th>Fecha<br>Vencimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
 
-            <label>Nombre</label>
-            <input type="text" id="nombre">
-
-            <label>Apellido</label>
-            <input type="text" id="apellido">
-
-            <label>Teléfono</label>
-            <input type="text" id="telefono">
-
-            <label>Nivel</label>
-            <input type="text" id="nivel">
-
-            <label>Días por semana</label>
-            <input type="number" id="dias_semana" min="0">
-
-            <label>Plan EG</label>
-            <input type="checkbox" id="plan_eg">
-
-            <label>Plan Personalizado</label>
-            <input type="checkbox" id="plan_personalizado">
-
-            <label>Plan Running</label>
-            <input type="checkbox" id="plan_running">
-
-            <label>Fecha de vencimiento</label>
-            <input type="date" id="fecha_vencimiento">
-
-            <button id="guardarBtn">Guardar Cambios</button>
-        </div>
-    </main>
+            <tbody id="tablaAlumnosBody"></tbody>
+        </table>
+    </div>
 
     <script src="alumnos.js"></script>
 </body>
