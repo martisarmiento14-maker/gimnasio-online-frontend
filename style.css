@@ -442,29 +442,6 @@ DASHBOARD
 
 /* ======== TABLA ======== */
 
-.tabla-alumnos {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-/* Cabecera */
-.tabla-alumnos thead {
-    background-color: #c27bff;
-    color: black;
-}
-
-/* Celdas */
-.tabla-alumnos th
-{
-    padding: 14px 16px;
-    font-size: 16px;
-    color: white !important;   /* 🔥 TEXTO BLANCO EN TODO */
-    text-shadow: 0 0 2px rgba(0,0,0,0.4);
-}
-
 /* ======== COLORES NUEVOS ======== */
 
 /* Rojo brillante para vencidos */
@@ -1130,22 +1107,46 @@ select:hover {
     background: #1a1125; /* morado oscuro */
 }
 
-/* Filas alternadas */
-.tabla-alumnos tbody tr:nth-child(odd) {
-    background: #2a1b38;   /* tono más claro */
-}
 
-.tabla-alumnos tbody tr:nth-child(even) {
-    background: #3b2550;   /* otro tono */
-}
 
 /* Texto más fuerte */
 .tabla-alumnos td {
     font-weight: 600;
 }
+/* ======== TABLA ESTILO VIOLETA ======== */
 
-/* Hover suave */
+.tabla-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a1125; /* fondo oscuro morado */
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* encabezado */
+.tabla-alumnos thead {
+    background-color: #c27bff; /* violeta */
+    color: black;
+}
+
+/* celdas */
+.tabla-alumnos th,
+.tabla-alumnos td {
+    padding: 14px 16px;
+    font-size: 16px;
+    color: white;
+}
+
+/* filas alternadas moradas */
+.tabla-alumnos tbody tr:nth-child(odd) {
+    background: #2a1b38;
+}
+
+.tabla-alumnos tbody tr:nth-child(even) {
+    background: #3b2550;
+}
+
+/* hover suave */
 .tabla-alumnos tbody tr:hover {
     background: rgba(255, 255, 255, 0.06);
-    transform: none; /* si querés desactivar el efecto agrandar */
 }
