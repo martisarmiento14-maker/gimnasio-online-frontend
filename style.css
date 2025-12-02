@@ -1145,3 +1145,25 @@ select:hover {
 .tabla-alumnos tbody tr:hover {
     background: rgba(255, 255, 255, 0.06);
 }
+
+.btn-agregar {
+    background-color: #e6c3ff;
+    color: #000;
+    font-weight: 600;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.btn-agregar:hover {
+    background-color: #d9aaff;
+    transform: scale(1.03);
+}
+
+.btn-agregar:active {
+    transform: scale(0.98);
+}
