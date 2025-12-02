@@ -1,4 +1,5 @@
-const API_URL = "https://gimnasio-online-frontend.onrender.com" || "http://localhost:3000";
+const API_URL = "https://gimnasio-online-1.onrender.com";
+
 
 const tablaBody = document.getElementById("tablaAlumnosBody");
 const buscador = document.getElementById("buscador");
