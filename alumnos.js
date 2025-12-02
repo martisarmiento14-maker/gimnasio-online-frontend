@@ -6,11 +6,14 @@ document.getElementById("buscador").addEventListener("input", cargarAlumnos);
 async function cargarAlumnos() {
     try {
         const res = await fetch(`${API_URL}/alumnos`);
-        const alumnos = await res.json();
+        const todos = await res.json();
+
+        // solo alumnos activos
+        const soloActivos = todos.filter(a => a.activo);
 
         const txt = document.getElementById("buscador").value.toLowerCase();
 
-        const filtrados = alumnos.filter(a =>
+        const filtrados = soloActivos.filter(a =>
             a.nombre.toLowerCase().includes(txt) ||
             a.apellido.toLowerCase().includes(txt) ||
             String(a.dni).includes(txt)
@@ -22,6 +25,7 @@ async function cargarAlumnos() {
         console.log("Error cargando alumnos:", error);
     }
 }
+
 
 function formatearFecha(f) {
     if (!f) return "-";

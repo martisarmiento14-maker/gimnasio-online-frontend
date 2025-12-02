@@ -32,7 +32,7 @@ async function cargarCuotas() {
 
         procesarEstados();
         ordenarLista();
-        renderTabla(alumnos);
+        filtrar();   // aplica filtros actuales y dibuja tabla
 
     } catch (error) {
         console.error(error);
@@ -91,7 +91,7 @@ function procesarEstados() {
 
 // ==============================
 // ORDEN: activos arriba, inactivos abajo
-// luego por estado: vencido → por vencer → al día → sin cuota
+// luego: vencido → por vencer → al día → sin cuota → inactivo
 // ==============================
 function ordenarLista() {
     const ordenEstado = {
@@ -103,7 +103,11 @@ function ordenarLista() {
     };
 
     alumnos.sort((a, b) => {
-        if (a.activo !== b.activo) return b.activo - a.activo;
+        // activos primero
+        if (Boolean(a.activo) !== Boolean(b.activo)) {
+            return (b.activo ? 1 : 0) - (a.activo ? 1 : 0);
+        }
+        // luego por estado
         return (ordenEstado[a.estadoClave] || 99) - (ordenEstado[b.estadoClave] || 99);
     });
 }
@@ -115,19 +119,36 @@ function crearControles() {
     const cont = document.getElementById("admin-controles");
 
     cont.innerHTML = `
-        <input id="buscar" class="input-search" placeholder="Buscar nombre o DNI">
+        <div class="admin-filtros">
+            <input id="buscar" class="input-search" placeholder="Buscar nombre o DNI">
 
-        <select id="filtroEstado" class="input-filter">
-            <option value="todos">Todos</option>
-            <option value="vencido">Vencidos</option>
-            <option value="por_vencer">Por vencer</option>
-            <option value="al_dia">Al día</option>
-            <option value="inactivo">Inactivos</option>
-        </select>
+            <select id="filtroEstado" class="input-filter">
+                <option value="todos">Estado: Todos</option>
+                <option value="vencido">Vencidos</option>
+                <option value="por_vencer">Por vencer</option>
+                <option value="al_dia">Al día</option>
+                <option value="sin_cuota">Sin cuota</option>
+                <option value="inactivo">Inactivos</option>
+            </select>
+
+            <select id="filtroActivo" class="input-filter">
+                <option value="todos">Activos + inactivos</option>
+                <option value="activos">Solo activos</option>
+                <option value="inactivos">Solo inactivos</option>
+            </select>
+
+            <select id="filtroEquipo" class="input-filter">
+                <option value="todos">Todos los equipos</option>
+                <option value="morado">Sólo morado</option>
+                <option value="blanco">Sólo blanco</option>
+            </select>
+        </div>
     `;
 
     document.getElementById("buscar").oninput = filtrar;
     document.getElementById("filtroEstado").onchange = filtrar;
+    document.getElementById("filtroActivo").onchange = filtrar;
+    document.getElementById("filtroEquipo").onchange = filtrar;
 }
 
 // ==============================
@@ -135,18 +156,29 @@ function crearControles() {
 // ==============================
 function filtrar() {
     const texto = document.getElementById("buscar").value.toLowerCase();
-    const estado = document.getElementById("filtroEstado").value;
+    const estadoSel = document.getElementById("filtroEstado").value;
+    const activoSel = document.getElementById("filtroActivo").value;
+    const equipoSel = document.getElementById("filtroEquipo").value;
 
     const filtrado = alumnos.filter(a => {
         const coincideTexto =
-            a.nombre.toLowerCase().includes(texto) ||
-            a.apellido.toLowerCase().includes(texto) ||
+            (a.nombre || "").toLowerCase().includes(texto) ||
+            (a.apellido || "").toLowerCase().includes(texto) ||
             String(a.dni || "").includes(texto);
 
         const coincideEstado =
-            estado === "todos" || a.estadoClave === estado;
+            estadoSel === "todos" || a.estadoClave === estadoSel;
 
-        return coincideTexto && coincideEstado;
+        const coincideActivo =
+            activoSel === "todos" ||
+            (activoSel === "activos" && a.activo) ||
+            (activoSel === "inactivos" && !a.activo);
+
+        const coincideEquipo =
+            equipoSel === "todos" ||
+            (a.equipo && a.equipo === equipoSel);
+
+        return coincideTexto && coincideEstado && coincideActivo && coincideEquipo;
     });
 
     renderTabla(filtrado);
@@ -197,7 +229,7 @@ function renderTabla(lista) {
             </td>
 
             <td>
-                <button class="btn-edit" onclick="toggleActivo(${al.id}, ${al.activo})">
+                <button class="btn-edit" onclick="toggleActivo(${al.id}, ${al.activo ? 1 : 0})">
                     ${al.activo ? "Desactivar" : "Activar"}
                 </button>
 
@@ -217,11 +249,14 @@ function renderTabla(lista) {
 // FUNCIONES DEL SISTEMA
 // ==============================
 function enviarWs(tel, msg) {
+    // tel debe ser sin 0 y sin 15, vos ya manejás ese formato
     window.open(`https://wa.me/549${tel}?text=${msg}`, "_blank");
 }
 
 async function cambiarEquipo(id, equipo) {
-    await fetch(`${API_URL}/alumnos/${id}/equipo`, {
+    if (!equipo) return;
+
+    await fetch(`${API_URL}/admin/equipo/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ equipo })
@@ -232,8 +267,8 @@ async function cambiarEquipo(id, equipo) {
 
 async function toggleActivo(id, actual) {
     const ruta = actual
-        ? `${API_URL}/alumnos/${id}/desactivar`
-        : `${API_URL}/alumnos/${id}/activar`;
+        ? `${API_URL}/admin/desactivar/${id}`
+        : `${API_URL}/admin/activar/${id}`;
 
     await fetch(ruta, { method: "PUT" });
     cargarCuotas();
@@ -245,4 +280,3 @@ async function eliminarAlumno(id) {
     await fetch(`${API_URL}/alumnos/${id}`, { method: "DELETE" });
     cargarCuotas();
 }
-
