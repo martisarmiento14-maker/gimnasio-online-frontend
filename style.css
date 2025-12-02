@@ -240,26 +240,9 @@ DASHBOARD
     max-width: 1400px;
 }
 
-.tabla-alumnos {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1a1125;
-    border-radius: 20px;
-    overflow: hidden;
-}
 
 .tabla-alumnos thead {
     background: #d6a6ff;
-}
-
-.tabla-alumnos tbody tr:hover {
-    background: rgba(255,255,255,0.1);
-    transition: 0.2s;
-}
-
-.tabla-alumnos tbody tr:hover {
-    background: rgba(255,255,255,0.08);
-    transform: scale(1.01);
 }
 
 /* Header fijo */
@@ -474,8 +457,8 @@ DASHBOARD
 }
 
 /* Celdas */
-.tabla-alumnos th,
-.tabla-alumnos td {
+.tabla-alumnos th
+{
     padding: 14px 16px;
     font-size: 16px;
     color: white !important;   /* 🔥 TEXTO BLANCO EN TODO */
@@ -1141,4 +1124,28 @@ select:hover {
     border-radius: 20px;
     border: 3px solid rgba(180,130,255,0.7);
     text-align: center;
+}
+/* Fondo de la tabla */
+.tabla-alumnos {
+    background: #1a1125; /* morado oscuro */
+}
+
+/* Filas alternadas */
+.tabla-alumnos tbody tr:nth-child(odd) {
+    background: #2a1b38;   /* tono más claro */
+}
+
+.tabla-alumnos tbody tr:nth-child(even) {
+    background: #3b2550;   /* otro tono */
+}
+
+/* Texto más fuerte */
+.tabla-alumnos td {
+    font-weight: 600;
+}
+
+/* Hover suave */
+.tabla-alumnos tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: none; /* si querés desactivar el efecto agrandar */
 }
