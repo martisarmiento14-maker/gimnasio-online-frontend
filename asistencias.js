@@ -1,8 +1,4 @@
-// ===============================
-// CONFIGURACIÓN
-// ===============================
 const API_URL = "https://gimnasio-online-1.onrender.com";
-
 
 const dniInput = document.getElementById("dniInput");
 const infoMensaje = document.getElementById("infoMensaje");
@@ -12,12 +8,6 @@ const cuotaBanner = document.getElementById("cuotaBanner");
 const cuotaBannerText = document.getElementById("cuotaBannerText");
 const btnBorrar = document.getElementById("btnBorrar");
 
-const globalCuotasBanner = document.getElementById("globalCuotasVencidas");
-const globalCuotasText = document.getElementById("globalCuotasText");
-
-// ===============================
-// BORRAR TODO
-// ===============================
 function borrarInfo() {
     dniInput.value = "";
     infoMensaje.textContent = "";
@@ -28,24 +18,21 @@ function borrarInfo() {
     dniInput.focus();
 }
 
-// ===============================
-// MOSTRAR ALERTA DE CUOTA VENCIDA
-// ===============================
-function mostrarCuotaVencida(fecha) {
-    cuotaBannerText.textContent = `⚠ Tu cuota está vencida desde el ${fecha}`;
+// 💛 Mostrar alerta de cuota vencida
+function mostrarCuotaVencida(texto) {
+    cuotaBannerText.textContent = texto;
     cuotaBanner.classList.remove("hidden");
 }
 
-// ===============================
-// ARMAR TARJETA DEL ALUMNO
-// ===============================
+// 🟪 Construir tarjeta visual del alumno
 function armarTarjeta(data) {
     const alumno = data.alumno;
     const asistencias = data.asistencias_semana;
-    const limite = data.limite_semanal ?? "-";
-    const alertaDias = data.alerta_dias;
-    const alertaCuota = data.alerta_cuota;
-    const seRegistro = data.se_registro;
+    const limite = data.limite_semanal;
+    
+    let alertaDias = data.alerta_dias || "";
+    let alertaCuota = data.alerta_cuota || "";
+    let seRegistro = data.se_registro;
 
     asistenciaCard.innerHTML = `
         <div class="bienvenida-inline">
@@ -56,13 +43,15 @@ function armarTarjeta(data) {
         <div class="fila"><span class="label">Planes:</span> ${alumno.planes}</div>
 
         <div class="fila">
-            <span class="label">Asistencias esta semana:</span>
-            ${asistencias} / ${limite}
+        <span class="label">Asistencias esta semana:</span>
+        ${asistencias} / ${limite}
         </div>
 
-        ${seRegistro
-            ? `<div class="alert-info">✔ Asistencia registrada correctamente</div>`
-            : `<div class="alert-warning">⚠ Ya alcanzaste tu límite semanal</div>`}
+        ${
+            seRegistro
+                ? `<div class="alert-info">✔ Asistencia registrada correctamente</div>`
+                : `<div class="alert-warning">⚠ Ya alcanzaste tu límite semanal</div>`
+        }
 
         ${alertaDias ? `<div class="alert-warning">${alertaDias}</div>` : ""}
         ${alertaCuota ? `<div class="alert-error">${alertaCuota}</div>` : ""}
@@ -70,41 +59,14 @@ function armarTarjeta(data) {
 
     asistenciaCard.classList.remove("card-blanco", "card-morado");
     asistenciaCard.classList.add(
-        alumno.equipo.toLowerCase() === "blanco" ? "card-blanco" : "card-morado"
+        alumno.equipo?.toLowerCase() === "blanco" ? "card-blanco" : "card-morado"
     );
 
     asistenciaCard.classList.remove("hidden");
     btnBorrar.classList.remove("hidden");
 }
 
-// ===============================
-// VERIFICAR SI HAY ALUMNOS CON CUOTA VENCIDA (GLOBAL)
-// ===============================
-async function verificarCuotasVencidasGlobal() {
-    try {
-        const res = await fetch(`${API_URL}/cuotas/vencidas`);
-        if (!res.ok) return;
-
-        const data = await res.json();
-
-        if (Array.isArray(data) && data.length > 0) {
-            globalCuotasText.textContent =
-                data.length === 1
-                    ? "Hay 1 alumno con la cuota vencida"
-                    : `Hay ${data.length} alumnos con la cuota vencida`;
-
-            globalCuotasBanner.classList.remove("hidden");
-        } else {
-            globalCuotasBanner.classList.add("hidden");
-        }
-    } catch (err) {
-        console.log("No se pudieron cargar cuotas vencidas globales", err);
-    }
-}
-
-// ===============================
-// REGISTRAR ASISTENCIA
-// ===============================
+// 🟩 Registrar asistencia
 async function registrarAsistencia() {
     const dni = dniInput.value.trim();
     if (!dni) return;
@@ -124,17 +86,19 @@ async function registrarAsistencia() {
 
         const data = await res.json();
 
-        if (!res.ok) {
+        if (!res.ok || data.error) {
             infoMensaje.textContent = "✖ DNI no encontrado";
             infoMensaje.classList.add("error");
             btnBorrar.classList.remove("hidden");
             return;
         }
 
-        if (data.cuota && data.cuota.estado === "vencida") {
-            mostrarCuotaVencida(data.cuota.fecha_vencimiento);
+        // 💛 Mostrar alerta cuota vencida
+        if (data.alerta_cuota) {
+            mostrarCuotaVencida(data.alerta_cuota);
         }
 
+        // 🎨 Mostrar tarjeta completa SIEMPRE (opción 1)
         armarTarjeta(data);
 
     } catch (err) {
@@ -145,9 +109,7 @@ async function registrarAsistencia() {
     }
 }
 
-// ===============================
-// EVENTOS
-// ===============================
+// Eventos
 dniInput.addEventListener("keydown", e => {
     if (e.key === "Enter") registrarAsistencia();
 });
@@ -155,9 +117,4 @@ dniInput.addEventListener("keydown", e => {
 document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "index.html";
-});
-
-// Al cargar la página → verificar deudas globales
-window.addEventListener("DOMContentLoaded", () => {
-    verificarCuotasVencidasGlobal();
 });
