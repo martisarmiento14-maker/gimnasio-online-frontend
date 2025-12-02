@@ -1,5 +1,6 @@
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
+console.log("ALUMNOS.JS CARGADO", API_URL);
 
 const tablaBody = document.getElementById("tablaAlumnosBody");
 const buscador = document.getElementById("buscador");
@@ -18,13 +19,17 @@ function formatearPlanes(a) {
 }
 
 function formatFecha(f) {
+    if (!f) return "-";
     return new Date(f).toLocaleDateString("es-AR");
 }
 
 async function cargarAlumnos() {
     try {
+        console.log("Cargando alumnos desde:", `${API_URL}/alumnos`);
         const res = await fetch(`${API_URL}/alumnos`);
         const data = await res.json();
+
+        console.log("Alumnos recibidos:", data);
 
         let txt = buscador.value.toLowerCase();
 
@@ -36,7 +41,7 @@ async function cargarAlumnos() {
 
         mostrarTabla(filtrados);
     } catch (error) {
-        console.log("Error cargando alumnos:", error);
+        console.error("Error cargando alumnos:", error);
     }
 }
 
@@ -63,4 +68,3 @@ function mostrarTabla(lista) {
 function editarAlumno(id) {
     window.location.href = `form-alumno.html?editar=${id}`;
 }
-
