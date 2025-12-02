@@ -39,18 +39,19 @@ function formatearPlanes(a) {
     return planes.join(" + ");
 }
 
+/* ⬇️ ACA VA LA FUNCIÓN QUE TENÉS QUE PEGAR ⬇️ */
 function mostrarAlumnos(lista) {
     const tbody = document.getElementById("tablaAlumnosBody");
     tbody.innerHTML = "";
 
     lista.forEach(a => {
-        let tr = document.createElement("tr");
+        const tr = document.createElement("tr");
 
         tr.innerHTML = `
             <td>${a.nombre} ${a.apellido}</td>
             <td>${a.dni}</td>
             <td>${a.nivel}</td>
-            <td>${a.equipo}</td>
+            <td>${a.equipo ?? "-"}</td>
             <td>${formatearPlanes(a)}</td>
             <td>${formatearFecha(a.fecha_vencimiento)}</td>
             <td><button class="btn-edit" onclick="editar(${a.id})">Editar</button></td>
