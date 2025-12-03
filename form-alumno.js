@@ -35,19 +35,14 @@ function actualizarDias() {
     let diasPlan = 0;
     let diasTotales = 0;
 
-    // ❌ EG + Pers no se puede
     if (eg && pers) {
         alert("No podés combinar Plan EG con Plan Personalizado.");
         plan_personalizado.checked = false;
         return;
     }
 
-    // Guardar selección actual si existe
     let valorPrevio = dias_eg_pers.value;
 
-    // -------------------------
-    // RUNNING SOLO (2)
-    // -------------------------
     if (run && !eg && !pers) {
         diasTotales = 2;
         mostrarTotales(diasTotales);
@@ -55,9 +50,6 @@ function actualizarDias() {
         return;
     }
 
-    // -------------------------
-    // EG SOLO o Personalizado SOLO
-    // -------------------------
     if ((eg || pers) && !run) {
         boxEgPers.style.display = "block";
 
@@ -66,7 +58,6 @@ function actualizarDias() {
             <option value="5">5 días</option>
         `;
 
-        // Restaurar selección previa si existe
         if (valorPrevio === "5") dias_eg_pers.value = "5";
 
         diasPlan = Number(dias_eg_pers.value);
@@ -78,9 +69,6 @@ function actualizarDias() {
         return;
     }
 
-    // -------------------------
-    // EG + RUNNING o Pers + RUNNING
-    // -------------------------
     if ((eg || pers) && run) {
         boxEgPers.style.display = "block";
 
@@ -89,7 +77,6 @@ function actualizarDias() {
             <option value="5">5 días</option>
         `;
 
-        // Restaurar selección previa si existe
         if (valorPrevio === "5") dias_eg_pers.value = "5";
 
         diasPlan = Number(dias_eg_pers.value);
@@ -102,7 +89,6 @@ function actualizarDias() {
     }
 }
 
-
 function mostrarTotales(total) {
     const boxTotales = document.getElementById("diasTotalesContainer");
     boxTotales.style.display = "block";
@@ -110,7 +96,7 @@ function mostrarTotales(total) {
 }
 
 // =========================================================
-// 🔄 CARGAR ALUMNO
+// 🔄 CARGAR ALUMNO SIN BUG DE FECHA
 // =========================================================
 async function cargarAlumno(id) {
     const res = await fetch(`${API_URL}/alumnos/${id}`);
@@ -122,9 +108,12 @@ async function cargarAlumno(id) {
     celular.value = a.telefono ?? "";
     nivel.value = a.nivel;
 
-    fecha_vencimiento.value = new Date(a.fecha_vencimiento)
-        .toISOString()
-        .split("T")[0];
+    // ⚡ NO USAMOS new Date → evitamos que reste un día
+    if (a.fecha_vencimiento) {
+        fecha_vencimiento.value = a.fecha_vencimiento.split("T")[0];
+    } else {
+        fecha_vencimiento.value = "";
+    }
 
     plan_eg.checked = a.plan_eg;
     plan_personalizado.checked = a.plan_personalizado;
@@ -138,16 +127,25 @@ async function cargarAlumno(id) {
 }
 
 // =========================================================
-// 📅 RENOVAR
+// 📅 RENOVAR +1 MES (sin adelanto)
 // =========================================================
 function sumarUnMes() {
-    let f = new Date(fecha_vencimiento.value);
+    if (!fecha_vencimiento.value) return;
+
+    const [year, month, day] = fecha_vencimiento.value.split("-").map(Number);
+
+    let f = new Date(year, month - 1, day);
     f.setMonth(f.getMonth() + 1);
-    fecha_vencimiento.value = f.toISOString().split("T")[0];
+
+    const y = f.getFullYear();
+    const m = String(f.getMonth() + 1).padStart(2, "0");
+    const d = String(f.getDate()).padStart(2, "0");
+
+    fecha_vencimiento.value = `${y}-${m}-${d}`;
 }
 
 // =========================================================
-// 💾 GUARDAR
+// 💾 GUARDAR ALUMNO
 // =========================================================
 async function guardarAlumno(e) {
     e.preventDefault();

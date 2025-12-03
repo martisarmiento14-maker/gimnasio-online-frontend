@@ -12,6 +12,15 @@ const alumnosPorPagina = 10;
 // =========================
 document.addEventListener("DOMContentLoaded", async () => {
     await cargarAlumnos();
+
+    // 🔍 BUSCADOR FUNCIONANDO
+    const inputBuscador = document.getElementById("buscador");
+    if (inputBuscador) {
+        inputBuscador.addEventListener("input", () => {
+            alumnosPaginaActual = 1;
+            aplicarFiltrosAlumnos();
+        });
+    }
 });
 
 // =========================
@@ -22,6 +31,7 @@ async function cargarAlumnos() {
         const res = await fetch(`${API_URL}/alumnos`);
         const data = await res.json();
 
+        // Solo alumnos activos
         listaAlumnos = data.filter(a => a.activo == 1);
 
         aplicarFiltrosAlumnos();
@@ -32,7 +42,7 @@ async function cargarAlumnos() {
 }
 
 // =========================
-// FILTROS + BUSCADOR
+// FILTROS + ORDEN ALFABÉTICO
 // =========================
 function aplicarFiltrosAlumnos() {
     let filtrados = [...listaAlumnos];
@@ -44,6 +54,17 @@ function aplicarFiltrosAlumnos() {
         a.apellido.toLowerCase().includes(texto) ||
         a.dni.includes(texto)
     );
+
+    // 🔥 ORDENAR POR APELLIDO → NOMBRE (orden profesional)
+    filtrados.sort((a, b) => {
+        const apA = a.apellido.toLowerCase();
+        const apB = b.apellido.toLowerCase();
+        const nomA = a.nombre.toLowerCase();
+        const nomB = b.nombre.toLowerCase();
+
+        if (apA !== apB) return apA.localeCompare(apB);
+        return nomA.localeCompare(nomB);
+    });
 
     renderAlumnosPaginado(filtrados);
 }
@@ -100,6 +121,18 @@ function actualizarPaginacionAlumnos(totalItems) {
 }
 
 // =========================
+// FORMATEAR FECHA SIN ERROR DE ZONA HORARIA
+// =========================
+function formatearFecha(fechaCruda) {
+    if (!fechaCruda) return "-";
+
+    const soloFecha = fechaCruda.split("T")[0];
+    const [y, m, d] = soloFecha.split("-");
+
+    return `${d}/${m}/${y}`;
+}
+
+// =========================
 // RENDER TABLA
 // =========================
 function renderTablaAlumnos(lista) {
@@ -115,13 +148,13 @@ function renderTablaAlumnos(lista) {
         ].filter(Boolean).join(", ");
 
         const fecha = alumno.fecha_vencimiento
-            ? new Date(alumno.fecha_vencimiento).toLocaleDateString("es-AR")
+            ? formatearFecha(alumno.fecha_vencimiento)
             : "-";
 
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${alumno.nombre} ${alumno.apellido}</td>
+            <td>${alumno.apellido} ${alumno.nombre}</td>
             <td>${alumno.dni}</td>
             <td>${alumno.nivel}</td>
             <td>${alumno.equipo}</td>
@@ -136,3 +169,9 @@ function renderTablaAlumnos(lista) {
     });
 }
 
+// =========================
+// EDITAR ALUMNO
+// =========================
+function editarAlumno(id) {
+    window.location.href = `form-alumno.html?editar=${id}`;
+}

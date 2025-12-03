@@ -4,11 +4,32 @@ const tbody = document.getElementById("tbodyAdmin");
 const buscador = document.getElementById("buscador");
 const filtroEquipo = document.getElementById("filtroEquipo");
 const filtroEstado = document.getElementById("filtroEstado");
-const paginacion = document.getElementById("paginacion"); // ← NUEVO
+const paginacion = document.getElementById("paginacion");
 
 let alumnos = [];
 let paginaActual = 1;
 const porPagina = 10;
+
+// ==================================
+//   FUNCIONES DE FECHA SIN ERROR UTC
+// ==================================
+function normalizarFechaTexto(fechaCruda) {
+    if (!fechaCruda) return null;
+    return fechaCruda.split("T")[0];
+}
+
+function fechaToDMY(fechaCruda) {
+    const soloFecha = normalizarFechaTexto(fechaCruda);
+    if (!soloFecha) return "-";
+    const [y, m, d] = soloFecha.split("-");
+    return `${d}/${m}/${y}`;
+}
+
+function fechaLocal(soloFecha) {
+    if (!soloFecha) return null;
+    const [y, m, d] = soloFecha.split("-").map(Number);
+    return new Date(y, m - 1, d);
+}
 
 // ==================================
 //      CARGAR ALUMNOS
@@ -22,7 +43,7 @@ async function cargarAlumnos() {
 cargarAlumnos();
 
 // ==================================
-//      FILTROS + PAGINACIÓN
+//      FILTROS + ORDENAMIENTO
 // ==================================
 function obtenerFiltrados() {
     const texto = buscador.value.toLowerCase();
@@ -43,8 +64,17 @@ function obtenerFiltrados() {
         return true;
     });
 
-    // ORDEN POR PRIORIDAD
-    filtrados.sort((a, b) => ordenEstado(a) - ordenEstado(b));
+    // ORDEN: estado → apellido → nombre
+    filtrados.sort((a, b) => {
+        const diffEstado = ordenEstado(a) - ordenEstado(b);
+        if (diffEstado !== 0) return diffEstado;
+
+        const apA = a.apellido.toLowerCase();
+        const apB = b.apellido.toLowerCase();
+        if (apA !== apB) return apA.localeCompare(apB);
+
+        return a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase());
+    });
 
     return filtrados;
 }
@@ -65,12 +95,13 @@ function renderTabla() {
 
     paginados.forEach(a => {
         const estado = calcularEstado(a);
+        const fechaMostrar = fechaToDMY(a.fecha_vencimiento);
 
         const tr = document.createElement("tr");
         tr.classList.add(`fila-${estado}`);
 
         tr.innerHTML = `
-            <td>${a.nombre} ${a.apellido}</td>
+            <td>${a.apellido} ${a.nombre}</td>
             <td>${a.dni}</td>
             <td>${a.telefono}</td>
             <td>${a.nivel}</td>
@@ -82,7 +113,7 @@ function renderTabla() {
                 </select>
             </td>
 
-            <td>${a.fecha_vencimiento ? new Date(a.fecha_vencimiento).toLocaleDateString() : "-"}</td>
+            <td>${fechaMostrar}</td>
             <td>${estado.replace("-", " ")}</td>
 
             <td>
@@ -92,14 +123,46 @@ function renderTabla() {
 
                 <button class="btn-delete" onclick="borrarAlumno(${a.id})">Borrar</button>
 
-                <button class="btn-ws" onclick="enviarWhatsApp('${a.telefono}')">WS</button>
+                <button class="btn-ws" onclick='enviarWhatsApp("${a.telefono}", ${JSON.stringify(a)})'>WS</button>
             </td>
         `;
 
         tbody.appendChild(tr);
     });
 
+    actualizarContadores();
     renderPaginacion(totalPaginas);
+}
+
+// ==================================
+//      CONTADORES
+// ==================================
+function actualizarContadores() {
+    const total = alumnos.length;
+
+    let alDia = 0, porVencer = 0, vencidos = 0, inactivos = 0;
+    let morados = 0, blancos = 0;
+
+    alumnos.forEach(a => {
+        const estado = calcularEstado(a);
+
+        if (estado === "al-dia") alDia++;
+        else if (estado === "por-vencer") porVencer++;
+        else if (estado === "vencido") vencidos++;
+        else if (estado === "inactivo") inactivos++;
+
+        if (a.equipo === "morado") morados++;
+        if (a.equipo === "blanco") blancos++;
+    });
+
+    document.getElementById("contTotal").textContent = total;
+    document.getElementById("contAlDia").textContent = alDia;
+    document.getElementById("contPorVencer").textContent = porVencer;
+    document.getElementById("contVencidos").textContent = vencidos;
+    document.getElementById("contInactivos").textContent = inactivos;
+
+    document.getElementById("contMorados").textContent = morados;
+    document.getElementById("contBlancos").textContent = blancos;
 }
 
 // ==================================
@@ -107,39 +170,26 @@ function renderTabla() {
 // ==================================
 function renderPaginacion(total) {
     paginacion.innerHTML = "";
-
     if (total <= 1) return;
 
-    // Botón anterior <
     const prev = document.createElement("button");
     prev.textContent = "<";
     prev.disabled = paginaActual === 1;
-    prev.onclick = () => {
-        paginaActual--;
-        renderTabla();
-    };
+    prev.onclick = () => { paginaActual--; renderTabla(); };
     paginacion.appendChild(prev);
 
-    // Números
     for (let i = 1; i <= total; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
         if (i === paginaActual) btn.classList.add("active");
-        btn.onclick = () => {
-            paginaActual = i;
-            renderTabla();
-        };
+        btn.onclick = () => { paginaActual = i; renderTabla(); };
         paginacion.appendChild(btn);
     }
 
-    // Botón siguiente >
     const next = document.createElement("button");
     next.textContent = ">";
     next.disabled = paginaActual === total;
-    next.onclick = () => {
-        paginaActual++;
-        renderTabla();
-    };
+    next.onclick = () => { paginaActual++; renderTabla(); };
     paginacion.appendChild(next);
 }
 
@@ -150,8 +200,10 @@ function calcularEstado(a) {
     if (!a.activo) return "inactivo";
 
     const hoy = new Date();
-    const vence = new Date(a.fecha_vencimiento);
+    const fechaTexto = normalizarFechaTexto(a.fecha_vencimiento);
+    const vence = fechaLocal(fechaTexto);
 
+    if (!vence) return "inactivo";
     if (vence < hoy) return "vencido";
 
     const diff = (vence - hoy) / (1000 * 60 * 60 * 24);
@@ -196,10 +248,26 @@ async function borrarAlumno(id) {
 }
 
 // ==================================
-//      WHATSAPP
+//      WHATSAPP AUTOMÁTICO
 // ==================================
-function enviarWhatsApp(numero) {
-    window.open(`https://wa.me/${numero}`, "_blank");
+function enviarWhatsApp(numero, alumno) {
+    const estado = calcularEstado(alumno);
+    const fecha = fechaToDMY(alumno.fecha_vencimiento);
+
+    let mensaje = "";
+
+    if (estado === "vencido") {
+        mensaje = `Hola! Somos de EG GYM.\nQueríamos recordarte que tu cuota se venció el ${fecha}.`;
+    } 
+    else if (estado === "por-vencer") {
+        mensaje = `Hola! Somos de EG GYM.\nQueríamos avisarte que tu cuota se vence el ${fecha}.`;
+    }
+    else {
+        mensaje = "Hola! ¿Cómo estás? Te contactamos de EGYM.";
+    }
+
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, "_blank");
 }
 
 // ==================================
