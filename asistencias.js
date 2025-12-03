@@ -3,19 +3,22 @@ const API = "https://gimnasio-online-1.onrender.com";
 const dniInput = document.getElementById("dniInput");
 const card = document.getElementById("asistenciaCard");
 
-const modalOverlay = document.getElementById("modalOverlay");
-const modalText = document.getElementById("modalText");
-const modalBtn = document.getElementById("modalBtn");
+// ====== MODAL WARNING NUEVO ======
 
-function abrirModal(msg) {
-    modalText.textContent = msg;
-    modalOverlay.classList.remove("hidden");
+const warningModal = document.getElementById("warningModal");
+const warningText = document.getElementById("warningText");
+const warningBtn = document.getElementById("warningBtn");
+
+function abrirWarning(msg) {
+    warningText.textContent = msg;
+    warningModal.classList.remove("hidden");
 }
 
-function cerrarModal() {
-    modalOverlay.classList.add("hidden");
+function cerrarWarning() {
+    warningModal.classList.add("hidden");
 }
-modalBtn.onclick = cerrarModal;
+
+warningBtn.onclick = cerrarWarning;
 
 // -------- TARJETA CLARA + ANIMACIÓN --------
 function armarTarjeta(data) {
@@ -104,7 +107,7 @@ dniInput.addEventListener("keydown", async (e) => {
         }
 
         if (data.motivo === "vencido") {
-            abrirModal("⚠ Tu cuota está vencida.");
+            abrirModal("⚠ Tu cuota está vencidadesde ${data.fecha}");
             return;
         }
 
