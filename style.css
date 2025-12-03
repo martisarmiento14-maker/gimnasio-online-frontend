@@ -1219,3 +1219,37 @@ select:hover {
 .pagination-container button:hover {
     background: #c793ff;
 }
+.pagination {
+    margin: 30px auto;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.pagination button {
+    background: #d8b3ff;
+    border: none;
+    padding: 10px 18px;
+    font-size: 18px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: bold;
+    color: #000;
+}
+
+.pagination button:hover {
+    background: #c48fff;
+    transform: scale(1.08);
+}
+
+.pagination button.active {
+    background: #b57bff;
+    color: white;
+    transform: scale(1.15);
+}
+
+.pagination button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
