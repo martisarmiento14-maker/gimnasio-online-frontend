@@ -3,28 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingreso al Sistema</title>
+    <title>Ingreso al Sistema - EG Gym</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="login-body">
 
-    <main class="login-container">
-        <h2>Ingreso al Sistema</h2>
+    <div class="login-wrapper">
 
-        <div class="login-card">
-            <label for="usuario">Usuario</label>
-            <input type="text" id="usuario" placeholder="Ingresar usuario">
+        <div class="login-card-pretty">
 
-            <label for="clave">Contraseña</label>
-            <input type="password" id="clave" placeholder="Ingresar contraseña">
+            <h1 class="login-title">Bienvenido a EG Gym</h1>
+            <p class="login-subtitle">Ingresá tu usuario y contraseña</p>
 
-            <button id="loginBtn">Ingresar</button>
+            <div class="login-form">
 
-            <p id="loginMensaje" class="mensaje"></p>
+                <label for="usuario" class="login-label">Usuario</label>
+                <input type="text" id="usuario" class="login-input" placeholder="Ingresar usuario">
+
+                <label for="clave" class="login-label">Contraseña</label>
+                <input type="password" id="clave" class="login-input" placeholder="Ingresar contraseña">
+
+                <button id="loginBtn" class="login-btn">Ingresar</button>
+
+                <p id="loginMensaje" class="login-msg"></p>
+
+            </div>
+
         </div>
-    </main>
 
+    </div>
+
+    <!-- Funciones siguen igual -->
     <script src="app.js"></script>
-
 </body>
 </html>
