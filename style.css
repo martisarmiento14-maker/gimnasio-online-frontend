@@ -94,16 +94,6 @@ DASHBOARD
     font-family: Arial, sans-serif;
 }
 
-.topbar {
-    width: 100%;
-    background: var(--violeta);
-    color: var(--white);
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #logoutBtn {
     background: white;
     color: #111;
@@ -187,14 +177,6 @@ DASHBOARD
     margin-top: 40px;
 }
 
-
-/* HEADER DE ALUMNOS */
-.alumnos-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
 
 /* BOTÓN AGREGAR */
 .btn-add {
@@ -1230,35 +1212,13 @@ select:hover {
     color: #fff;
 }
 
-.asist-main {
-    max-width: 500px;
-    margin: 40px auto;
-    text-align: center;
-}
-
-.asist-welcome {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.asist-sub {
-    font-size: 18px;
-    margin-bottom: 20px;
-    opacity: .8;
-}
-
 .dni-input {
-    width: 100%;
-    padding: 15px;
-    font-size: 20px;
-    border-radius: 12px;
-    border: 2px solid #b66eff;
-    margin-bottom: 20px;
-    text-align: center;
-    outline: none;
+    width: 450px;
+    max-width: 90%;
+    padding: 14px 16px;
+    font-size: 22px;
+    margin-top: 40px;
 }
-
 
 .asist-line {
     margin-bottom: 10px;
@@ -1293,50 +1253,6 @@ select:hover {
     font-weight: 700;
     border-radius: 10px;
     cursor: pointer;
-}
-
-
-/* TARJETA NUEVA CLARA */
-.asist-card {
-    background: #ffffff;
-    border: 3px solid #b57bff;
-    border-radius: 20px;
-    padding: 30px;
-    margin-top: 25px;
-    color: #222;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    width: 100%;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    animation: fadeSlide .35s ease-out;
-}
-
-.asist-card h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #7a18ff;
-}
-
-.asist-card p {
-    font-size: 18px;
-    margin: 6px 0;
-}
-
-.asist-clear {
-    margin-top: 20px;
-    background: #ff5c5c;
-    color: white;
-    border: none;
-    padding: 10px 22px;
-    border-radius: 12px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.asist-clear:hover {
-    transform: scale(1.05);
-    background: #ff3b3b;
 }
 
 @keyframes fadeSlide {
@@ -1423,4 +1339,106 @@ select:hover {
 .warning-btn:hover {
     background: #ff2626;
     transform: scale(1.05);
+}
+/* ----- ARREGLAR CORTE NEGRO Y HACER QUE EL MORADO OCUPE TODO ----- */
+.topbar {
+    width: 100%;
+    background: #b26efb;
+    padding: 25px 40px;
+    display: flex;
+    align-items: center;
+    border-radius: 0 0 12px 12px;
+    margin: 0; /* elimina el espacio negro */
+}
+
+/* ----- CENTRAR TODO EL CONTENIDO EN MEDIO DE LA PANTALLA ----- */
+.asist-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* antes estaba center */
+    align-items: center;
+    padding-top: 110px;
+}
+
+
+/* ----- TEXTO PRINCIPAL MÁS GRANDE Y CENTRADO ----- */
+/* ---- TITULO PRINCIPAL DE ASISTENCIAS ---- */
+.asist-welcome {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;         /* <--- ESTO ES LO QUE FALTABA */
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* ---- SUBTITULO ---- */
+.asist-sub {
+    font-size: 22px;
+    font-weight: 400;
+    color: #dcdcdc;        /* gris suave como en alumnos */
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+
+
+/* ----- TARJETA MORADO PASTEL MEJORADA ----- */
+.asist-card {
+    background: #E3C9FF; /* morado pastel */
+    padding: 30px 40px;
+    border-radius: 20px;
+    border: 3px solid #1f023a; /* violeta EG */
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.asist-card p,
+.asist-card h3 {
+    font-size: 22px;
+    margin: 10px 0;
+}
+
+
+/* ----- BOTÓN BORRAR MÁS LINDO ----- */
+.asist-clear {
+    margin-top: 25px;
+    background: #ff6b6b;
+    padding: 12px 25px;
+    border-radius: 14px;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.asist-clear:hover {
+    background: #ff4b4b;
+}
+
+
+/* Animación */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alumnos-header {
+    width: 100%;
+    background: #b26efb;
+    padding: 25px 40px;
+    border-radius: 0 0 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+}
+
+.header-spacer {
+    flex: 1;
 }

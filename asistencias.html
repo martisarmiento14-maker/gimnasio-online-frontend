@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registrar asistencia</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencias - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
-    <h2 class="title-asist">Ingrese su DNI para registrar asistencia</h2>
+    <!-- TOPBAR IGUAL A ALUMNOS -->
+    <div class="topbar">
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
 
-    <input 
-        type="text" 
-        id="dniInput" 
-        placeholder="DNI" 
-        class="dni-input"
-    />
+        <div class="buscador-contenedor"></div> <!-- vacío para mantener estructura -->
 
-    <div id="asistenciaCard" class="card hidden"></div>
+        <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+    </div>
 
-    <!-- ============================ -->
-    <!-- MODAL WARNING ESTILO 3D NUEVO -->
-    <!-- ============================ -->
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="asist-main">
+        <h2 class="asist-welcome">Bienvenido a EG Gym</h2>
+        <p class="asist-sub">Ingrese su DNI para registrar asistencia</p>
 
+        <input 
+            id="dniInput" 
+            type="number" 
+            class="dni-input"
+            placeholder="Ingrese DNI y presione ENTER"
+        >
+
+        <div id="asistenciaCard" class="asist-card hidden"></div>
+    </div>
+
+    <!-- MODAL -->
     <div id="warningModal" class="modal-warning hidden">
         <div class="warning-box">
             <div class="warning-icon">⚠</div>
             <h2 class="warning-title">Advertencia</h2>
             <p id="warningText" class="warning-text"></p>
-
             <button id="warningBtn" class="warning-btn">Aceptar</button>
         </div>
     </div>
 
     <script src="asistencias.js"></script>
-
 </body>
 </html>
