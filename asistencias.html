@@ -3,334 +3,40 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Asistencias - EG Gimnasio</title>
-
-    <!-- Tu hoja de estilos general -->
-    <link rel="stylesheet" href="style.css" />
-
-    <!-- Estilos específicos de Asistencias (no pisan al resto) -->
-    <style>
-        body.asist-body {
-            background: #05040d;
-            color: #fff;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-                sans-serif;
-            margin: 0;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 40px;
-            background: #c46bff;
-            color: #fff;
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        .topbar-title {
-            margin: 0;
-            text-align: center;
-            flex: 1;
-        }
-
-        .topbar-btn {
-            background: #ffffff;
-            color: #000;
-            border: none;
-            border-radius: 999px;
-            padding: 10px 26px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-            text-decoration: none;
-        }
-
-        .topbar-btn-left {
-            margin-right: 20px;
-        }
-
-        .topbar-spacer {
-            width: 160px; /* ancho aprox botón para centrar título */
-        }
-
-        .asist-main {
-            max-width: 1100px;
-            margin: 40px auto 80px;
-            padding: 0 16px 40px;
-            text-align: center;
-        }
-
-        .welcome-main-text {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 26px;
-            color: #f2e5ff;
-        }
-
-        .dni-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        #dniInput {
-            width: 80%;
-            max-width: 700px;
-            padding: 16px 22px;
-            font-size: 26px;
-            border-radius: 25px;
-            border: 3px solid #e0b0ff;
-            outline: none;
-            text-align: center;
-            background: #ecebff;
-            box-shadow: 0 0 40px rgba(228, 180, 255, 0.6);
-        }
-
-        #dniInput:focus {
-            border-color: #ffb7ff;
-            box-shadow: 0 0 45px rgba(255, 183, 255, 0.8);
-        }
-
-        .info-message {
-            margin-top: 26px;
-            font-size: 26px;
-            min-height: 36px;
-        }
-
-        .info-message.error {
-            color: #ff4b4b;
-        }
-
-        .info-message.ok {
-            color: #34d27b;
-        }
-
-        .asistencia-card {
-            margin: 40px auto 0;
-            max-width: 1000px;
-            padding: 36px 40px 42px;
-            border-radius: 36px;
-            border: 3px solid #e0b3ff;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
-            text-align: center;
-            transition: all 0.25s ease;
-        }
-
-        .asistencia-card h2 {
-            margin-top: 0;
-            font-size: 34px;
-        }
-
-        .asistencia-card .bienvenida-inline {
-            font-size: 34px;
-            margin-bottom: 10px;
-        }
-
-        .asistencia-card .bienvenida-inline .nombre {
-            font-weight: 800;
-        }
-
-        .asistencia-card .fila {
-            margin: 4px 0;
-            font-size: 24px;
-        }
-
-        .asistencia-card .label {
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
-
-        /* Esquema BLANCO: fondo claro + texto oscuro + labels moradas */
-        .card-blanco {
-            background: rgba(245, 245, 245, 0.95);
-            color: #111;
-        }
-
-        .card-blanco .bienvenida-inline,
-        .card-blanco .label,
-        .card-blanco .nombre {
-            color: #7b3cff;
-        }
-
-        /* Esquema MORADO: fondo morado translúcido + texto claro */
-        .card-morado {
-            background: rgba(50, 0, 90, 0.92);
-            color: #ffffff;
-        }
-
-        .card-morado .bienvenida-inline,
-        .card-morado .label,
-        .card-morado .nombre {
-            color: #e2b3ff;
-        }
-
-        .alert-warning {
-            margin-top: 14px;
-            font-size: 22px;
-            font-weight: 600;
-            color: #ffd93b;
-        }
-
-        .alert-error {
-            margin-top: 10px;
-            font-size: 22px;
-            font-weight: 700;
-            color: #ff4b4b;
-        }
-
-        .alert-info {
-            margin-top: 10px;
-            font-size: 22px;
-            color: #59e389;
-        }
-
-        .btn-borrar {
-            margin: 40px auto 0;
-            display: inline-block;
-            padding: 14px 40px;
-            font-size: 22px;
-            border-radius: 999px;
-            border: none;
-            background: #ff6b6b;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .btn-borrar:hover {
-            background: #ff5050;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Banner de cuota vencida */
-        .cuota-banner {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 217, 0, 0.97);
-            color: #3a1e00;
-            padding: 14px 26px;
-            border-radius: 999px;
-            font-size: 20px;
-            font-weight: 600;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideDown 0.25s ease-out;
-        }
-
-        .cuota-banner .icon {
-            font-size: 24px;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -15px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-
-        @media (max-width: 720px) {
-            .topbar {
-                padding: 14px 16px;
-                font-size: 24px;
-            }
-            .topbar-btn {
-                padding: 8px 18px;
-                font-size: 16px;
-            }
-            .welcome-main-text {
-                font-size: 32px;
-            }
-            #dniInput {
-                width: 95%;
-                font-size: 22px;
-            }
-            .asistencia-card {
-                padding: 26px 18px 30px;
-            }
-            .asistencia-card .bienvenida-inline {
-                font-size: 28px;
-            }
-            .asistencia-card .fila {
-                font-size: 20px;
-            }
-        }
-    </style>
+    <title>Asistencias</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="asist-body">
-    <header class="topbar">
-        <a href="dashboard.html" class="topbar-btn topbar-btn-left">← Volver</a>
-        <h1 class="topbar-title">Asistencias</h1>
-        <button id="logoutBtn" class="topbar-btn">Cerrar Sesión</button>
-        <!-- Este span solo ocupa espacio para que el título quede centrado
-             en caso de que en tu CSS global haya otros estilos -->
-        <span class="topbar-spacer" aria-hidden="true"></span>
-    </header>
 
-    <!-- Banner de cuota vencida -->
-    <div id="cuotaBanner" class="cuota-banner hidden">
-        <span class="icon">⚠</span>
-        <span id="cuotaBannerText"></span>
+<div class="topbar">
+    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+    <div style="flex:1"></div> <!-- Espaciador para mantener alineación -->
+
+    <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+</div>
+
+<main class="asist-main">
+
+    <h2 class="asist-welcome">Bienvenido a EG Gym</h2>
+    <p class="asist-sub">Ingrese su DNI para registrar asistencia</p>
+
+    <input id="dniInput" type="number" class="dni-input"
+        placeholder="Ingrese DNI y presione ENTER">
+
+    <div id="asistenciaCard" class="asist-card hidden"></div>
+
+</main>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="modal-overlay hidden">
+    <div id="modalBox" class="modal-box">
+        <p id="modalText"></p>
+        <button id="modalBtn" class="modal-btn">Aceptar</button>
     </div>
-    <!-- Banner global: hay alumnos con cuota vencida -->
-    <div id="globalCuotasVencidas" class="cuota-banner hidden">
-        <span class="icon">⚠</span>
-        <span id="globalCuotasText"></span>
-    </div>
+</div>
 
-
-    <main class="asist-main">
-        <!-- Texto de bienvenida general (se oculta después de usar un DNI) -->
-        <h2 id="welcomeMain" class="welcome-main-text">
-            Bienvenido a EG Gym
-        </h2>
-
-        <!-- Campo para DNI -->
-        <div class="dni-wrapper">
-            <input
-                id="dniInput"
-                type="number"
-                placeholder="Ingresar DNI"
-                onkeydown="if(event.key === 'Enter') registrarAsistencia()"
-            />
-        </div>
-
-        <!-- Mensajes simples: DNI no encontrado, error de servidor, etc -->
-        <div id="infoMensaje" class="info-message"></div>
-
-        <!-- Tarjeta con la info del alumno y estado de asistencia -->
-        <section
-            id="asistenciaCard"
-            class="asistencia-card hidden"
-            aria-live="polite"
-        >
-            <!-- Contenido se rellena desde asistencias.js -->
-        </section>
-
-        <!-- Botón borrar -->
-        <button id="btnBorrar" class="btn-borrar hidden" onclick="borrarInfo()">
-            Borrar
-        </button>
-    </main>
-
-    <!-- Tu JS de lógica general (logout, etc) si lo usás -->
-    <script src="dashboard.js"></script>
-    <!-- JS específico de asistencias -->
-    <script src="asistencias.js"></script>
+<script src="asistencias.js"></script>
 </body>
 </html>

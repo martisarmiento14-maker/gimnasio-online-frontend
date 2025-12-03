@@ -539,11 +539,6 @@ select:hover {
 
 /* ======== ASISTENCIAS PAGE ======== */
 
-.asist-body {
-    background: #0e0c14;
-    margin: 0;
-    padding: 0;
-}
 
 .asist-container {
     max-width: 750px;
@@ -582,27 +577,6 @@ select:hover {
 }
 
 /* TARJETA DEL ALUMNO */
-.asist-card {
-    margin-top: 40px;
-    background: #c27bff;
-    padding: 40px 30px;
-    border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-    color: #1c0033;
-    font-size: 22px;
-}
-
-.asist-card h3 {
-    font-size: 36px;
-    margin-bottom: 20px;
-    font-weight: 700;
-    text-transform: capitalize;
-}
-
-.asist-card p {
-    margin: 12px 0;
-    font-size: 24px;
-}
 
 .asist-label {
     font-weight: 700;
@@ -713,22 +687,6 @@ select:hover {
     }
 }
 
-/* ---- Contenedor principal centrado ---- */
-.asist-main {
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-    text-align: center;
-
-    /* CENTRAR VERTICALMENTE */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    height: calc(100vh - 130px); /* resta altura del topbar */
-}
-/* ---- Título Bienvenido ---- */
 
 /* ---- Card del alumno ---- */
 .info-card-container {
@@ -1252,4 +1210,139 @@ select:hover {
 .pagination button:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+.btn-borrar {
+    margin-top: 18px;
+    background: #ffb3b3;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* =======================
+   ASISTENCIAS
+======================= */
+
+.asist-body {
+    background: #05040d;
+    color: #fff;
+}
+
+.asist-main {
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.asist-welcome {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.asist-sub {
+    font-size: 18px;
+    margin-bottom: 20px;
+    opacity: .8;
+}
+
+.dni-input {
+    width: 100%;
+    padding: 15px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 2px solid #b66eff;
+    margin-bottom: 20px;
+    text-align: center;
+    outline: none;
+}
+
+
+.asist-line {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: #1a1128;
+    border: 2px solid #b66eff;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 350px;
+    text-align: center;
+}
+
+.modal-btn {
+    margin-top: 20px;
+    background: #b66eff;
+    border: none;
+    padding: 10px 25px;
+    color: #000;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* TARJETA NUEVA CLARA */
+.asist-card {
+    background: #ffffff;
+    border: 3px solid #b57bff;
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 25px;
+    color: #222;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeSlide .35s ease-out;
+}
+
+.asist-card h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #7a18ff;
+}
+
+.asist-card p {
+    font-size: 18px;
+    margin: 6px 0;
+}
+
+.asist-clear {
+    margin-top: 20px;
+    background: #ff5c5c;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.asist-clear:hover {
+    transform: scale(1.05);
+    background: #ff3b3b;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
