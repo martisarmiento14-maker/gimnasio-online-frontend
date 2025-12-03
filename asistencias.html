@@ -3,44 +3,38 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Asistencias</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Registrar asistencia</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
-<body class="asist-body">
+<body>
 
-<div class="topbar">
-    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+    <h2 class="title-asist">Ingrese su DNI para registrar asistencia</h2>
 
-    <div style="flex:1"></div> <!-- Espaciador para mantener alineación -->
+    <input 
+        type="text" 
+        id="dniInput" 
+        placeholder="DNI" 
+        class="dni-input"
+    />
 
-    <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
-</div>
+    <div id="asistenciaCard" class="card hidden"></div>
 
-<main class="asist-main">
+    <!-- ============================ -->
+    <!-- MODAL WARNING ESTILO 3D NUEVO -->
+    <!-- ============================ -->
 
-    <h2 class="asist-welcome">Bienvenido a EG Gym</h2>
-    <p class="asist-sub">Ingrese su DNI para registrar asistencia</p>
+    <div id="warningModal" class="modal-warning hidden">
+        <div class="warning-box">
+            <div class="warning-icon">⚠</div>
+            <h2 class="warning-title">Advertencia</h2>
+            <p id="warningText" class="warning-text"></p>
 
-    <input id="dniInput" type="number" class="dni-input"
-        placeholder="Ingrese DNI y presione ENTER">
-
-    <div id="asistenciaCard" class="asist-card hidden"></div>
-
-</main>
-
-<!-- MODAL -->
-<div id="warningModal" class="modal-warning hidden">
-    <div class="warning-box">
-        <div class="warning-icon">⚠</div>
-        <h2 class="warning-title">Advertencia</h2>
-        <p id="warningText" class="warning-text"></p>
-
-        <button id="warningBtn" class="warning-btn">Aceptar</button>
+            <button id="warningBtn" class="warning-btn">Aceptar</button>
+        </div>
     </div>
-</div>
 
+    <script src="asistencias.js"></script>
 
-<script src="asistencias.js"></script>
 </body>
 </html>
