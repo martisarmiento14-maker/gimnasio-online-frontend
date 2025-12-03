@@ -1235,26 +1235,6 @@ select:hover {
     justify-content: center;
 }
 
-.modal-box {
-    background: #1a1128;
-    border: 2px solid #b66eff;
-    padding: 25px;
-    border-radius: 15px;
-    max-width: 350px;
-    text-align: center;
-}
-
-.modal-btn {
-    margin-top: 20px;
-    background: #b66eff;
-    border: none;
-    padding: 10px 25px;
-    color: #000;
-    font-weight: 700;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
 @keyframes fadeSlide {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -1373,52 +1353,11 @@ select:hover {
 
 /* ---- SUBTITULO ---- */
 .asist-sub {
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 400;
     color: #dcdcdc;        /* gris suave como en alumnos */
     text-align: center;
-    margin-bottom: 40px;
-}
-
-
-
-/* ----- TARJETA MORADO PASTEL MEJORADA ----- */
-.asist-card {
-    background: #E3C9FF; /* morado pastel */
-    padding: 30px 40px;
-    border-radius: 20px;
-    border: 3px solid #1f023a; /* violeta EG */
-    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    margin-top: 50px;
-    animation: fadeIn 0.4s ease-out;
-}
-
-.asist-card p,
-.asist-card h3 {
-    font-size: 22px;
-    margin: 10px 0;
-}
-
-
-/* ----- BOTÓN BORRAR MÁS LINDO ----- */
-.asist-clear {
-    margin-top: 25px;
-    background: #ff6b6b;
-    padding: 12px 25px;
-    border-radius: 14px;
-    font-size: 20px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-.asist-clear:hover {
-    background: #ff4b4b;
+    margin-bottom: 10px;
 }
 
 
@@ -1441,4 +1380,163 @@ select:hover {
 
 .header-spacer {
     flex: 1;
+}
+/* TARJETA DE BIENVENIDA */
+.asist-welcome-card {
+    background: #E3C9FF;
+    padding: 40px 50px;
+    border-radius: 25px;
+    border: 3px solid #1f023a;
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    margin-top: 60px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.asist-subtitle {
+    color: #7d4b9c;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+
+.asist-dni-input:focus {
+    border-color: #9d5aff;
+    box-shadow: 0 0 10px #caafff;
+}
+
+/* TARJETA DEL ALUMNO (resultado) */
+.asist-card {
+    background: #f0e1ff;
+    padding: 35px 45px;
+    border-radius: 22px;
+    border: 3px solid #2a0142;
+    box-shadow: 0 8px 22px rgba(168, 85, 247, 0.4);
+    max-width: 650px;
+    width: 100%;
+    margin-top: 50px;
+    text-align: center;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.asist-card h3 {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.asist-card p {
+    font-size: 20px;
+    margin: 8px 0;
+}
+
+/* BOTÓN BORRAR */
+.asist-clear {
+    margin-top: 25px;
+    padding: 14px 26px;
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.asist-clear:hover {
+    background: #ff3b3b;
+}
+/* TARJETA UNIFICADA */
+.asist-card-full {
+    background: #E3C9FF;
+    padding: 18px 30px;
+    border-radius: 15px;
+    border: 3px solid #1f023a;
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    text-align: center;
+    max-width: 430px;
+    width: 90%;
+    margin: 40px auto 0 auto;
+    margin-top: 25px;
+}
+
+.asist-info {
+    margin-top: 12px;
+    font-size: 20px;
+    background: #f7eaff;
+    padding: 12px 15px;
+    border-radius: 18px;
+    border: 2px solid #b77bff;
+}
+
+.asist-title {
+    font-size: 35px;
+    color: rgb(94, 34, 118);
+    font-weight: 900;
+    margin-bottom: 2px;
+}
+
+.asist-dni-input {
+    width: 90%;
+    padding: 18px;
+    border-radius: 15px;
+    border: 2px solid #b88cff;
+    font-size: 22px;
+    margin-top: 20px;
+}
+
+/* MODALES BASE */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden { display: none; }
+
+.modal-box {
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.modal-purple { background: #efd9ff; border: 3px solid #b26dff; }
+.modal-yellow { background: #fff3b0; border: 3px solid #ffd344; }
+.modal-red    { background: #ffd1d1; border: 3px solid #ff5a5a; }
+.modal-green  { background: #d5ffd8; border: 3px solid #4eca62; }
+
+.modal-btn {
+    margin-top: 15px;
+    padding: 12px 28px;
+    background: #7c2bff;
+    border: none;
+    color: white;
+    border-radius: 15px;
+    font-size: 18px;
+    cursor: pointer;
+}
+/* Asegura que el botón BORRAR aparezca SIEMPRE */
+.asist-info button {
+    grid-column: 1 / -1;   /* ocupa todo el ancho de la grilla */
+    justify-self: center;
+    margin-top: 10px;
+
+    padding: 10px 22px;
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 14px;
+    cursor: pointer;
+}
+
+.asist-info button:hover {
+    background: #ff3b3b;
 }

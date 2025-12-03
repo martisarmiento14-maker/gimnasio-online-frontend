@@ -3,43 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencias - EG Gimnasio</title>
+    <title>Asistencias - EG Gym</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="dashboard-body">
 
-    <!-- TOPBAR IGUAL A ALUMNOS -->
+    <!-- TOPBAR -->
     <div class="topbar">
         <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
-
-        <div class="buscador-contenedor"></div> <!-- vacío para mantener estructura -->
-
+        <div></div>
         <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="asist-main">
-        <h2 class="asist-welcome">Bienvenido a EG Gym</h2>
-        <p class="asist-sub">Ingrese su DNI para registrar asistencia</p>
+    <!-- TARJETA UNIFICADA -->
+    <div class="asist-card-full">
+        <h2 class="asist-title">Bienvenido a EG Gym</h2>
+        <p class="asist-subtitle">Ingrese su DNI para registrar asistencia</p>
 
         <input 
             id="dniInput" 
             type="number" 
-            class="dni-input"
+            class="asist-dni-input"
             placeholder="Ingrese DNI y presione ENTER"
         >
 
-        <div id="asistenciaCard" class="asist-card hidden"></div>
+        <div id="asistenciaInfo" class="asist-info hidden"></div>
     </div>
 
-    <!-- MODAL -->
-    <div id="warningModal" class="modal-warning hidden">
-        <div class="warning-box">
-            <div class="warning-icon">⚠</div>
-            <h2 class="warning-title">Advertencia</h2>
-            <p id="warningText" class="warning-text"></p>
-            <button id="warningBtn" class="warning-btn">Aceptar</button>
+    <!-- MODAL ÉXITO -->
+    <div id="modalExito" class="modal hidden">
+        <div class="modal-box modal-purple">
+            <h2>Asistencia registrada</h2>
+            <p>La asistencia fue registrada correctamente.</p>
+            <button onclick="cerrarModal('modalExito')" class="modal-btn">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- MODAL CUOTA VENCIDA -->
+    <div id="modalVencido" class="modal hidden">
+        <div class="modal-box modal-yellow">
+            <h2>Cuota vencida</h2>
+            <p>No puede ingresar: su cuota está vencida.</p>
+            <button onclick="cerrarModal('modalVencido')" class="modal-btn">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- MODAL CUPOS AGOTADOS -->
+    <div id="modalCupos" class="modal hidden">
+        <div class="modal-box modal-red">
+            <h2>Límite semanal alcanzado</h2>
+            <p>No puede ingresar más veces esta semana.</p>
+            <button onclick="cerrarModal('modalCupos')" class="modal-btn">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- MODAL YA REGISTRÓ HOY -->
+    <div id="modalYaVino" class="modal hidden">
+        <div class="modal-box modal-green">
+            <h2>Asistencia ya registrada</h2>
+            <p>Usted ya registró asistencia hoy.</p>
+            <button onclick="cerrarModal('modalYaVino')" class="modal-btn">Aceptar</button>
         </div>
     </div>
 
