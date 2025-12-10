@@ -5,6 +5,8 @@ const buscador = document.getElementById("buscador");
 const filtroEquipo = document.getElementById("filtroEquipo");
 const filtroEstado = document.getElementById("filtroEstado");
 const paginacion = document.getElementById("paginacion");
+const filtroPlan = document.getElementById("filtroPlan");
+
 
 let alumnos = [];
 let paginaActual = 1;
@@ -60,6 +62,13 @@ function obtenerFiltrados() {
             const estado = calcularEstado(a);
             if (estado !== filtroEstado.value) return false;
         }
+        // 🔥 FILTRO POR PLAN
+        if (filtroPlan.value !== "todos") {
+            if (filtroPlan.value === "eg" && !a.plan_eg) return false;
+            if (filtroPlan.value === "personalizado" && !a.plan_personalizado) return false;
+            if (filtroPlan.value === "running" && !a.plan_running) return false;
+        }
+
 
         return true;
     });
@@ -172,13 +181,18 @@ function renderPaginacion(total) {
     paginacion.innerHTML = "";
     if (total <= 1) return;
 
+    // Botón anterior
     const prev = document.createElement("button");
     prev.textContent = "<";
     prev.disabled = paginaActual === 1;
     prev.onclick = () => { paginaActual--; renderTabla(); };
     paginacion.appendChild(prev);
 
-    for (let i = 1; i <= total; i++) {
+    // Mostrar solo las primeras 10 páginas
+    const maxPaginas = 10;
+    const limite = Math.min(total, maxPaginas);
+
+    for (let i = 1; i <= limite; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
         if (i === paginaActual) btn.classList.add("active");
@@ -186,12 +200,22 @@ function renderPaginacion(total) {
         paginacion.appendChild(btn);
     }
 
+    // Si hay más páginas, mostrar "..."
+    if (total > maxPaginas) {
+        const puntos = document.createElement("button");
+        puntos.textContent = "...";
+        puntos.disabled = true;
+        paginacion.appendChild(puntos);
+    }
+
+    // Botón siguiente
     const next = document.createElement("button");
     next.textContent = ">";
     next.disabled = paginaActual === total;
     next.onclick = () => { paginaActual++; renderTabla(); };
     paginacion.appendChild(next);
 }
+
 
 // ==================================
 //      ESTADO
@@ -276,3 +300,8 @@ function enviarWhatsApp(numero, alumno) {
 buscador.addEventListener("input", () => { paginaActual = 1; renderTabla(); });
 filtroEquipo.addEventListener("change", () => { paginaActual = 1; renderTabla(); });
 filtroEstado.addEventListener("change", () => { paginaActual = 1; renderTabla(); });
+filtroPlan.addEventListener("change", () => {
+    paginaActual = 1;
+    renderTabla();
+});
+

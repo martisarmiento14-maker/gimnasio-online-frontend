@@ -88,6 +88,7 @@ function actualizarPaginacionAlumnos(totalItems) {
 
     if (totalPaginas <= 1) return;
 
+    // Botón anterior
     const prev = document.createElement("button");
     prev.textContent = "<";
     prev.onclick = () => {
@@ -98,7 +99,11 @@ function actualizarPaginacionAlumnos(totalItems) {
     };
     cont.appendChild(prev);
 
-    for (let i = 1; i <= totalPaginas; i++) {
+    // Mostrar solo primeras 10 páginas
+    const maxPaginas = 10;
+    const limite = Math.min(totalPaginas, maxPaginas);
+
+    for (let i = 1; i <= limite; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
         if (i === alumnosPaginaActual) btn.classList.add("active");
@@ -109,6 +114,15 @@ function actualizarPaginacionAlumnos(totalItems) {
         cont.appendChild(btn);
     }
 
+    // Mostrar "..." si hay más páginas
+    if (totalPaginas > maxPaginas) {
+        const puntos = document.createElement("button");
+        puntos.textContent = "...";
+        puntos.disabled = true;
+        cont.appendChild(puntos);
+    }
+
+    // Botón siguiente
     const next = document.createElement("button");
     next.textContent = ">";
     next.onclick = () => {
@@ -119,6 +133,7 @@ function actualizarPaginacionAlumnos(totalItems) {
     };
     cont.appendChild(next);
 }
+
 
 // =========================
 // FORMATEAR FECHA SIN ERROR DE ZONA HORARIA

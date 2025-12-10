@@ -11,12 +11,19 @@ const infoBox = document.getElementById("asistenciaInfo");
 ===================================== */
 
 function abrirModal(id) {
-    document.getElementById(id).classList.remove("hidden");
+    const modal = document.getElementById(id);
+    modal.classList.remove("hidden");
+
+    // 🔥 Auto-cerrar en 2 segundos
+    setTimeout(() => {
+        modal.classList.add("hidden");
+    }, 2000);
 }
 
 function cerrarModal(id) {
     document.getElementById(id).classList.add("hidden");
 }
+
 
 /* =====================================
    BORRAR TARJETA (LA FUNCIÓN DEBE ESTAR AFUERA)
@@ -51,6 +58,10 @@ function mostrarInfo(alumno, asis, limite) {
 
         <button class="asist-clear" onclick="borrarInfo()">Borrar</button>
     `;
+    clearTimeout(window.timerTarjeta);
+    window.timerTarjeta = setTimeout(() => {
+        borrarInfo();
+    }, 7000);
 
     infoBox.classList.remove("hidden");
 }
