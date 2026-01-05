@@ -3,17 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Estadísticas</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <h2>Estadísticas mensuales</h2>
+<h1>📊 Estadísticas del Gimnasio</h1>
 
-    <input type="month" id="mes" />
-    <button onclick="cargarStats()">Ver</button>
+<label>
+    Mes:
+    <input type="month" id="mesSeleccionado">
+</label>
 
-    <canvas id="graficoAlumnos" width="400" height="200"></canvas>
+<!-- ===== GRÁFICO 1 ===== -->
+<div class="card">
+    <h2>Altas vs Renovaciones</h2>
+    <canvas id="graficoAltas"></canvas>
+    <div id="totalMes" class="total"></div>
+</div>
 
-    <script src="estadisticas.js"></script>
+<!-- ===== GRÁFICO 2 ===== -->
+<div class="card">
+    <h2>Planes del Mes</h2>
+    <canvas id="graficoPlanes"></canvas>
+</div>
+
+<script src="estadisticas.js"></script>
 </body>
 </html>
