@@ -143,6 +143,11 @@ async function cargarGraficoPersDias(mes) {
 async function cargarGraficoIngresos(mes) {
     const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
+
+    const ctx = document.getElementById("graficoIngresos");
+
+    if (chartIngresos) chartIngresos.destroy();
+
     chartIngresos = new Chart(ctx, {
         type: "bar",
         data: {
@@ -177,6 +182,4 @@ async function cargarGraficoIngresos(mes) {
             }
         }
     });
-
 }
-
