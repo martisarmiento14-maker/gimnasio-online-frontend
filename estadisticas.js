@@ -34,29 +34,44 @@ async function cargarTodo(mes) {
 // 📊 GRÁFICO ALTAS / RENOVACIONES
 // ================================
 async function cargarGraficoAltas(mes) {
-    const res = await fetch(`${API_URL}/estadisticas?mes=${mes}`);
+    const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
 
-    document.getElementById("totalMes").innerText =
-        `Total del mes: ${data.total} alumnos`;
-
-    const ctx = document.getElementById("graficoAltas");
-
-    if (chartAltas) chartAltas.destroy();
-
-    chartAltas = new Chart(ctx, {
+    chartIngresos = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: ["Altas", "Renovaciones"],
+            labels: ["Efectivo", "Transferencia"],
             datasets: [{
-                label: "Cantidad de alumnos",
-                data: [data.altas, data.renovaciones]
+                label: "Ingresos del mes ($)",
+                data: [
+                    data.efectivo.total,
+                    data.transferencia.total
+                ]
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const index = context.dataIndex;
+                            const metodo = index === 0 ? "efectivo" : "transferencia";
+
+                            return [
+                                `Total: $${context.raw}`,
+                                `Personas: ${data[metodo].personas}`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
     });
+
 }
 
 // ================================
