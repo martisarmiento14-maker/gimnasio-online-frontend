@@ -9,17 +9,24 @@
 
 <body class="dashboard-body">
 
+    <!-- TOPBAR -->
     <div class="topbar">
-        <h2 id="tituloForm">Nuevo Alumno</h2>
-        <button id="logoutBtn" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+        <h2 id="tituloForm">Alumno</h2>
+        <button class="btn-cancelar" onclick="window.location.href='index.html'">
+            Cerrar Sesión
+        </button>
     </div>
 
+    <!-- CONTENEDOR -->
     <div class="form-container">
 
-        <button class="btn-volver" onclick="window.location.href='alumnos.html'">← Volver</button>
+        <button class="btn-volver" onclick="window.location.href='alumnos.html'">
+            ← Volver
+        </button>
 
         <form id="formAlumno">
 
+            <!-- DATOS -->
             <div class="form-row">
                 <input type="text" id="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" placeholder="Apellido" required>
@@ -39,16 +46,21 @@
                 </select>
 
                 <div style="flex:1; display:flex; flex-direction:column;">
-                    <label style="color:white; font-size:14px;">Fecha de vencimiento</label>
+                    <label>Fecha de vencimiento</label>
                     <input type="date" id="fecha_vencimiento" required>
                 </div>
 
-                <button id="btnRenovar" class="btn-guardar" type="button">
+                <!-- SOLO EDICIÓN -->
+                <button
+                    id="btnRenovar"
+                    type="button"
+                    class="btn-guardar">
                     Renovar +1 mes
                 </button>
             </div>
 
-            <h3 class="subtitulo" style="color:white;">Planes</h3>
+            <!-- PLANES -->
+            <h3>Planes</h3>
 
             <div class="planes-box">
                 <label><input type="checkbox" id="plan_eg"> Plan EG</label>
@@ -56,26 +68,79 @@
                 <label><input type="checkbox" id="plan_running"> Running (2 días)</label>
             </div>
 
-            <!-- Días del plan EG/Personalizado -->
+            <!-- DÍAS PLAN -->
             <div class="form-row" id="diasEgPersContainer" style="display:none;">
                 <div style="flex:1;">
-                    <label style="color:white; font-size:14px;">Días del plan EG/Personalizado</label>
+                    <label>Días EG / Personalizado</label>
                     <select id="dias_eg_pers"></select>
                 </div>
             </div>
 
-            <!-- TOTAL AUTOMÁTICO -->
+            <!-- TOTAL -->
             <div class="form-row" id="diasTotalesContainer" style="display:none;">
                 <div style="flex:1;">
-                    <label style="color:white; font-size:14px;">Días totales por semana</label>
+                    <label>Días totales por semana</label>
                     <input id="dias_semana" type="number" readonly>
                 </div>
             </div>
 
-            <button type="submit" class="btn-guardar">Guardar</button>
+            <!-- 💰 SOLO ALTA -->
+            <div id="pagoAltaContainer">
+                <h3>Pago inicial</h3>
+
+                <div class="input-monto">
+                    <span>$</span>
+                    <input type="number" id="monto" placeholder="Monto abonado">
+                </div>
+
+                <select id="metodo_pago">
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                </select>
+            </div>
+
+            <!-- GUARDAR -->
+            <button type="submit" class="btn-guardar">
+                Guardar
+            </button>
 
         </form>
+    </div>
 
+    <!-- ================= MODAL RENOVAR ================= -->
+    <!-- ⚠️ IMPORTANTE: está DIRECTO bajo body -->
+    <div id="modalRenovar" class="modal-overlay" style="display:none;">
+        <div class="renovar-modal">
+            <h3>Renovar membresía</h3>
+
+            <label>Monto</label>
+            <div class="input-monto">
+                <span>$</span>
+                <input type="number" id="renovarMonto" min="0">
+            </div>
+
+            <label>Método de pago</label>
+            <select id="renovarMetodo">
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+            </select>
+
+            <div class="renovar-actions">
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    onclick="cerrarModalRenovar()">
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-guardar"
+                    onclick="confirmarRenovacion()">
+                    Confirmar
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="form-alumno.js"></script>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estadísticas | EG GYM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dashboard-body">
+
+<div class="topbar">
+    <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+    <h2>Estadísticas</h2>
+    <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar sesión</button>
+</div>
+
+<div class="content" style="width:90%;max-width:1200px;margin:30px auto;color:white;">
+
+    <label>
+        Seleccionar mes:
+        <input type="month" id="selectorMes">
+    </label>
+
+    <div class="chart-card">
+        <h3>Métodos de pago</h3>
+        <canvas id="graficoPagos"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Planes</h3>
+        <canvas id="graficoPlanes"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Evolución mensual</h3>
+        <canvas id="graficoEvolucion"></canvas>
+    </div>
+
+</div>
+
+<script src="estadisticas.js"></script>
+</body>
+</html>

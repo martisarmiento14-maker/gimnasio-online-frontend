@@ -1,25 +1,56 @@
 const API_URL = "https://gimnasio-online-1.onrender.com";
 
+// 🔥 VARIABLES GLOBALES
+let nombre, apellido, dni, celular, nivel, fecha_vencimiento;
+let plan_eg, plan_personalizado, plan_running;
+let dias_eg_pers, dias_semana;
+let pagoAlta, btnRenovar;
+
 document.addEventListener("DOMContentLoaded", () => {
+
     const params = new URLSearchParams(window.location.search);
     const id = params.get("editar");
 
-    const btnRenovar = document.getElementById("btnRenovar");
+    nombre = document.getElementById("nombre");
+    apellido = document.getElementById("apellido");
+    dni = document.getElementById("dni");
+    celular = document.getElementById("celular");
+    nivel = document.getElementById("nivel");
+    fecha_vencimiento = document.getElementById("fecha_vencimiento");
 
-    if (!id) btnRenovar.style.display = "none";
+    plan_eg = document.getElementById("plan_eg");
+    plan_personalizado = document.getElementById("plan_personalizado");
+    plan_running = document.getElementById("plan_running");
+
+    dias_eg_pers = document.getElementById("dias_eg_pers");
+    dias_semana = document.getElementById("dias_semana");
+
+    pagoAlta = document.getElementById("pagoAltaContainer");
+    btnRenovar = document.getElementById("btnRenovar");
+
+    if (id) {
+        pagoAlta.style.display = "none";
+        btnRenovar.style.display = "inline-block";
+        cargarAlumno(id);
+    } else {
+        pagoAlta.style.display = "block";
+        btnRenovar.style.display = "none";
+    }
 
     plan_eg.addEventListener("change", actualizarDias);
     plan_personalizado.addEventListener("change", actualizarDias);
     plan_running.addEventListener("change", actualizarDias);
 
-    if (id) cargarAlumno(id);
+    document.getElementById("formAlumno")
+        .addEventListener("submit", guardarAlumno);
 
-    document.getElementById("formAlumno").addEventListener("submit", guardarAlumno);
-    btnRenovar.addEventListener("click", sumarUnMes);
+    btnRenovar.addEventListener("click", abrirModalRenovar);
 });
 
+
+
 // =========================================================
-// 🔥 LÓGICA DE DÍAS AUTOMÁTICOS
+// 🔢 CÁLCULO CORRECTO DE DÍAS
 // =========================================================
 function actualizarDias() {
     const eg = plan_eg.checked;
@@ -32,71 +63,44 @@ function actualizarDias() {
     boxEgPers.style.display = "none";
     boxTotales.style.display = "none";
 
-    let diasPlan = 0;
-    let diasTotales = 0;
-
     if (eg && pers) {
-        alert("No podés combinar Plan EG con Plan Personalizado.");
+        alert("No podés combinar Plan EG con Personalizado.");
         plan_personalizado.checked = false;
         return;
     }
 
-    let valorPrevio = dias_eg_pers.value;
+    let total = 0;
 
-    if (run && !eg && !pers) {
-        diasTotales = 2;
-        mostrarTotales(diasTotales);
-        dias_eg_pers.innerHTML = "";
-        return;
-    }
-
-    if ((eg || pers) && !run) {
+    // EG o Personalizado → 3 o 5 días
+    if (eg || pers) {
         boxEgPers.style.display = "block";
 
-        dias_eg_pers.innerHTML = `
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
+        if (!dias_eg_pers.innerHTML) {
+            dias_eg_pers.innerHTML = `
+                <option value="3">3 días</option>
+                <option value="5">5 días</option>
+            `;
+        }
 
-        if (valorPrevio === "5") dias_eg_pers.value = "5";
-
-        diasPlan = Number(dias_eg_pers.value);
-        diasTotales = diasPlan;
-
-        mostrarTotales(diasTotales);
-
-        dias_eg_pers.onchange = actualizarDias;
-        return;
+        total += Number(dias_eg_pers.value || 3);
     }
 
-    if ((eg || pers) && run) {
-        boxEgPers.style.display = "block";
-
-        dias_eg_pers.innerHTML = `
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
-
-        if (valorPrevio === "5") dias_eg_pers.value = "5";
-
-        diasPlan = Number(dias_eg_pers.value);
-        diasTotales = diasPlan + 2;
-
-        mostrarTotales(diasTotales);
-
-        dias_eg_pers.onchange = actualizarDias;
-        return;
+    // Running → siempre 2 días
+    if (run) {
+        total += 2;
     }
+
+    if (total > 0) {
+        dias_semana.value = total;
+        boxTotales.style.display = "block";
+    }
+
+    dias_eg_pers.onchange = actualizarDias;
 }
 
-function mostrarTotales(total) {
-    const boxTotales = document.getElementById("diasTotalesContainer");
-    boxTotales.style.display = "block";
-    dias_semana.value = total;
-}
 
 // =========================================================
-// 🔄 CARGAR ALUMNO SIN BUG DE FECHA
+// 🔄 CARGAR ALUMNO
 // =========================================================
 async function cargarAlumno(id) {
     const res = await fetch(`${API_URL}/alumnos/${id}`);
@@ -108,12 +112,9 @@ async function cargarAlumno(id) {
     celular.value = a.telefono ?? "";
     nivel.value = a.nivel;
 
-    // ⚡ NO USAMOS new Date → evitamos que reste un día
-    if (a.fecha_vencimiento) {
-        fecha_vencimiento.value = a.fecha_vencimiento.split("T")[0];
-    } else {
-        fecha_vencimiento.value = "";
-    }
+    fecha_vencimiento.value = a.fecha_vencimiento
+        ? a.fecha_vencimiento.split("T")[0]
+        : "";
 
     plan_eg.checked = a.plan_eg;
     plan_personalizado.checked = a.plan_personalizado;
@@ -122,36 +123,17 @@ async function cargarAlumno(id) {
     actualizarDias();
 
     if (a.dias_eg_pers) dias_eg_pers.value = a.dias_eg_pers;
-
     dias_semana.value = a.dias_semana;
 }
 
-// =========================================================
-// 📅 RENOVAR +1 MES (sin adelanto)
-// =========================================================
-function sumarUnMes() {
-    if (!fecha_vencimiento.value) return;
-
-    const [year, month, day] = fecha_vencimiento.value.split("-").map(Number);
-
-    let f = new Date(year, month - 1, day);
-    f.setMonth(f.getMonth() + 1);
-
-    const y = f.getFullYear();
-    const m = String(f.getMonth() + 1).padStart(2, "0");
-    const d = String(f.getDate()).padStart(2, "0");
-
-    fecha_vencimiento.value = `${y}-${m}-${d}`;
-}
 
 // =========================================================
-// 💾 GUARDAR ALUMNO
+// 💾 GUARDAR ALUMNO (ALTA O EDICIÓN)
 // =========================================================
 async function guardarAlumno(e) {
     e.preventDefault();
 
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("editar");
+    const id = new URLSearchParams(window.location.search).get("editar");
 
     const datos = {
         nombre: nombre.value,
@@ -167,25 +149,114 @@ async function guardarAlumno(e) {
         dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
     };
 
-    let url = `${API_URL}/alumnos`;
-    let method = "POST";
+    const res = await fetch(
+        id ? `${API_URL}/alumnos/${id}` : `${API_URL}/alumnos`,
+        {
+            method: id ? "PUT" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        }
+    );
 
-    if (id) {
-        url = `${API_URL}/alumnos/${id}`;
-        method = "PUT";
-    }
-
-    const response = await fetch(url, {
-        method,
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(datos)
-    });
-
-    if (!response.ok) {
-        alert("❌ Error al guardar el alumno.");
+    if (!res.ok) {
+        alert("❌ Error al guardar alumno");
         return;
     }
 
-    alert("Alumno guardado con éxito.");
+    const alumno = await res.json();
+
+    // 🔥 PAGO SOLO EN ALTA
+    if (!id) {
+        const monto = Number(document.getElementById("monto").value);
+        const metodo = document.getElementById("metodo_pago").value;
+
+        if (monto > 0) {
+            await fetch(`${API_URL}/pagos`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    alumno_id: alumno.id,
+                    monto,
+                    metodo_pago: metodo,
+                    tipo: "alta"
+                })
+            });
+        }
+    }
+
+    alert("Alumno guardado correctamente ✅");
     window.location.href = "alumnos.html";
+}
+
+
+// =========================================================
+// 🪟 MODAL RENOVAR
+// =========================================================
+function abrirModalRenovar() {
+    document.getElementById("renovarMonto").value = "";
+    document.getElementById("renovarMetodo").value = "efectivo";
+    document.getElementById("modalRenovar").style.display = "flex";
+}
+
+function cerrarModalRenovar() {
+    document.getElementById("modalRenovar").style.display = "none";
+}
+
+
+// =========================================================
+// 🔁 CONFIRMAR RENOVACIÓN
+// =========================================================
+async function confirmarRenovacion() {
+    const monto = Number(document.getElementById("renovarMonto").value);
+    const metodo = document.getElementById("renovarMetodo").value;
+
+    if (monto <= 0) {
+        alert("Ingresá un monto válido");
+        return;
+    }
+
+    const id = new URLSearchParams(window.location.search).get("editar");
+
+    const [y, m, d] = fecha_vencimiento.value.split("-").map(Number);
+    const f = new Date(y, m - 1, d);
+    f.setMonth(f.getMonth() + 1);
+
+    const nuevaFecha =
+        `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
+
+    // actualizar alumno
+    await fetch(`${API_URL}/alumnos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre: nombre.value,
+            apellido: apellido.value,
+            dni: dni.value,
+            telefono: celular.value,
+            nivel: nivel.value,
+            fecha_vencimiento: nuevaFecha,
+            plan_eg: plan_eg.checked,
+            plan_personalizado: plan_personalizado.checked,
+            plan_running: plan_running.checked,
+            dias_semana: Number(dias_semana.value),
+            dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
+        })
+    });
+
+    fecha_vencimiento.value = nuevaFecha;
+
+    // registrar pago
+    await fetch(`${API_URL}/pagos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            alumno_id: Number(id),
+            monto,
+            metodo_pago: metodo,
+            tipo: "renovacion"
+        })
+    });
+
+    cerrarModalRenovar();
+    alert("Renovación registrada correctamente ✅");
 }
