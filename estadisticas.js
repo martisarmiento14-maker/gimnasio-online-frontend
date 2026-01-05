@@ -2,6 +2,10 @@ const API_URL = "https://gimnasio-online-1.onrender.com";
 
 let chartAltas = null;
 let chartPlanes = null;
+let chartEgDias = null;
+let chartPersDias = null;
+let chartIngresos = null;
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const inputMes = document.getElementById("mesSeleccionado");
@@ -20,7 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
 async function cargarTodo(mes) {
     await cargarGraficoAltas(mes);
     await cargarGraficoPlanes(mes);
+    await cargarGraficoEgDias(mes);
+    await cargarGraficoPersDias(mes);
+    await cargarGraficoIngresos(mes);
 }
+
 
 // ================================
 // 📊 GRÁFICO ALTAS / RENOVACIONES
@@ -88,3 +96,70 @@ async function cargarGraficoPlanes(mes) {
         }
     });
 }
+async function cargarGraficoEgDias(mes) {
+    const res = await fetch(`${API_URL}/estadisticas/planes-dias?mes=${mes}`);
+    const data = await res.json();
+
+    const ctx = document.getElementById("graficoEgDias");
+
+    if (chartEgDias) chartEgDias.destroy();
+
+    chartEgDias = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["3 días", "5 días"],
+            datasets: [{
+                label: "Plan EG",
+                data: [
+                    data.eg_3_dias,
+                    data.eg_5_dias
+                ]
+            }]
+        }
+    });
+}
+async function cargarGraficoPersDias(mes) {
+    const res = await fetch(`${API_URL}/estadisticas/planes-dias?mes=${mes}`);
+    const data = await res.json();
+
+    const ctx = document.getElementById("graficoPersDias");
+
+    if (chartPersDias) chartPersDias.destroy();
+
+    chartPersDias = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["3 días", "5 días"],
+            datasets: [{
+                label: "Plan Personalizado",
+                data: [
+                    data.pers_3_dias,
+                    data.pers_5_dias
+                ]
+            }]
+        }
+    });
+}
+async function cargarGraficoIngresos(mes) {
+    const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
+    const data = await res.json();
+
+    const ctx = document.getElementById("graficoIngresos");
+
+    if (chartIngresos) chartIngresos.destroy();
+
+    chartIngresos = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Efectivo", "Transferencia"],
+            datasets: [{
+                label: "Ingresos ($)",
+                data: [
+                    data.efectivo,
+                    data.transferencia
+                ]
+            }]
+        }
+    });
+}
+
