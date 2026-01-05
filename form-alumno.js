@@ -180,7 +180,7 @@ async function guardarAlumno(e) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                alumno_id: alumno.id,
+                id_alumno: alumno.id,
                 monto,
                 metodo_pago: metodo,
                 tipo: "alta"
@@ -255,7 +255,7 @@ async function confirmarRenovacion() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            alumno_id: Number(id),
+            id_alumno: Number(id),
             monto,
             metodo_pago: metodo,
             tipo: "renovacion"
