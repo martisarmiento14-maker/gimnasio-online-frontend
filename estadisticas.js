@@ -143,23 +143,40 @@ async function cargarGraficoPersDias(mes) {
 async function cargarGraficoIngresos(mes) {
     const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
-
-    const ctx = document.getElementById("graficoIngresos");
-
-    if (chartIngresos) chartIngresos.destroy();
-
     chartIngresos = new Chart(ctx, {
         type: "bar",
         data: {
             labels: ["Efectivo", "Transferencia"],
             datasets: [{
-                label: "Ingresos ($)",
+                label: "Ingresos del mes ($)",
                 data: [
-                    data.efectivo,
-                    data.transferencia
+                    data.efectivo.total,
+                    data.transferencia.total
                 ]
             }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const index = context.dataIndex;
+                            const metodo = index === 0 ? "efectivo" : "transferencia";
+
+                            return [
+                                `Total: $${context.raw}`,
+                                `Personas: ${data[metodo].personas}`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
     });
+
 }
 
