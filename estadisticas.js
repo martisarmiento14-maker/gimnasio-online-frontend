@@ -1,4 +1,4 @@
-let grafico;
+let grafico = null;
 
 async function cargarStats() {
     const mes = document.getElementById("mes").value;
@@ -13,15 +13,22 @@ async function cargarStats() {
             `https://gimnasio-online-1.onrender.com/estadisticas?mes=${mes}`
         );
 
-        if (!res.ok) throw new Error("Error backend");
-
         const data = await res.json();
+        console.log("📊 DATA:", data);
 
         const total = data.total_alumnos_mes;
 
-        const ctx = document.getElementById("graficoAlumnos").getContext("2d");
+        const canvas = document.getElementById("graficoAlumnos");
+        if (!canvas) {
+            console.error("❌ No existe el canvas");
+            return;
+        }
 
-        if (grafico) grafico.destroy();
+        const ctx = canvas.getContext("2d");
+
+        if (grafico) {
+            grafico.destroy();
+        }
 
         grafico = new Chart(ctx, {
             type: "bar",
@@ -37,14 +44,17 @@ async function cargarStats() {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        precision: 0
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
         });
 
     } catch (error) {
-        console.error("❌ Error:", error);
-        alert("No se pudieron cargar las estadísticas");
+        console.error("❌ ERROR REAL:", error);
+        alert("Error al dibujar el gráfico");
     }
 }
+
