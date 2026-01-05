@@ -2,57 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Estadísticas - EG Gimnasio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>Estadísticas</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body class="dashboard-body">
+    <h2>Estadísticas mensuales</h2>
 
-    <div class="topbar">
-        <h2>Estadísticas Mensuales</h2>
-        <button class="btn-cancelar" onclick="window.location.href='index.html'">
-            Volver
-        </button>
-    </div>
+    <input type="month" id="mes" />
+    <button onclick="cargarStats()">Ver</button>
 
-    <div class="form-container">
-
-        <div class="form-row">
-            <div style="flex:1">
-                <label>Mes</label>
-                <input type="month" id="mes">
-            </div>
-        </div>
-
-        <div class="card-estadistica">
-            <h3>Total de alumnos</h3>
-            <canvas id="graficoAlumnos"></canvas>
-        </div>
-
-        <div class="card-estadistica">
-            <h3>Planes contratados</h3>
-            <canvas id="graficoPlanes"></canvas>
-        </div>
-
-        <div class="card-estadistica">
-            <h3>Plan EG - días</h3>
-            <canvas id="graficoEg"></canvas>
-        </div>
-
-        <div class="card-estadistica">
-            <h3>Plan Personalizado - días</h3>
-            <canvas id="graficoPers"></canvas>
-        </div>
-
-        <div class="card-estadistica">
-            <h3>Ingresos del mes</h3>
-            <canvas id="graficoIngresos"></canvas>
-        </div>
-
-    </div>
+    <canvas id="graficoAlumnos" width="400" height="200"></canvas>
 
     <script src="estadisticas.js"></script>
 </body>
