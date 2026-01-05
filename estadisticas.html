@@ -5,16 +5,12 @@
     <title>Estadísticas - EG Gimnasio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Tu CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="dashboard-body">
 
-    <!-- TOPBAR -->
     <div class="topbar">
         <h2>Estadísticas Mensuales</h2>
         <button class="btn-cancelar" onclick="window.location.href='index.html'">
@@ -22,52 +18,35 @@
         </button>
     </div>
 
-    <!-- CONTENEDOR -->
     <div class="form-container">
 
-        <!-- FILTRO -->
         <div class="form-row">
-            <div style="flex:1;">
-                <label>Seleccionar mes</label>
+            <div style="flex:1">
+                <label>Mes</label>
                 <input type="month" id="mes">
             </div>
         </div>
 
-        <!-- ===================== -->
-        <!-- 1️⃣ TOTAL ALUMNOS -->
-        <!-- ===================== -->
         <div class="card-estadistica">
-            <h3>Total de alumnos del mes</h3>
+            <h3>Total de alumnos</h3>
             <canvas id="graficoAlumnos"></canvas>
         </div>
 
-        <!-- ===================== -->
-        <!-- 2️⃣ PLANES -->
-        <!-- ===================== -->
         <div class="card-estadistica">
             <h3>Planes contratados</h3>
             <canvas id="graficoPlanes"></canvas>
         </div>
 
-        <!-- ===================== -->
-        <!-- 3️⃣ EG -->
-        <!-- ===================== -->
         <div class="card-estadistica">
-            <h3>Plan EG - días por semana</h3>
+            <h3>Plan EG - días</h3>
             <canvas id="graficoEg"></canvas>
         </div>
 
-        <!-- ===================== -->
-        <!-- 4️⃣ PERSONALIZADO -->
-        <!-- ===================== -->
         <div class="card-estadistica">
-            <h3>Plan Personalizado - días por semana</h3>
+            <h3>Plan Personalizado - días</h3>
             <canvas id="graficoPers"></canvas>
         </div>
 
-        <!-- ===================== -->
-        <!-- 5️⃣ INGRESOS -->
-        <!-- ===================== -->
         <div class="card-estadistica">
             <h3>Ingresos del mes</h3>
             <canvas id="graficoIngresos"></canvas>
@@ -75,8 +54,6 @@
 
     </div>
 
-    <!-- JS -->
     <script src="estadisticas.js"></script>
-
 </body>
 </html>
