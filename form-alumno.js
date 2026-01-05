@@ -176,6 +176,15 @@ async function guardarAlumno(e) {
 
         const metodo = document.getElementById("metodo_pago").value;
 
+        let plan = "";
+        let dias = Number(dias_semana.value);
+
+        if (plan_personalizado.checked && plan_running.checked) plan = "combo1";
+        else if (plan_eg.checked && plan_running.checked) plan = "combo2";
+        else if (plan_personalizado.checked) plan = "personalizado";
+        else if (plan_eg.checked) plan = "eg";
+        else if (plan_running.checked) plan = "running";
+
         await fetch(`${API_URL}/pagos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -183,9 +192,12 @@ async function guardarAlumno(e) {
                 id_alumno: alumno.id,
                 monto,
                 metodo_pago: metodo,
-                tipo: "alta"
+                tipo: "alta",
+                plan,
+                dias_por_semana: dias
             })
         });
+
     }
 
 
@@ -251,6 +263,15 @@ async function confirmarRenovacion() {
     fecha_vencimiento.value = nuevaFecha;
 
     // registrar pago
+    let plan = "";
+    let dias = Number(dias_semana.value);
+
+    if (plan_personalizado.checked && plan_running.checked) plan = "combo1";
+    else if (plan_eg.checked && plan_running.checked) plan = "combo2";
+    else if (plan_personalizado.checked) plan = "personalizado";
+    else if (plan_eg.checked) plan = "eg";
+    else if (plan_running.checked) plan = "running";
+
     await fetch(`${API_URL}/pagos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -258,7 +279,9 @@ async function confirmarRenovacion() {
             id_alumno: Number(id),
             monto,
             metodo_pago: metodo,
-            tipo: "renovacion"
+            tipo: "renovacion",
+            plan,
+            dias_por_semana: dias
         })
     });
 
