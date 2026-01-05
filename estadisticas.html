@@ -5,7 +5,6 @@
     <title>Estadísticas | EG GYM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Estilos generales -->
     <link rel="stylesheet" href="style.css">
 
     <!-- Chart.js -->
@@ -14,67 +13,55 @@
 
 <body class="dashboard-body">
 
-    <!-- Barra superior -->
+    <!-- TOPBAR -->
     <div class="topbar">
-        <button class="btn-volver" onclick="window.location.href='dashboard.html'">
-            ← Volver
-        </button>
-
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
         <h2>Estadísticas</h2>
-
-        <button class="btn-sesion" onclick="window.location.href='index.html'">
-            Cerrar sesión
-        </button>
+        <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar sesión</button>
     </div>
 
-    <!-- Contenido principal -->
+    <!-- CONTENIDO -->
     <main class="content" style="width:90%; max-width:1200px; margin:30px auto; color:white;">
 
-        <!-- Selector de mes -->
+        <!-- Selector -->
         <div style="margin-bottom:30px;">
-            <label for="selectorMes" style="font-weight:600;">
-                Seleccionar mes:
-            </label>
-            <input
-                type="month"
-                id="selectorMes"
-                style="margin-left:10px; padding:6px; font-size:15px;"
-            >
+            <label for="selectorMes"><strong>Seleccionar mes:</strong></label>
+            <input type="month" id="selectorMes" style="margin-left:10px; padding:6px;">
         </div>
 
-        <!-- GRÁFICO 1: TOTAL DE ALUMNOS -->
-        <div class="chart-card" style="margin-bottom:40px;">
-            <h3>Total de alumnos que asistieron en el mes</h3>
-            <canvas id="graficoTotal" height="120"></canvas>
+        <!-- TOTAL ALUMNOS -->
+        <div class="chart-card" style="margin-bottom:30px;">
+            <h3>Total de alumnos que asistieron</h3>
+            <canvas id="graficoTotal"></canvas>
         </div>
 
-        <!-- GRÁFICO 2: PLANES -->
-        <div class="chart-card" style="margin-bottom:40px;">
-            <h3>Distribución por tipo de plan</h3>
-            <canvas id="graficoPlanes" height="140"></canvas>
+        <!-- PLANES -->
+        <div class="chart-card" style="margin-bottom:30px;">
+            <h3>Planes</h3>
+            <canvas id="graficoPlanes"></canvas>
         </div>
 
-        <!-- GRÁFICO 3 y 4: DÍAS -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
-
-            <!-- Días EG -->
+        <!-- DÍAS -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:30px;">
             <div class="chart-card">
-                <h3>Plan EG – días por semana</h3>
-                <canvas id="graficoDiasEG" height="140"></canvas>
+                <h3>Plan EG – días</h3>
+                <canvas id="graficoDiasEG"></canvas>
             </div>
 
-            <!-- Días Personalizado -->
             <div class="chart-card">
-                <h3>Plan Personalizado – días por semana</h3>
-                <canvas id="graficoDiasPers" height="140"></canvas>
+                <h3>Plan Personalizado – días</h3>
+                <canvas id="graficoDiasPers"></canvas>
             </div>
+        </div>
 
+        <!-- INGRESOS -->
+        <div class="chart-card">
+            <h3>Ingresos del mes</h3>
+            <canvas id="graficoIngresos"></canvas>
         </div>
 
     </main>
 
-    <!-- JS estadísticas -->
     <script src="estadisticas.js"></script>
-
 </body>
 </html>
