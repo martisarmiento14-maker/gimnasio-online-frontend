@@ -27,7 +27,7 @@
         </button>
     </div>
 
-    <!-- Contenido -->
+    <!-- Contenido principal -->
     <main class="content" style="width:90%; max-width:1200px; margin:30px auto; color:white;">
 
         <!-- Selector de mes -->
@@ -42,21 +42,39 @@
             >
         </div>
 
-        <!-- Gráfico Alumnos -->
+        <!-- GRÁFICO 1: TOTAL DE ALUMNOS -->
         <div class="chart-card" style="margin-bottom:40px;">
-            <h3>Alumnos del mes</h3>
-            <canvas id="graficoAlumnos" height="120"></canvas>
+            <h3>Total de alumnos que asistieron en el mes</h3>
+            <canvas id="graficoTotal" height="120"></canvas>
         </div>
 
-        <!-- Gráfico Ingresos -->
-        <div class="chart-card">
-            <h3>Ingresos del mes</h3>
-            <canvas id="graficoIngresos" height="120"></canvas>
+        <!-- GRÁFICO 2: PLANES -->
+        <div class="chart-card" style="margin-bottom:40px;">
+            <h3>Distribución por tipo de plan</h3>
+            <canvas id="graficoPlanes" height="140"></canvas>
+        </div>
+
+        <!-- GRÁFICO 3 y 4: DÍAS -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+
+            <!-- Días EG -->
+            <div class="chart-card">
+                <h3>Plan EG – días por semana</h3>
+                <canvas id="graficoDiasEG" height="140"></canvas>
+            </div>
+
+            <!-- Días Personalizado -->
+            <div class="chart-card">
+                <h3>Plan Personalizado – días por semana</h3>
+                <canvas id="graficoDiasPers" height="140"></canvas>
+            </div>
+
         </div>
 
     </main>
 
     <!-- JS estadísticas -->
     <script src="estadisticas.js"></script>
+
 </body>
 </html>

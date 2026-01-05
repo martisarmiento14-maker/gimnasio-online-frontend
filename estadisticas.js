@@ -6,51 +6,56 @@ document.getElementById("selectorMes").addEventListener("change", async (e) => {
   const res = await fetch(`${API_URL}/estadisticas?mes=${mes}&anio=${anio}`);
   const data = await res.json();
 
-  /* ===============================
-     GRÁFICO INGRESOS
-  =============================== */
-  new Chart(document.getElementById("graficoIngresos"), {
-    type: "doughnut",
+  // GRÁFICO 1 — TOTAL ALUMNOS
+  new Chart(document.getElementById("graficoTotal"), {
+    type: "bar",
     data: {
-      labels: ["Efectivo", "Transferencia"],
+      labels: ["Alumnos del mes"],
       datasets: [{
+        label: "Total",
+        data: [data.totalAlumnos]
+      }]
+    }
+  });
+
+  // GRÁFICO 2 — PLANES
+  new Chart(document.getElementById("graficoPlanes"), {
+    type: "bar",
+    data: {
+      labels: ["EG", "Personalizado", "Running", "EG + Running", "Pers + Running"],
+      datasets: [{
+        label: "Cantidad",
         data: [
-          data.ingresos.efectivo,
-          data.ingresos.transferencia
+          data.planes.eg,
+          data.planes.personalizado,
+          data.planes.running,
+          data.planes.combo_eg,
+          data.planes.combo_pers
         ]
       }]
     }
   });
 
-  /* ===============================
-     GRÁFICO ALUMNOS
-  =============================== */
-  new Chart(document.getElementById("graficoAlumnos"), {
-    type: "bar",
+  // GRÁFICO 3 — DÍAS EG
+  new Chart(document.getElementById("graficoDiasEG"), {
+    type: "doughnut",
     data: {
-      labels: [
-        "Nuevos",
-        "Renovaciones",
-        "EG",
-        "Personalizado",
-        "Running",
-        "EG + Running",
-        "Pers + Running",
-        "3 días",
-        "5 días"
-      ],
+      labels: ["3 días", "5 días"],
       datasets: [{
-        label: "Cantidad",
+        data: [data.diasEG.tres, data.diasEG.cinco]
+      }]
+    }
+  });
+
+  // GRÁFICO 4 — DÍAS PERSONALIZADO
+  new Chart(document.getElementById("graficoDiasPers"), {
+    type: "doughnut",
+    data: {
+      labels: ["3 días", "5 días"],
+      datasets: [{
         data: [
-          data.alumnos.nuevos,
-          data.alumnos.renovaciones,
-          data.alumnos.planes.eg,
-          data.alumnos.planes.personalizado,
-          data.alumnos.planes.running,
-          data.alumnos.planes.eg_running,
-          data.alumnos.planes.pers_running,
-          data.alumnos.dias.tres,
-          data.alumnos.dias.cinco
+          data.diasPersonalizado.tres,
+          data.diasPersonalizado.cinco
         ]
       }]
     }
