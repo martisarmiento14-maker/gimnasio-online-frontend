@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     plan_personalizado = document.getElementById("plan_personalizado");
     plan_running = document.getElementById("plan_running");
     plan_mma = document.getElementById("plan_mma");
-    dias_eg_pers.addEventListener("change", actualizarDias);
 
     dias_eg_pers = document.getElementById("dias_eg_pers");
     dias_semana = document.getElementById("dias_semana");
@@ -44,13 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
     plan_running.addEventListener("change", actualizarDias);
     plan_mma.addEventListener("change", actualizarDias);
 
+    dias_eg_pers.addEventListener("change", actualizarDias);
 
     document.getElementById("formAlumno")
         .addEventListener("submit", guardarAlumno);
 
     btnRenovar.addEventListener("click", abrirModalRenovar);
 });
-
 
 
 // =========================================================
@@ -68,7 +67,6 @@ function actualizarDias() {
     boxEgPers.style.display = "none";
     boxTotales.style.display = "none";
 
-    // ❌ prohibido
     if (eg && pers) {
         alert("No podés combinar Plan EG con Personalizado.");
         plan_personalizado.checked = false;
@@ -81,22 +79,12 @@ function actualizarDias() {
     if (eg || pers) {
         boxEgPers.style.display = "block";
 
-        // EG o Personalizado → 3 o 5 días
-    if (eg || pers) {
-        boxEgPers.style.display = "block";
-
-        // cargar opciones SOLO una vez
-        if (dias_eg_pers.options.length === 0) {
+        if (!dias_eg_pers.innerHTML) {
             dias_eg_pers.innerHTML = `
                 <option value="3">3 días</option>
                 <option value="5">5 días</option>
             `;
-            dias_eg_pers.value = "3"; // default
         }
-
-        total += Number(dias_eg_pers.value);
-    }
-
 
         total += Number(dias_eg_pers.value || 3);
     }
@@ -112,6 +100,7 @@ function actualizarDias() {
         boxTotales.style.display = "block";
     }
 }
+
 function obtenerPlanPago() {
     const planes = [];
 
