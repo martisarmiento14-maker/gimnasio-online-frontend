@@ -44,8 +44,12 @@ async function cargarGraficoAltas(mes) {
     const res = await fetch(`${API_URL}/estadisticas?mes=${mes}`);
     const data = await res.json();
 
-    document.getElementById("totalMes").innerText =
-        `Total del mes: ${data.total} alumnos`;
+    const totalMesEl = document.getElementById("totalMes");
+    const textoActual = totalMesEl.innerText.split("|")[0].trim();
+
+    totalMesEl.innerText =
+        `${textoActual} | Ingresos: $${totalIngresos.toLocaleString("es-AR")}`;
+
 
     const ctx = document.getElementById("graficoAltas");
 
@@ -182,6 +186,10 @@ async function cargarGraficoPersDias(mes) {
 async function cargarGraficoIngresos(mes) {
     const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
+    const totalIngresos =
+    (data.efectivo?.total || 0) +
+    (data.transferencia?.total || 0);
+
 
     const ctx = document.getElementById("graficoIngresos");
 
