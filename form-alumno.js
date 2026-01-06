@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     plan_personalizado = document.getElementById("plan_personalizado");
     plan_running = document.getElementById("plan_running");
     plan_mma = document.getElementById("plan_mma");
+    dias_eg_pers.addEventListener("change", actualizarDias);
 
     dias_eg_pers = document.getElementById("dias_eg_pers");
     dias_semana = document.getElementById("dias_semana");
@@ -110,8 +111,6 @@ function actualizarDias() {
         dias_semana.value = total;
         boxTotales.style.display = "block";
     }
-
-    dias_eg_pers.onchange = actualizarDias;
 }
 function obtenerPlanPago() {
     const planes = [];
