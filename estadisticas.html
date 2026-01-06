@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+este es  actualmente <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -76,4 +76,157 @@
 
 <script src="estadisticas.js"></script>
 </body>
+</html> y te muestro como es el de los otros: <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumnos - EG Gimnasio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+        <div class="buscador-contenedor">
+            <input type="text" id="buscador" placeholder="Buscar por nombre o DNI...">
+            <button class="btn-agregar" onclick="window.location.href='form-alumno.html'">+ Agregar Alumno</button>
+        </div>
+
+        <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+    </div>
+
+    <!-- TABLA -->
+    <div class="tabla-container">
+        <table class="tabla-alumnos">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Nivel</th>
+                    <th>Equipo</th>
+                    <th>Planes</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <!-- CORREGIDO -->
+            <tbody id="listaAlumnos"></tbody>
+        </table>
+
+        <div id="alumnosPagination" class="pagination-container"></div>
+    </div>
+
+    <script src="alumnos.js"></script>
+</body>
 </html>
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administración</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="dashboard-body">
+
+    <!-- TOPBAR IGUAL AL DE ALUMNOS -->
+    <div class="topbar">
+
+        <button class="btn-volver" onclick="window.location.href='dashboard.html'">← Volver</button>
+
+        <div class="buscador-contenedor">
+            <input id="buscador" class="input-search" type="text" placeholder="Buscar alumno...">
+
+            <!-- FILTROS EN EL HEADER -->
+            <select id="filtroEquipo" class="input-filter">
+                <option value="todos">Todos</option>
+                <option value="morado">Morado</option>
+                <option value="blanco">Blanco</option>
+            </select>
+
+            <select id="filtroEstado" class="input-filter">
+                <option value="todos">Estados</option>
+                <option value="vencido">Vencidos</option>
+                <option value="por-vencer">Por vencer</option>
+                <option value="al-dia">Al día</option>
+                <option value="inactivo">Inactivos</option>
+            </select>
+            <select id="filtroPlan" class="input-filter">
+                <option value="todos">Planes</option>
+                <option value="eg">Plan EG</option>
+                <option value="personalizado">Personalizado</option>
+                <option value="running">Running</option>
+            </select>
+
+        </div>
+
+        <button class="btn-sesion" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+
+    </div>
+
+    <!-- PANEL DE CONTADORES -->
+    <div class="contador-panel" style="
+        display:flex;
+        justify-content:center;
+        gap:25px;
+        margin-top:20px;
+        color:white;
+        font-size:18px;
+        font-weight:bold;
+    ">
+        <p>Total: <span id="contTotal">0</span></p>
+        <p>Al día: <span id="contAlDia">0</span></p>
+        <p>Por vencer: <span id="contPorVencer">0</span></p>
+        <p>Vencidos: <span id="contVencidos">0</span></p>
+        <p>Inactivos: <span id="contInactivos">0</span></p>
+    </div>
+
+    <!-- TABLA -->
+    <div class="tabla-container">
+
+        <table id="listaAdmin" class="tabla-alumnos">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Teléfono</th>
+                    <th>Nivel</th>
+                    <th>Equipo</th>
+                    <th>Vence</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbodyAdmin"></tbody>
+        </table>
+
+    </div>
+
+    <!-- CONTADORES DE EQUIPOS (ABAJO DE LA TABLA) -->
+    <div class="contador-equipos" style="
+        display:flex;
+        justify-content:center;
+        gap:25px;
+        margin:20px auto;
+        color:white;
+        font-size:20px;
+        font-weight:bold;
+    ">
+        <p>Morados: <span id="contMorados">0</span></p>
+        <p>Blancos: <span id="contBlancos">0</span></p>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <div id="paginacion" class="pagination-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
+
