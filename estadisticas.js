@@ -85,26 +85,41 @@ async function cargarGraficoPlanes(mes) {
         type: "doughnut",
         data: {
             labels: [
-                "Personalizado",
                 "EG",
+                "Personalizado",
                 "Running",
-                "Pers + Running",
-                "EG + Running"
+                "MMA",
+                "Running + EG",
+                "Running + Personalizado",
+                "MMA + EG",
+                "MMA + Personalizado",
+                "MMA + Running + EG",
+                "MMA + Running + Personalizado"
             ],
             datasets: [{
                 data: [
-                    data.personalizado,
                     data.eg,
+                    data.personalizado,
                     data.running,
-                    data.combo1,
-                    data.combo2
+                    data.mma,
+                    data.running_eg,
+                    data.running_personalizado,
+                    data.mma_eg,
+                    data.mma_personalizado,
+                    data.mma_running_eg,
+                    data.mma_running_personalizado
                 ],
                 backgroundColor: [
-                    "#7c3aed",
-                    "#22c55e",
-                    "#38bdf8",
-                    "#facc15",
-                    "#fb7185"
+                    "#22c55e", // EG
+                    "#7c3aed", // Personalizado
+                    "#38bdf8", // Running
+                    "#ef4444", // MMA
+                    "#facc15", // Run + EG
+                    "#fb7185", // Run + Pers
+                    "#a855f7", // MMA + EG
+                    "#ec4899", // MMA + Pers
+                    "#14b8a6", // MMA + Run + EG
+                    "#f97316"  // MMA + Run + Pers
                 ],
                 borderWidth: 0
             }]
@@ -117,6 +132,7 @@ async function cargarGraficoPlanes(mes) {
         }
     });
 }
+
 
 async function cargarGraficoEgDias(mes) {
     const res = await fetch(`${API_URL}/estadisticas/planes-dias?mes=${mes}`);
