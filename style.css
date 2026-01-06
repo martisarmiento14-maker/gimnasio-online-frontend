@@ -1878,3 +1878,15 @@ button {
 .estadistica-card canvas {
     margin-top: 10px;
 }
+
+
+.estadistica-card {
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+    padding: 15px;
+    height: 320px;           /* 🔹 altura fija */
+}
+
+.estadistica-card canvas {
+    max-height: 220px;       /* 🔹 gráficos más compactos */
+}

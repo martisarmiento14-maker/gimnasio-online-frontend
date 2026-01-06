@@ -56,12 +56,12 @@ async function cargarGraficoAltas(mes) {
         data: {
             labels: ["Altas", "Renovaciones"],
             datasets: [{
-                label: "Alumnos",
-                data: [data.altas, data.renovaciones],
-                backgroundColor: ["#22c55e", "#7c3aed"],
-                borderRadius: 8,
-                maxBarThickness: 60
-            }]
+            label: "Alumnos",
+            data: [data.altas, data.renovaciones],
+            backgroundColor: ["#22c55e", "#7c3aed"],
+            borderRadius: 8,
+            maxBarThickness: 60
+        }]
 
         },
         options: {
@@ -135,8 +135,16 @@ async function cargarGraficoEgDias(mes) {
                 data: [
                     data.eg_3_dias,
                     data.eg_5_dias
-                ]
+                ],
+                backgroundColor: "#22c55e",
+                borderRadius: 6
             }]
+        },
+        options: {
+            indexAxis: "y",   // 🔹 BARRAS LATERALES
+            scales: {
+                x: { beginAtZero: true }
+            }
         }
     });
 }
@@ -157,11 +165,20 @@ async function cargarGraficoPersDias(mes) {
                 data: [
                     data.pers_3_dias,
                     data.pers_5_dias
-                ]
+                ],
+                backgroundColor: "#7c3aed",
+                borderRadius: 6
             }]
+        },
+        options: {
+            indexAxis: "y",   // 🔹 BARRAS LATERALES
+            scales: {
+                x: { beginAtZero: true }
+            }
         }
     });
 }
+
 async function cargarGraficoIngresos(mes) {
     const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
@@ -171,26 +188,41 @@ async function cargarGraficoIngresos(mes) {
     if (chartIngresos) chartIngresos.destroy();
 
     chartIngresos = new Chart(ctx, {
-        type: "line",
+        type: "bar",
         data: {
             labels: ["Efectivo", "Transferencia"],
             datasets: [{
-                label: "Ingresos ($)",
+                label: "Ingresos del mes ($)",
                 data: [
                     data.efectivo.total,
                     data.transferencia.total
                 ],
-                borderColor: "#7c3aed",
-                backgroundColor: "rgba(124,58,237,0.25)",
-                tension: 0.4,
-                fill: true,
-                pointRadius: 6
+                backgroundColor: ["#22c55e", "#7c3aed"],
+                borderRadius: 8,
+                maxBarThickness: 60
             }]
         },
         options: {
+            responsive: true,
             scales: {
                 y: { beginAtZero: true }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const metodo =
+                                context.dataIndex === 0 ? "efectivo" : "transferencia";
+
+                            return [
+                                `Total: $${context.raw}`,
+                                `Personas: ${data[metodo].personas}`
+                            ];
+                        }
+                    }
+                }
             }
         }
     });
 }
+
