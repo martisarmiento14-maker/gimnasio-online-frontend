@@ -185,10 +185,11 @@ async function guardarAlumno(e) {
     if (!id) {
         const monto = Number(document.getElementById("monto").value);
 
-        if (isNaN(monto)) {
-            alert("Ingresá un monto");
+        if (monto === "" || monto === null || monto < 0) {
+            alert("Monto inválido");
             return;
-            }
+        }
+
 
         const metodo = document.getElementById("metodo_pago").value;
 
@@ -238,10 +239,11 @@ async function confirmarRenovacion() {
     const monto = Number(document.getElementById("renovarMonto").value);
     const metodo = document.getElementById("renovarMetodo").value;
 
-    if (monto <= 0) {
-        alert("Ingresá un monto válido");
+    if (monto === "" || monto === null || monto < 0) {
+        alert("Monto inválido");
         return;
     }
+
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
