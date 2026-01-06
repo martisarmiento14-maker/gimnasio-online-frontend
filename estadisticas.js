@@ -5,6 +5,13 @@ let chartPlanes = null;
 let chartEgDias = null;
 let chartPersDias = null;
 let chartIngresos = null;
+Chart.defaults.color = "#e5e7eb";
+Chart.defaults.font.family = "Inter, Arial, sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.tooltip.backgroundColor = "#111827";
+Chart.defaults.plugins.tooltip.borderColor = "#7c3aed";
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     inputMes.addEventListener("change", () => {
         cargarTodo(inputMes.value);
-    });
+    })
 });
 
 async function cargarTodo(mes) {
@@ -49,9 +56,13 @@ async function cargarGraficoAltas(mes) {
         data: {
             labels: ["Altas", "Renovaciones"],
             datasets: [{
-                label: "Cantidad de alumnos",
-                data: [data.altas, data.renovaciones]
+                label: "Alumnos",
+                data: [data.altas, data.renovaciones],
+                backgroundColor: ["#22c55e", "#7c3aed"],
+                borderRadius: 8,
+                maxBarThickness: 60
             }]
+
         },
         options: {
             responsive: true
@@ -71,31 +82,42 @@ async function cargarGraficoPlanes(mes) {
     if (chartPlanes) chartPlanes.destroy();
 
     chartPlanes = new Chart(ctx, {
-        type: "bar",
+        type: "doughnut",
         data: {
             labels: [
                 "Personalizado",
                 "EG",
                 "Running",
-                "Combo Personalizado + Running",
-                "Combo EG + Running"
+                "Pers + Running",
+                "EG + Running"
             ],
             datasets: [{
-                label: "Planes vendidos",
                 data: [
                     data.personalizado,
                     data.eg,
                     data.running,
                     data.combo1,
                     data.combo2
-                ]
+                ],
+                backgroundColor: [
+                    "#7c3aed",
+                    "#22c55e",
+                    "#38bdf8",
+                    "#facc15",
+                    "#fb7185"
+                ],
+                borderWidth: 0
             }]
         },
         options: {
-            responsive: true
+            cutout: "70%",
+            plugins: {
+                legend: { position: "bottom" }
+            }
         }
     });
 }
+
 async function cargarGraficoEgDias(mes) {
     const res = await fetch(`${API_URL}/estadisticas/planes-dias?mes=${mes}`);
     const data = await res.json();
@@ -149,37 +171,26 @@ async function cargarGraficoIngresos(mes) {
     if (chartIngresos) chartIngresos.destroy();
 
     chartIngresos = new Chart(ctx, {
-        type: "bar",
+        type: "line",
         data: {
             labels: ["Efectivo", "Transferencia"],
             datasets: [{
-                label: "Ingresos del mes ($)",
+                label: "Ingresos ($)",
                 data: [
                     data.efectivo.total,
                     data.transferencia.total
-                ]
+                ],
+                borderColor: "#7c3aed",
+                backgroundColor: "rgba(124,58,237,0.25)",
+                tension: 0.4,
+                fill: true,
+                pointRadius: 6
             }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const index = context.dataIndex;
-                            const metodo = index === 0 ? "efectivo" : "transferencia";
-
-                            return [
-                                `Total: $${context.raw}`,
-                                `Personas: ${data[metodo].personas}`
-                            ];
-                        }
-                    }
-                }
-            },
             scales: {
                 y: { beginAtZero: true }
             }
         }
     });
-} 
+}
