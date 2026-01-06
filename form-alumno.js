@@ -2,7 +2,7 @@ const API_URL = "https://gimnasio-online-1.onrender.com";
 
 // 🔥 VARIABLES GLOBALES
 let nombre, apellido, dni, celular, nivel, fecha_vencimiento;
-let plan_eg, plan_personalizado, plan_running;
+let plan_eg, plan_personalizado, plan_running, plan_mma;
 let dias_eg_pers, dias_semana;
 let pagoAlta, btnRenovar;
 
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     plan_eg = document.getElementById("plan_eg");
     plan_personalizado = document.getElementById("plan_personalizado");
     plan_running = document.getElementById("plan_running");
+    plan_mma = document.getElementById("plan_mma");
 
     dias_eg_pers = document.getElementById("dias_eg_pers");
     dias_semana = document.getElementById("dias_semana");
@@ -40,6 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     plan_eg.addEventListener("change", actualizarDias);
     plan_personalizado.addEventListener("change", actualizarDias);
     plan_running.addEventListener("change", actualizarDias);
+    plan_mma.addEventListener("change", actualizarDias);
+
 
     document.getElementById("formAlumno")
         .addEventListener("submit", guardarAlumno);
@@ -56,6 +59,7 @@ function actualizarDias() {
     const eg = plan_eg.checked;
     const pers = plan_personalizado.checked;
     const run = plan_running.checked;
+    const mma = plan_mma.checked;
 
     const boxEgPers = document.getElementById("diasEgPersContainer");
     const boxTotales = document.getElementById("diasTotalesContainer");
@@ -63,6 +67,7 @@ function actualizarDias() {
     boxEgPers.style.display = "none";
     boxTotales.style.display = "none";
 
+    // ❌ prohibido
     if (eg && pers) {
         alert("No podés combinar Plan EG con Personalizado.");
         plan_personalizado.checked = false;
@@ -75,20 +80,19 @@ function actualizarDias() {
     if (eg || pers) {
         boxEgPers.style.display = "block";
 
-        if (!dias_eg_pers.innerHTML) {
-            dias_eg_pers.innerHTML = `
-                <option value="3">3 días</option>
-                <option value="5">5 días</option>
-            `;
-        }
+        dias_eg_pers.innerHTML = `
+            <option value="3">3 días</option>
+            <option value="5">5 días</option>
+        `;
 
         total += Number(dias_eg_pers.value || 3);
     }
 
-    // Running → siempre 2 días
-    if (run) {
-        total += 2;
-    }
+    // Running → 3 días
+    if (run) total += 3;
+
+    // MMA → 2 días
+    if (mma) total += 2;
 
     if (total > 0) {
         dias_semana.value = total;
@@ -96,6 +100,16 @@ function actualizarDias() {
     }
 
     dias_eg_pers.onchange = actualizarDias;
+}
+function obtenerPlanPago() {
+    const planes = [];
+
+    if (plan_eg.checked) planes.push("eg");
+    if (plan_personalizado.checked) planes.push("personalizado");
+    if (plan_running.checked) planes.push("running");
+    if (plan_mma.checked) planes.push("mma");
+
+    return planes.join("+"); // ej: "eg+running+mma"
 }
 
 
@@ -119,6 +133,7 @@ async function cargarAlumno(id) {
     plan_eg.checked = a.plan_eg;
     plan_personalizado.checked = a.plan_personalizado;
     plan_running.checked = a.plan_running;
+    plan_mma.checked = a.plan_mma;
 
     actualizarDias();
 
@@ -146,7 +161,8 @@ async function guardarAlumno(e) {
         plan_personalizado: plan_personalizado.checked,
         plan_running: plan_running.checked,
         dias_semana: Number(dias_semana.value),
-        dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
+        dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null,
+        plan_mma: plan_mma.checked
     };
 
     const res = await fetch(
@@ -176,14 +192,9 @@ async function guardarAlumno(e) {
 
         const metodo = document.getElementById("metodo_pago").value;
 
-        let plan = "";
-        let dias = Number(dias_semana.value);
+        const plan = obtenerPlanPago();
+        const dias = Number(dias_semana.value);
 
-        if (plan_personalizado.checked && plan_running.checked) plan = "combo1";
-        else if (plan_eg.checked && plan_running.checked) plan = "combo2";
-        else if (plan_personalizado.checked) plan = "personalizado";
-        else if (plan_eg.checked) plan = "eg";
-        else if (plan_running.checked) plan = "running";
 
         await fetch(`${API_URL}/pagos`, {
             method: "POST",
@@ -263,14 +274,9 @@ async function confirmarRenovacion() {
     fecha_vencimiento.value = nuevaFecha;
 
     // registrar pago
-    let plan = "";
-    let dias = Number(dias_semana.value);
+    const plan = obtenerPlanPago();
+    const dias = Number(dias_semana.value);
 
-    if (plan_personalizado.checked && plan_running.checked) plan = "combo1";
-    else if (plan_eg.checked && plan_running.checked) plan = "combo2";
-    else if (plan_personalizado.checked) plan = "personalizado";
-    else if (plan_eg.checked) plan = "eg";
-    else if (plan_running.checked) plan = "running";
 
     await fetch(`${API_URL}/pagos`, {
         method: "POST",
