@@ -80,10 +80,22 @@ function actualizarDias() {
     if (eg || pers) {
         boxEgPers.style.display = "block";
 
-        dias_eg_pers.innerHTML = `
-            <option value="3">3 días</option>
-            <option value="5">5 días</option>
-        `;
+        // EG o Personalizado → 3 o 5 días
+    if (eg || pers) {
+        boxEgPers.style.display = "block";
+
+        // cargar opciones SOLO una vez
+        if (dias_eg_pers.options.length === 0) {
+            dias_eg_pers.innerHTML = `
+                <option value="3">3 días</option>
+                <option value="5">5 días</option>
+            `;
+            dias_eg_pers.value = "3"; // default
+        }
+
+        total += Number(dias_eg_pers.value);
+    }
+
 
         total += Number(dias_eg_pers.value || 3);
     }
