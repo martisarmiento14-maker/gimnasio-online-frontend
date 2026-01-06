@@ -44,12 +44,8 @@ async function cargarGraficoAltas(mes) {
     const res = await fetch(`${API_URL}/estadisticas?mes=${mes}`);
     const data = await res.json();
 
-    const totalMesEl = document.getElementById("totalMes");
-    const textoActual = totalMesEl.innerText.split("|")[0].trim();
-
-    totalMesEl.innerText =
-        `${textoActual} | Ingresos: $${totalIngresos.toLocaleString("es-AR")}`;
-
+    document.getElementById("totalMes").innerText =
+        `Total del mes: ${data.total} alumnos`;
 
     const ctx = document.getElementById("graficoAltas");
 
@@ -152,6 +148,7 @@ async function cargarGraficoEgDias(mes) {
         }
     });
 }
+
 async function cargarGraficoPersDias(mes) {
     const res = await fetch(`${API_URL}/estadisticas/planes-dias?mes=${mes}`);
     const data = await res.json();
@@ -183,13 +180,20 @@ async function cargarGraficoPersDias(mes) {
     });
 }
 
+
 async function cargarGraficoIngresos(mes) {
     const res = await fetch(`${API_URL}/estadisticas/ingresos?mes=${mes}`);
     const data = await res.json();
-    const totalIngresos =
-    (data.efectivo?.total || 0) +
-    (data.transferencia?.total || 0);
 
+    const totalIngresos =
+        (data.efectivo?.total || 0) +
+        (data.transferencia?.total || 0);
+
+    const totalMesEl = document.getElementById("totalMes");
+    const textoActual = totalMesEl.innerText.split("|")[0].trim();
+
+    totalMesEl.innerText =
+        `${textoActual} | Ingresos: $${totalIngresos.toLocaleString("es-AR")}`;
 
     const ctx = document.getElementById("graficoIngresos");
 
@@ -211,26 +215,9 @@ async function cargarGraficoIngresos(mes) {
             }]
         },
         options: {
-            responsive: true,
             scales: {
                 y: { beginAtZero: true }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const metodo =
-                                context.dataIndex === 0 ? "efectivo" : "transferencia";
-
-                            return [
-                                `Total: $${context.raw}`,
-                                `Personas: ${data[metodo].personas}`
-                            ];
-                        }
-                    }
-                }
             }
         }
     });
 }
-
