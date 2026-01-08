@@ -99,6 +99,10 @@ function actualizarDias() {
         dias_semana.value = total;
         boxTotales.style.display = "block";
     }
+    if (!eg && !pers) {
+    dias_eg_pers.value = "";
+}
+
 }
 
 function obtenerPlanPago() {
@@ -109,8 +113,9 @@ function obtenerPlanPago() {
     if (plan_running.checked) planes.push("running");
     if (plan_mma.checked) planes.push("mma");
 
-    return planes.join("+"); // ej: "eg+running+mma"
+    return planes.sort().join("+");
 }
+
 
 
 // =========================================================
@@ -150,20 +155,21 @@ async function guardarAlumno(e) {
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    const datos = {
-        nombre: nombre.value,
-        apellido: apellido.value,
-        dni: dni.value,
-        telefono: celular.value,
-        nivel: nivel.value,
-        fecha_vencimiento: fecha_vencimiento.value,
-        plan_eg: plan_eg.checked,
-        plan_personalizado: plan_personalizado.checked,
-        plan_running: plan_running.checked,
-        dias_semana: Number(dias_semana.value),
-        dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null,
-        plan_mma: plan_mma.checked
-    };
+    body: JSON.stringify({
+    nombre: nombre.value,
+    apellido: apellido.value,
+    dni: dni.value,
+    telefono: celular.value,
+    nivel: nivel.value,
+    fecha_vencimiento: nuevaFecha,
+    plan_eg: plan_eg.checked,
+    plan_personalizado: plan_personalizado.checked,
+    plan_running: plan_running.checked,
+    plan_mma: plan_mma.checked,
+    dias_semana: Number(dias_semana.value),
+    dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
+})
+
 
     const res = await fetch(
         id ? `${API_URL}/alumnos/${id}` : `${API_URL}/alumnos`,
@@ -183,12 +189,14 @@ async function guardarAlumno(e) {
 
     // 🔥 PAGO SOLO EN ALTA
     if (!id) {
-        const monto = Number(document.getElementById("monto").value);
+        const montoInput = document.getElementById("monto").value;
+        const monto = Number(montoInput);
 
-        if (monto === "" || monto === null || monto < 0) {
+        if (montoInput === "" || isNaN(monto) || monto < 0) {
             alert("Monto inválido");
             return;
         }
+
 
 
         const metodo = document.getElementById("metodo_pago").value;
