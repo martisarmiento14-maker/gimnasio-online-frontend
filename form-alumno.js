@@ -280,7 +280,7 @@ async function confirmarRenovacion() {
     const dias = Number(dias_semana.value);
 
 
-    await fetch(`${API_URL}/pagos`, {
+    const resPago = await fetch(`${API_URL}/pagos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -289,9 +289,17 @@ async function confirmarRenovacion() {
             metodo_pago: metodo,
             tipo: "renovacion",
             plan,
-            dias_por_semana: dias
+            dias_por_semana: dias,
+            cantidad_meses: 1
         })
     });
+
+    if (!resPago.ok) {
+        console.error(await resPago.text());
+        alert("❌ Error registrando el pago de renovación");
+        return;
+    }
+
 
     cerrarModalRenovar();
     alert("Renovación registrada correctamente ✅");
