@@ -155,21 +155,22 @@ async function guardarAlumno(e) {
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    body: JSON.stringify({
-    nombre: nombre.value,
-    apellido: apellido.value,
-    dni: dni.value,
-    telefono: celular.value,
-    nivel: nivel.value,
-    fecha_vencimiento: nuevaFecha,
-    plan_eg: plan_eg.checked,
-    plan_personalizado: plan_personalizado.checked,
-    plan_running: plan_running.checked,
-    plan_mma: plan_mma.checked,
-    dias_semana: Number(dias_semana.value),
-    dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
-})
-
+    const datos = {
+        nombre: nombre.value,
+        apellido: apellido.value,
+        dni: dni.value,
+        telefono: celular.value,
+        nivel: nivel.value,
+        fecha_vencimiento: fecha_vencimiento.value,
+        plan_eg: plan_eg.checked,
+        plan_personalizado: plan_personalizado.checked,
+        plan_running: plan_running.checked,
+        plan_mma: plan_mma.checked,
+        dias_semana: Number(dias_semana.value),
+        dias_eg_pers: dias_eg_pers.value
+            ? Number(dias_eg_pers.value)
+            : null
+    };
 
     const res = await fetch(
         id ? `${API_URL}/alumnos/${id}` : `${API_URL}/alumnos`,
@@ -181,29 +182,22 @@ async function guardarAlumno(e) {
     );
 
     if (!res.ok) {
+        console.error(await res.text());
         alert("❌ Error al guardar alumno");
         return;
     }
 
     const alumno = await res.json();
 
-    // 🔥 PAGO SOLO EN ALTA
+    // 💰 PAGO SOLO EN ALTA
     if (!id) {
-        const montoInput = document.getElementById("monto").value;
-        const monto = Number(montoInput);
+        const monto = Number(document.getElementById("monto").value);
+        const metodo = document.getElementById("metodo_pago").value;
 
-        if (montoInput === "" || isNaN(monto) || monto < 0) {
+        if (isNaN(monto) || monto <= 0) {
             alert("Monto inválido");
             return;
         }
-
-
-
-        const metodo = document.getElementById("metodo_pago").value;
-
-        const plan = obtenerPlanPago();
-        const dias = Number(dias_semana.value);
-
 
         await fetch(`${API_URL}/pagos`, {
             method: "POST",
@@ -213,18 +207,16 @@ async function guardarAlumno(e) {
                 monto,
                 metodo_pago: metodo,
                 tipo: "alta",
-                plan,
-                dias_por_semana: dias
+                plan: obtenerPlanPago(),
+                dias_por_semana: Number(dias_semana.value),
+                cantidad_meses: 1
             })
         });
-
     }
-
 
     alert("Alumno guardado correctamente ✅");
     window.location.href = "alumnos.html";
 }
-
 
 // =========================================================
 // 🪟 MODAL RENOVAR
