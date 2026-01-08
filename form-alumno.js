@@ -209,7 +209,7 @@ async function guardarAlumno(e) {
                 tipo: "alta",
                 plan: obtenerPlanPago(),
                 dias_por_semana: Number(dias_semana.value),
-                cantidad_meses: 1
+                cantidad_meses: CantidadMeses
             })
         });
     }
@@ -238,23 +238,35 @@ function cerrarModalRenovar() {
 async function confirmarRenovacion() {
     const monto = Number(document.getElementById("renovarMonto").value);
     const metodo = document.getElementById("renovarMetodo").value;
+    const cantidadMeses =
+        Number(document.getElementById("renovarMeses").value);
 
-    if (monto === "" || monto === null || monto < 0) {
-        alert("Monto inválido");
+    if (monto <= 0 || isNaN(cantidadMeses)) {
+        alert("Datos inválidos");
         return;
     }
 
-
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    const [y, m, d] = fecha_vencimiento.value.split("-").map(Number);
-    const f = new Date(y, m - 1, d);
-    f.setMonth(f.getMonth() + 1);
+    const [y, m] = fecha_vencimiento.value.split("-").map(Number);
+
+// arrancamos en el mes siguiente
+    const base = new Date(y, m, 1);
+
+    // sumamos la cantidad de meses
+    base.setMonth(base.getMonth() + cantidadMeses);
+
+    // último día del mes final
+    const ultimaFecha = new Date(
+        base.getFullYear(),
+        base.getMonth(),
+        0
+    );
 
     const nuevaFecha =
-        `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
+        `${ultimaFecha.getFullYear()}-${String(ultimaFecha.getMonth() + 1).padStart(2, "0")}-${String(ultimaFecha.getDate()).padStart(2, "0")}`;
 
-    // actualizar alumno
+
     await fetch(`${API_URL}/alumnos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -268,19 +280,15 @@ async function confirmarRenovacion() {
             plan_eg: plan_eg.checked,
             plan_personalizado: plan_personalizado.checked,
             plan_running: plan_running.checked,
+            plan_mma: plan_mma.checked,
             dias_semana: Number(dias_semana.value),
-            dias_eg_pers: dias_eg_pers.value ? Number(dias_eg_pers.value) : null
+            dias_eg_pers: dias_eg_pers.value
+                ? Number(dias_eg_pers.value)
+                : null
         })
     });
 
-    fecha_vencimiento.value = nuevaFecha;
-
-    // registrar pago
-    const plan = obtenerPlanPago();
-    const dias = Number(dias_semana.value);
-
-
-    const resPago = await fetch(`${API_URL}/pagos`, {
+    await fetch(`${API_URL}/pagos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -288,19 +296,13 @@ async function confirmarRenovacion() {
             monto,
             metodo_pago: metodo,
             tipo: "renovacion",
-            plan,
-            dias_por_semana: dias,
-            cantidad_meses: 1
+            plan: obtenerPlanPago(),
+            dias_por_semana: Number(dias_semana.value),
+            cantidad_meses: cantidadMeses
         })
     });
-
-    if (!resPago.ok) {
-        console.error(await resPago.text());
-        alert("❌ Error registrando el pago de renovación");
-        return;
-    }
-
 
     cerrarModalRenovar();
     alert("Renovación registrada correctamente ✅");
 }
+
