@@ -253,19 +253,6 @@ async function confirmarRenovacion() {
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    async function confirmarRenovacion() {
-    const monto = Number(document.getElementById("renovarMonto").value);
-    const metodo = document.getElementById("renovarMetodo").value;
-    const cantidadMeses =
-        Number(document.getElementById("renovarMeses").value);
-
-    if (monto <= 0 || isNaN(cantidadMeses)) {
-        alert("Datos inválidos");
-        return;
-    }
-
-    const id = new URLSearchParams(window.location.search).get("editar");
-
     await fetch(`${API_URL}/pagos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -283,8 +270,6 @@ async function confirmarRenovacion() {
     cerrarModalRenovar();
     alert("Renovación registrada correctamente ✅");
     location.reload();
-}
-
 
 // arrancamos en el mes siguiente
     const base = new Date(y, m, 1);
