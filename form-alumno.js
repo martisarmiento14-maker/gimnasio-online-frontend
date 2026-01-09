@@ -1,4 +1,3 @@
-const API_URL = "https://gimnasio-online-1.onrender.com";
 
 // 🔥 VARIABLES GLOBALES
 let nombre, apellido, dni, celular, nivel, fecha_vencimiento;
