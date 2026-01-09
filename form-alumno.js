@@ -253,7 +253,7 @@ async function confirmarRenovacion() {
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    await fetch(`${API_URL}/pagos`, {
+    const res = await fetch(`${API_URL}/pagos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -266,64 +266,13 @@ async function confirmarRenovacion() {
             cantidad_meses: cantidadMeses
         })
     });
+
+    if (!res.ok) {
+        alert("❌ Error registrando renovación");
+        return;
+    }
 
     cerrarModalRenovar();
     alert("Renovación registrada correctamente ✅");
     location.reload();
-
-// arrancamos en el mes siguiente
-    const base = new Date(y, m, 1);
-
-    // sumamos la cantidad de meses
-    base.setMonth(base.getMonth() + cantidadMeses);
-
-    // último día del mes final
-    const ultimaFecha = new Date(
-        base.getFullYear(),
-        base.getMonth(),
-        0
-    );
-
-    const nuevaFecha =
-        `${ultimaFecha.getFullYear()}-${String(ultimaFecha.getMonth() + 1).padStart(2, "0")}-${String(ultimaFecha.getDate()).padStart(2, "0")}`;
-
-
-    await fetch(`${API_URL}/alumnos/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            nombre: nombre.value,
-            apellido: apellido.value,
-            dni: dni.value,
-            telefono: celular.value,
-            nivel: nivel.value,
-            fecha_vencimiento: nuevaFecha,
-            plan_eg: plan_eg.checked,
-            plan_personalizado: plan_personalizado.checked,
-            plan_running: plan_running.checked,
-            plan_mma: plan_mma.checked,
-            dias_semana: Number(dias_semana.value),
-            dias_eg_pers: dias_eg_pers.value
-                ? Number(dias_eg_pers.value)
-                : null
-        })
-    });
-
-    await fetch(`${API_URL}/pagos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            id_alumno: Number(id),
-            monto,
-            metodo_pago: metodo,
-            tipo: "renovacion",
-            plan: obtenerPlanPago(),
-            dias_por_semana: Number(dias_semana.value),
-            cantidad_meses: cantidadMeses
-        })
-    });
-
-    cerrarModalRenovar();
-    alert("Renovación registrada correctamente ✅");
 }
-
