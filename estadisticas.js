@@ -49,6 +49,19 @@ async function cargarGraficoIngresos(mes) {
         }
     });
 }
+
+
+async function cargarAlumnosMes(mes) {
+    const res = await fetch(
+        `${API_URL}/estadisticas/alumnos?mes=${mes}`
+    );
+
+    const data = await res.json();
+
+    document.getElementById("totalAlumnosMes").innerText =
+        `${data.total} alumnos`;
+}
+
 const inputMes = document.getElementById("mesSeleccionado");
 
 const hoy = new Date();
