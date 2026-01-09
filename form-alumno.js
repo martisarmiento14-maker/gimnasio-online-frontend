@@ -199,6 +199,10 @@ async function guardarAlumno(e) {
             return;
         }
 
+        const cantidadMeses = Number(
+            document.getElementById("altaMeses").value
+        );
+
         await fetch(`${API_URL}/pagos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -209,9 +213,10 @@ async function guardarAlumno(e) {
                 tipo: "alta",
                 plan: obtenerPlanPago(),
                 dias_por_semana: Number(dias_semana.value),
-                cantidad_meses: CantidadMeses
+                cantidad_meses: cantidadMeses
             })
         });
+
     }
 
     alert("Alumno guardado correctamente ✅");
@@ -248,7 +253,38 @@ async function confirmarRenovacion() {
 
     const id = new URLSearchParams(window.location.search).get("editar");
 
-    const [y, m] = fecha_vencimiento.value.split("-").map(Number);
+    async function confirmarRenovacion() {
+    const monto = Number(document.getElementById("renovarMonto").value);
+    const metodo = document.getElementById("renovarMetodo").value;
+    const cantidadMeses =
+        Number(document.getElementById("renovarMeses").value);
+
+    if (monto <= 0 || isNaN(cantidadMeses)) {
+        alert("Datos inválidos");
+        return;
+    }
+
+    const id = new URLSearchParams(window.location.search).get("editar");
+
+    await fetch(`${API_URL}/pagos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_alumno: Number(id),
+            monto,
+            metodo_pago: metodo,
+            tipo: "renovacion",
+            plan: obtenerPlanPago(),
+            dias_por_semana: Number(dias_semana.value),
+            cantidad_meses: cantidadMeses
+        })
+    });
+
+    cerrarModalRenovar();
+    alert("Renovación registrada correctamente ✅");
+    location.reload();
+}
+
 
 // arrancamos en el mes siguiente
     const base = new Date(y, m, 1);
